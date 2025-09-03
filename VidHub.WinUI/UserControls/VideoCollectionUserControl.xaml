@@ -38,7 +38,7 @@
                             
                             <Border Margin="0" Padding="0" BorderThickness="0" CornerRadius="8" HorizontalAlignment="Center" VerticalAlignment="Bottom" Grid.Row="0">
                                 <Grid>
-                                    <Image Source="{Binding VideoPreview, Converter={StaticResource EnsurePreview}}" MaxHeight="425" Stretch="Uniform" />
+                                    <Image Source="{Binding ThumbnailPath}" MaxHeight="425" Stretch="Uniform" />
                                     <Border Background="Black" Opacity="0.8" BorderThickness="0" CornerRadius="8" Margin="4" HorizontalAlignment="Right" VerticalAlignment="Bottom" >
                                         <TextBlock Text="{Binding Duration, Converter={StaticResource FormatDuration}}" Margin="6 2" />
                                     </Border>
