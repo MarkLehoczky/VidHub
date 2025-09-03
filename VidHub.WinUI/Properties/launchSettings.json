@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "VidHub.WinUI (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "VidHub.WinUI (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
