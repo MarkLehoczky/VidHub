@@ -61,6 +61,34 @@ namespace VidHub.Services.Logics
             }
         }
 
+        public async Task LoadExternal(IEnumerable<IStorageItem> items)
+        {
+            if (items.Any())
+            {
+                await Task.Run(async () =>
+                {
+                    var index = transfers.Count;
+                    var transfer = new Transfer();
+                    transfers.Enqueue(transfer);
+                    service.Update();
+
+                    var files = items.OfType<StorageFile>().Where(f => Video.ExtensionTypes.Contains(f.FileType)).ToList();
+                    foreach (var folder in items.OfType<StorageFolder>())
+                    {
+                        files.AddRange(await CollectFilesAsync(folder, true, Video.ExtensionTypes));
+                    }
+                    if (files.Count > 0)
+                    {
+                        transfers.ElementAt(index).AddTotalCount(files.Count);
+                        AddFilesToVideoCollection(index, files);
+                    }
+
+                    service.Update();
+                    TransferCleanup();
+                });
+            }
+        }
+
 
         private static async Task<IReadOnlyList<StorageFile>> PickFilesOpen(string commitButtonText, List<string> fileTypeFilters)
         {

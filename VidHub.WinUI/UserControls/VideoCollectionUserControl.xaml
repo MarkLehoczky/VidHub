@@ -19,7 +19,7 @@
         <viewmodel:VideoCollectionViewModel />
     </UserControl.DataContext>
 
-    <Grid>
+    <Grid AllowDrop="True" DragOver="DragOverItems" Drop="DropItems">
         <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
             <ItemsControl ItemsSource="{Binding Videos}">
                 <ItemsControl.ItemsPanel>
