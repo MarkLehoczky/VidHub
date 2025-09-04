@@ -14,6 +14,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Pages\MainPage.xaml" />
+    <None Remove="UserControls\TitlebarUserControl.xaml" />
     <None Remove="UserControls\VideoCollectionUserControl.xaml" />
   </ItemGroup>
 
@@ -40,12 +41,19 @@
     <ProjectCapability Include="Msix" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.8" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4948" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.250606001" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VidHub.Core\VidHub.Core.csproj" />
+    <ProjectReference Include="..\VidHub.Services\VidHub.Services.csproj" />
     <ProjectReference Include="..\VidHub.ViewModels\VidHub.ViewModels.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="UserControls\TitlebarUserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="UserControls\VideoCollectionUserControl.xaml">

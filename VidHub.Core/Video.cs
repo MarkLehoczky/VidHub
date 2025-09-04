@@ -1,6 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace VidHub.Core
 {
@@ -14,8 +15,8 @@ namespace VidHub.Core
         public TimeSpan Duration { get; set; }
         public string ThumbnailPath { get; set; }
         public string FilePath { get; set; }
-        public int ID { get; set; }
-        protected string Hash { get; set; }
+        [JsonIgnore] public int ID { get; set; }
+        [JsonIgnore] protected string Hash { get; set; }
 
 
         public Video()
@@ -84,7 +85,8 @@ namespace VidHub.Core
 
             if (File.Exists(cachePath))
             {
-                var video = JsonSerializer.Deserialize<Video>(cachePath);
+                var json = File.ReadAllText(cachePath);
+                var video = JsonSerializer.Deserialize<Video>(json);
 
                 if (video != null)
                 {

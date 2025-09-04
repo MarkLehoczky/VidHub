@@ -10,7 +10,14 @@
     mc:Ignorable="d">
 
     <Grid>
-        <control:VideoCollectionUserControl />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <control:TitlebarUserControl Grid.Row="0" />
+        <control:VideoCollectionUserControl Grid.Row="1" />
+
     </Grid>
 
 </Page>
