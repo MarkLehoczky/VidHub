@@ -16,6 +16,30 @@ namespace VidHub.WinUI.UserControls
         public VideoCollectionUserControl()
         {
             InitializeComponent();
+
+            var pasteAccelerator = new KeyboardAccelerator
+            {
+                Key = Windows.System.VirtualKey.V,
+                Modifiers = Windows.System.VirtualKeyModifiers.Control
+            };
+            pasteAccelerator.Invoked += PasteAccelerator_Invoked;
+
+            KeyboardAccelerators.Add(pasteAccelerator);
+            KeyboardAcceleratorPlacementMode = KeyboardAcceleratorPlacementMode.Hidden;
+        }
+
+
+        private async void PasteAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            args.Handled = true;
+
+            var dataPackageView = Clipboard.GetContent();
+
+            if (dataPackageView.Contains(StandardDataFormats.StorageItems))
+            {
+                var items = await dataPackageView.GetStorageItemsAsync();
+                HandlePastedFiles(items);
+            }
         }
 
         private void DragOverItems(object sender, DragEventArgs e)
