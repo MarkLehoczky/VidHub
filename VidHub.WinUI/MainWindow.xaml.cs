@@ -7,6 +7,7 @@ namespace VidHub.WinUI
         public MainWindow()
         {
             InitializeComponent();
+            ExtendsContentIntoTitleBar = true;
         }
     }
 }
