@@ -4,7 +4,7 @@ namespace VidHub.Platform
 {
     public class Context
     {
-        public static IWindowContext MainWindow {  get; set; }
+        public static IWindowContext MainWindow { get; set; }
         public static IHostContext MainHost { get; set; }
     }
 }
