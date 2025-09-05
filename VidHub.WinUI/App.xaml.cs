@@ -10,6 +10,8 @@ using VidHub.Services.Logics;
 using VidHub.Services.Logics.Interfaces;
 using VidHub.Services.Settings;
 using VidHub.Services.Settings.Interfaces;
+using VidHub.Services.System;
+using VidHub.Services.System.Interfaces;
 using VidHub.ViewModels;
 using WinRT.Interop;
 
@@ -27,6 +29,7 @@ namespace VidHub.WinUI
                 {
                     services.AddSingleton<IMainService, MainService>();
                     services.AddSingleton<ISettingsService, SettingsService>();
+                    services.AddSingleton<ISystemManager, SystemManager>();
                     services.AddSingleton<IVideoLoadService, VideoLoadService>();
                     services.AddSingleton<IVideoOrganizeService, VideoOrganizeService>();
                     services.AddSingleton<IVideoCollectionService, VideoCollectionService>();
@@ -41,6 +44,7 @@ namespace VidHub.WinUI
             _window = new MainWindow();
             _window.Activate();
             Context.MainWindow = new WindowContext(_window);
+            _window.Activated += (s, e) => Context.MainWindow.IsActive = e.WindowActivationState != WindowActivationState.Deactivated;
         }
     }
 
@@ -51,6 +55,9 @@ namespace VidHub.WinUI
         public object Window => window;
 
         public nint HWND => WindowNative.GetWindowHandle(window);
+
+        public bool IsActive { get; set; }
+
 
         public bool TryEnqueue(Action callback)
         {

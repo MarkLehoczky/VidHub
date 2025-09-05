@@ -6,13 +6,14 @@ using VidHub.Platform;
 using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Logics.Interfaces;
 using VidHub.Services.Settings.Interfaces;
+using VidHub.Services.System.Interfaces;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
 
 namespace VidHub.Services.Logics
 {
-    public class VideoLoadService(IMainService service, ISettingsService settings) : IVideoLoadService
+    public class VideoLoadService(IMainService service, ISettingsService settings, ISystemManager manager) : IVideoLoadService
     {
         private readonly object locker = new();
         private readonly ConcurrentQueue<Transfer> transfers = [];
@@ -42,11 +43,13 @@ namespace VidHub.Services.Logics
                     var transfer = new Transfer();
                     transfer.AddTotalCount(files.Count);
                     transfers.Enqueue(transfer);
+                    manager.SetTaskbar(transfers);
                     service.Update();
 
                     AddFilesToVideoCollection(index, files);
 
                     transfers.ElementAt(index).IsActive = false;
+                    manager.SetTaskbar(transfers);
                     service.Update();
                     TransferCleanup();
                 });
@@ -65,6 +68,7 @@ namespace VidHub.Services.Logics
                     var transfer = new Transfer();
                     transfer.IsCollecting = true;
                     transfers.Enqueue(transfer);
+                    manager.SetTaskbar(transfers);
                     service.Update();
 
                     transfers.ElementAt(index).IsCollecting = true;
@@ -74,6 +78,7 @@ namespace VidHub.Services.Logics
                     AddFilesToVideoCollection(index, files);
 
                     transfers.ElementAt(index).IsActive = false;
+                    manager.SetTaskbar(transfers);
                     service.Update();
                     TransferCleanup();
                 });
@@ -89,6 +94,7 @@ namespace VidHub.Services.Logics
                     var index = transfers.Count;
                     var transfer = new Transfer();
                     transfers.Enqueue(transfer);
+                    manager.SetTaskbar(transfers);
                     service.Update();
 
                     transfers.ElementAt(index).IsCollecting = true;
@@ -103,8 +109,9 @@ namespace VidHub.Services.Logics
                         transfers.ElementAt(index).AddTotalCount(files.Count);
                         AddFilesToVideoCollection(index, files);
                     }
-                    transfers.ElementAt(index).IsActive = false;
 
+                    transfers.ElementAt(index).IsActive = false;
+                    manager.SetTaskbar(transfers);
                     service.Update();
                     TransferCleanup();
                 });
@@ -173,6 +180,7 @@ namespace VidHub.Services.Logics
                         video.TryLoad();
                         service.AddVideo(video);
                         transfers.ElementAt(index).Increment();
+                        manager.SetTaskbar(transfers);
                     });
                 }
                 else
@@ -183,10 +191,12 @@ namespace VidHub.Services.Logics
                         video.TryLoad();
                         service.AddVideo(video);
                         transfers.ElementAt(index).Increment();
+                        manager.SetTaskbar(transfers);
                     }
                 }
 
                 transfers.ElementAt(index).IsLoading = false;
+                manager.SetTaskbar(transfers);
                 service.Update();
             }
         }
