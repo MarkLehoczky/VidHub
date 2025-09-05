@@ -53,10 +53,10 @@ namespace VidHub.Core
 
         public bool TryLoad()
         {
-            if (LoadCache())
-            {
-                return true;
-            }
+            //if (LoadCache())
+            //{
+                //return true;
+            //}
 
             bool success = true;
             var processor = new MetadataProcessor(FilePath);
@@ -73,7 +73,7 @@ namespace VidHub.Core
                 }
             }
 
-            SaveCache();
+            //SaveCache();
             return success;
         }
 

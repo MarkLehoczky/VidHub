@@ -11,6 +11,16 @@ namespace VidHub.ViewModels
         private bool CanOpenSidePanel() => !settings.OpenPanel;
         private bool CanCloseSidePanel() => settings.OpenPanel;
 
+        public bool ConcurrentVideoLoading
+        {
+            get => settings.ConcurrentVideoLoading;
+            set
+            {
+                if (settings.ConcurrentVideoLoading == value) return;
+                settings.ConcurrentVideoLoading = value;
+            }
+        }
+
 
         [RelayCommand(AllowConcurrentExecutions = true)]
         private async Task LoadFilesAsync()

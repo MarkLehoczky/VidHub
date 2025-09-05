@@ -32,6 +32,19 @@
                     </MenuFlyoutItem.Icon>
                 </MenuFlyoutItem>
             </MenuBarItem>
+            <MenuBarItem Title="Settings" Height="32" Margin="0">
+                <MenuFlyoutSubItem Text="System settings">
+                    <MenuFlyoutSubItem.Icon>
+                        <FontIcon Glyph="&#xe713;" FontFamily="Segoe Fluent Icons" />
+                    </MenuFlyoutSubItem.Icon>
+                </MenuFlyoutSubItem>
+                <MenuFlyoutSubItem Text="Video settings">
+                    <MenuFlyoutSubItem.Icon>
+                        <FontIcon Glyph="&#xe786;" FontFamily="Segoe Fluent Icons" />
+                    </MenuFlyoutSubItem.Icon>
+                    <ToggleMenuFlyoutItem Text="Concurrent load" ToolTipService.ToolTip="Load multiple files at the same time to speed up processing" IsChecked="{Binding ConcurrentVideoLoading, Mode=TwoWay}" />
+                </MenuFlyoutSubItem>
+            </MenuBarItem>
         </MenuBar>
     </Grid>
 

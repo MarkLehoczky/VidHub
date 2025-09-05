@@ -3,5 +3,6 @@
     public interface ISettingsService
     {
         bool OpenPanel { get; set; }
+        bool ConcurrentVideoLoading { get; set; }
     }
 }

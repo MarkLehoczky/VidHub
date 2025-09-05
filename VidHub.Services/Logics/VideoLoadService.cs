@@ -5,13 +5,14 @@ using VidHub.Core.Helpers;
 using VidHub.Platform;
 using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Logics.Interfaces;
+using VidHub.Services.Settings.Interfaces;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
 
 namespace VidHub.Services.Logics
 {
-    public class VideoLoadService(IMainService service) : IVideoLoadService
+    public class VideoLoadService(IMainService service, ISettingsService settings) : IVideoLoadService
     {
         private readonly object locker = new();
         private readonly ConcurrentQueue<Transfer> transfers = [];
@@ -164,12 +165,25 @@ namespace VidHub.Services.Logics
             {
                 transfers.ElementAt(index).IsLoading = true;
 
-                foreach (var file in files)
+                if (settings.ConcurrentVideoLoading)
                 {
-                    var video = new Video(file.Path);
-                    video.TryLoad();
-                    service.AddVideo(video);
-                    transfers.ElementAt(index).Increment();
+                    Parallel.ForEach(files, file =>
+                    {
+                        var video = new Video(file.Path);
+                        video.TryLoad();
+                        service.AddVideo(video);
+                        transfers.ElementAt(index).Increment();
+                    });
+                }
+                else
+                {
+                    foreach (var file in files)
+                    {
+                        var video = new Video(file.Path);
+                        video.TryLoad();
+                        service.AddVideo(video);
+                        transfers.ElementAt(index).Increment();
+                    }
                 }
 
                 transfers.ElementAt(index).IsLoading = false;

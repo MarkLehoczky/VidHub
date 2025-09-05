@@ -6,6 +6,7 @@ namespace VidHub.Services.Settings
     public class SettingsService(IMainService service) : ISettingsService
     {
         private bool openPanel = true;
+        private bool concurrentVideoLoading = false;
 
         public bool OpenPanel
         {
@@ -16,6 +17,12 @@ namespace VidHub.Services.Settings
                 openPanel = value;
                 service.Update();
             }
+        }
+
+        public bool ConcurrentVideoLoading
+        {
+            get => concurrentVideoLoading;
+            set => concurrentVideoLoading = value;
         }
     }
 }
