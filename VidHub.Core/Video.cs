@@ -36,9 +36,9 @@ namespace VidHub.Core
         }
 
 
-        public void Load()
+        public void Load(bool cacheLoad)
         {
-            if (LoadCache())
+            if (cacheLoad && LoadCache())
             {
                 return;
             }
@@ -51,12 +51,12 @@ namespace VidHub.Core
             SaveCache();
         }
 
-        public bool TryLoad()
+        public bool TryLoad(bool cacheLoad)
         {
-            //if (LoadCache())
-            //{
-                //return true;
-            //}
+            if (cacheLoad && LoadCache())
+            {
+                return true;
+            }
 
             bool success = true;
             var processor = new MetadataProcessor(FilePath);
@@ -73,7 +73,7 @@ namespace VidHub.Core
                 }
             }
 
-            //SaveCache();
+            SaveCache();
             return success;
         }
 

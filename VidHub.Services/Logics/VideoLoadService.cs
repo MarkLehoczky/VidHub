@@ -177,7 +177,7 @@ namespace VidHub.Services.Logics
                     Parallel.ForEach(files, file =>
                     {
                         var video = new Video(file.Path);
-                        video.TryLoad();
+                        video.TryLoad(settings.CacheLoad);
                         service.AddVideo(video);
                         transfers.ElementAt(index).Increment();
                         manager.SetTaskbar(transfers);
@@ -188,7 +188,7 @@ namespace VidHub.Services.Logics
                     foreach (var file in files)
                     {
                         var video = new Video(file.Path);
-                        video.TryLoad();
+                        video.TryLoad(settings.CacheLoad);
                         service.AddVideo(video);
                         transfers.ElementAt(index).Increment();
                         manager.SetTaskbar(transfers);

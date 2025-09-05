@@ -12,6 +12,16 @@ namespace VidHub.ViewModels
         private bool CanCloseSidePanel() => settings.OpenPanel;
 
 
+        public bool CacheLoad
+        {
+            get => settings.CacheLoad;
+            set
+            {
+                if (settings.CacheLoad == value) return;
+                settings.CacheLoad = value;
+            }
+        }
+
         public bool ConcurrentVideoLoading
         {
             get => settings.ConcurrentVideoLoading;

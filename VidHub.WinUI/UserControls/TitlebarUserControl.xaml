@@ -43,6 +43,7 @@
                     <MenuFlyoutSubItem.Icon>
                         <FontIcon Glyph="&#xe786;" FontFamily="Segoe Fluent Icons" />
                     </MenuFlyoutSubItem.Icon>
+                    <ToggleMenuFlyoutItem Text="Fast load" ToolTipService.ToolTip="Use cached data to load files faster (skips metadata processing)" IsChecked="{Binding CacheLoad, Mode=TwoWay}" />
                     <ToggleMenuFlyoutItem Text="Concurrent load" ToolTipService.ToolTip="Load multiple files at the same time to speed up processing" IsChecked="{Binding ConcurrentVideoLoading, Mode=TwoWay}" />
                 </MenuFlyoutSubItem>
             </MenuBarItem>
