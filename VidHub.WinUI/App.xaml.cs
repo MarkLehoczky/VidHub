@@ -8,6 +8,8 @@ using VidHub.Services.Base;
 using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Logics;
 using VidHub.Services.Logics.Interfaces;
+using VidHub.Services.Settings;
+using VidHub.Services.Settings.Interfaces;
 using VidHub.ViewModels;
 using WinRT.Interop;
 
@@ -24,6 +26,7 @@ namespace VidHub.WinUI
                 .ConfigureServices(services =>
                 {
                     services.AddSingleton<IMainService, MainService>();
+                    services.AddSingleton<ISettingsService, SettingsService>();
                     services.AddSingleton<IVideoLoadService, VideoLoadService>();
                     services.AddSingleton<IVideoOrganizeService, VideoOrganizeService>();
                     services.AddSingleton<IVideoCollectionService, VideoCollectionService>();

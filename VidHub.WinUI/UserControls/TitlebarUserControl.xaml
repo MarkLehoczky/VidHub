@@ -20,6 +20,18 @@
                 <MenuFlyoutItem Text="Load folder" Icon="OpenLocal" Command="{Binding LoadSingleFolderCommand}" />
                 <MenuFlyoutItem Text="Load folder &amp; sub-folders" Icon="OpenLocal" Command="{Binding LoadAllFolderCommand}" />
             </MenuBarItem>
+            <MenuBarItem Title="View" Height="32" Margin="0">
+                <MenuFlyoutItem Text="Open side panel" Command="{Binding OpenSidePanelCommand}">
+                    <MenuFlyoutItem.Icon>
+                        <FontIcon Glyph="&#xea5b;" FontFamily="Segoe Fluent Icons" />
+                    </MenuFlyoutItem.Icon>
+                </MenuFlyoutItem>
+                <MenuFlyoutItem Text="Close side panel" Command="{Binding CloseSidePanelCommand}">
+                    <MenuFlyoutItem.Icon>
+                        <FontIcon Glyph="&#xea49;" FontFamily="Segoe Fluent Icons" />
+                    </MenuFlyoutItem.Icon>
+                </MenuFlyoutItem>
+            </MenuBarItem>
         </MenuBar>
     </Grid>
 
