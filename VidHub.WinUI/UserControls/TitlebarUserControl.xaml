@@ -37,6 +37,7 @@
                     <MenuFlyoutSubItem.Icon>
                         <FontIcon Glyph="&#xe713;" FontFamily="Segoe Fluent Icons" />
                     </MenuFlyoutSubItem.Icon>
+                    <ToggleMenuFlyoutItem Text="Notifications" ToolTipService.ToolTip="Show system notifications for important events" IsChecked="{Binding SystemNotifications, Mode=TwoWay}" />
                 </MenuFlyoutSubItem>
                 <MenuFlyoutSubItem Text="Video settings">
                     <MenuFlyoutSubItem.Icon>

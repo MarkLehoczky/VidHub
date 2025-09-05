@@ -11,6 +11,7 @@ namespace VidHub.ViewModels
         private bool CanOpenSidePanel() => !settings.OpenPanel;
         private bool CanCloseSidePanel() => settings.OpenPanel;
 
+
         public bool ConcurrentVideoLoading
         {
             get => settings.ConcurrentVideoLoading;
@@ -18,6 +19,16 @@ namespace VidHub.ViewModels
             {
                 if (settings.ConcurrentVideoLoading == value) return;
                 settings.ConcurrentVideoLoading = value;
+            }
+        }
+
+        public bool SystemNotifications
+        {
+            get => settings.SystemNotifications;
+            set
+            {
+                if (settings.SystemNotifications == value) return;
+                settings.SystemNotifications = value;
             }
         }
 

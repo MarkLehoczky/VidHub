@@ -4,5 +4,6 @@
     {
         bool OpenPanel { get; set; }
         bool ConcurrentVideoLoading { get; set; }
+        bool SystemNotifications { get; set; }
     }
 }

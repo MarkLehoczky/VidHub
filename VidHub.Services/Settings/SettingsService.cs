@@ -7,6 +7,7 @@ namespace VidHub.Services.Settings
     {
         private bool openPanel = true;
         private bool concurrentVideoLoading = false;
+        private bool systemNotifications = true;
 
         public bool OpenPanel
         {
@@ -23,6 +24,12 @@ namespace VidHub.Services.Settings
         {
             get => concurrentVideoLoading;
             set => concurrentVideoLoading = value;
+        }
+
+        public bool SystemNotifications
+        {
+            get => systemNotifications;
+            set => systemNotifications = value;
         }
     }
 }

@@ -205,6 +205,7 @@ namespace VidHub.Services.Logics
         {
             if (transfers.All(t => !t.IsActive))
             {
+                manager.DisplayToast("Video loading finished!", $"{LoadedCount} videos were loaded successfully.");
                 while (transfers.TryDequeue(out _)) ;
             }
         }
