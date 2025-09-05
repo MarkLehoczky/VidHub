@@ -11,5 +11,6 @@
         TimeSpan? MinDuration { get; set; }
         TimeSpan? MaxDuration { get; set; }
         IEnumerable<string> GetSortOptions();
+        void UpdateTextFilter(string text);
     }
 }

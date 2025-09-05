@@ -84,6 +84,12 @@ namespace VidHub.ViewModels
         }
 
 
+        public void UpdateTextFilter(string text)
+        {
+            organizeService.UpdateTextFilter(text);
+        }
+
+
         private void UpdateProperties()
         {
             OnPropertyChanged(nameof(OpenPanel));

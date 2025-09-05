@@ -3,8 +3,10 @@
     public interface ISettingsService
     {
         bool OpenPanel { get; set; }
+        bool SystemNotifications { get; set; }
         bool CacheLoad { get; set; }
         bool ConcurrentVideoLoading { get; set; }
-        bool SystemNotifications { get; set; }
+        bool CaseSensitiveTextFiltering { get; set; }
+        bool LiveTextFiltering { get; set; }
     }
 }

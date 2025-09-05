@@ -1,10 +1,11 @@
 ﻿using VidHub.Core;
 using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Logics.Interfaces;
+using VidHub.Services.Settings.Interfaces;
 
 namespace VidHub.Services.Logics
 {
-    public class VideoOrganizeService(IMainService service) : IVideoOrganizeService
+    public class VideoOrganizeService(IMainService service, ISettingsService settings) : IVideoOrganizeService
     {
         private readonly object locker = new();
         private string? currentSortOption = null;
@@ -44,7 +45,7 @@ namespace VidHub.Services.Logics
             get => searchText;
             set
             {
-                if (searchText == value) return;
+                if (searchText == value || !settings.LiveTextFiltering) return;
                 searchText = value;
                 UpdateOrganizers();
             }
@@ -115,14 +116,20 @@ namespace VidHub.Services.Logics
 
         public IEnumerable<string> GetSortOptions() => sortOptions.Keys;
 
+        public void UpdateTextFilter(string text)
+        {
+            searchText = text;
+            UpdateOrganizers();
+        }
+
 
         private void UpdateOrganizers()
         {
             service.Predicate = video =>
             {
-                if (!string.IsNullOrEmpty(SearchText))
+                if (!string.IsNullOrEmpty(searchText))
                 {
-                    if (!video.Title.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) return false;
+                    if (!video.Title.Contains(searchText, settings.CaseSensitiveTextFiltering ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase)) return false;
                 }
                 if (FilterDate)
                 {

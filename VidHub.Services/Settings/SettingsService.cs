@@ -6,9 +6,11 @@ namespace VidHub.Services.Settings
     public class SettingsService(IMainService service) : ISettingsService
     {
         private bool openPanel = true;
+        private bool systemNotifications = true;
         private bool cacheLoad = true;
         private bool concurrentVideoLoading = false;
-        private bool systemNotifications = true;
+        private bool caseSensitiveTextFiltering = false;
+        private bool liveTextFiltering = true;
 
         public bool OpenPanel
         {
@@ -19,6 +21,13 @@ namespace VidHub.Services.Settings
                 openPanel = value;
                 service.Update();
             }
+        }
+
+
+        public bool SystemNotifications
+        {
+            get => systemNotifications;
+            set => systemNotifications = value;
         }
 
         public bool CacheLoad
@@ -33,10 +42,16 @@ namespace VidHub.Services.Settings
             set => concurrentVideoLoading = value;
         }
 
-        public bool SystemNotifications
+        public bool CaseSensitiveTextFiltering
         {
-            get => systemNotifications;
-            set => systemNotifications = value;
+            get => caseSensitiveTextFiltering;
+            set => caseSensitiveTextFiltering = value;
+        }
+
+        public bool LiveTextFiltering
+        {
+            get => liveTextFiltering;
+            set => liveTextFiltering = value;
         }
     }
 }

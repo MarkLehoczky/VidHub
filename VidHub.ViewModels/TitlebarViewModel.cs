@@ -12,6 +12,16 @@ namespace VidHub.ViewModels
         private bool CanCloseSidePanel() => settings.OpenPanel;
 
 
+        public bool SystemNotifications
+        {
+            get => settings.SystemNotifications;
+            set
+            {
+                if (settings.SystemNotifications == value) return;
+                settings.SystemNotifications = value;
+            }
+        }
+
         public bool CacheLoad
         {
             get => settings.CacheLoad;
@@ -32,13 +42,23 @@ namespace VidHub.ViewModels
             }
         }
 
-        public bool SystemNotifications
+        public bool CaseSensitiveTextFiltering
         {
-            get => settings.SystemNotifications;
+            get => settings.CaseSensitiveTextFiltering;
             set
             {
-                if (settings.SystemNotifications == value) return;
-                settings.SystemNotifications = value;
+                if (settings.CaseSensitiveTextFiltering == value) return;
+                settings.CaseSensitiveTextFiltering = value;
+            }
+        }
+
+        public bool LiveTextFiltering
+        {
+            get => settings.LiveTextFiltering;
+            set
+            {
+                if (settings.LiveTextFiltering == value) return;
+                settings.LiveTextFiltering = value;
             }
         }
 
