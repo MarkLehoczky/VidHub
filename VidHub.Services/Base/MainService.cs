@@ -10,6 +10,10 @@ namespace VidHub.Services.Base
         private event Action? UpdateEvent;
         private readonly List<Video> videos = [];
 
+        public Func<Video, bool> Predicate { get; set; } = _ => true;
+        public Comparer<Video> Comparer { get; set; } = Comparer<Video>.Default;
+
+
         public void AddVideo(Video video)
         {
             lock (locker)
@@ -23,7 +27,15 @@ namespace VidHub.Services.Base
         {
             lock (locker)
             {
-                return [.. videos];
+                return videos;
+            }
+        }
+
+        public IEnumerable<Video> GetDisplayVideos()
+        {
+            lock (locker)
+            {
+                return videos.Where(Predicate).Order(Comparer);
             }
         }
 

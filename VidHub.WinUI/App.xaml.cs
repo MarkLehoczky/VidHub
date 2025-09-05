@@ -25,6 +25,7 @@ namespace VidHub.WinUI
                 {
                     services.AddSingleton<IMainService, MainService>();
                     services.AddSingleton<IVideoLoadService, VideoLoadService>();
+                    services.AddSingleton<IVideoOrganizeService, VideoOrganizeService>();
                     services.AddSingleton<IVideoCollectionService, VideoCollectionService>();
                     services.AddTransient<TitlebarViewModel>();
                     services.AddTransient<VideoCollectionViewModel>();
