@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using VidHub.Core;
 using VidHub.Core.Helpers;
 using VidHub.Platform;
@@ -14,6 +15,18 @@ namespace VidHub.Services.Logics
     {
         private readonly object locker = new();
         private readonly ConcurrentQueue<Transfer> transfers = [];
+
+        public bool HasTransfer => !transfers.IsEmpty;
+        public bool HasActiveTransfer => transfers.Any(t => t.IsActive);
+
+        public string TransferDescription =>
+            transfers.Where(t => t.IsActive).All(t => t.IsCollecting) ? "Collecting videos" :
+            transfers.Where(t => t.IsActive).All(t => !t.IsCollecting) ? "Loading videos" :
+            "Collecting and loading videos";
+
+        public int LoadedCount => transfers.Sum(t => t.LoadedCount);
+
+        public int TotalCount => transfers.Sum(t => t.TotalCount);
 
 
         public async Task LoadFilesAsync()
@@ -32,6 +45,7 @@ namespace VidHub.Services.Logics
 
                     AddFilesToVideoCollection(index, files);
 
+                    transfers.ElementAt(index).IsActive = false;
                     service.Update();
                     TransferCleanup();
                 });
@@ -48,13 +62,17 @@ namespace VidHub.Services.Logics
                 {
                     var index = transfers.Count;
                     var transfer = new Transfer();
+                    transfer.IsCollecting = true;
                     transfers.Enqueue(transfer);
                     service.Update();
 
+                    transfers.ElementAt(index).IsCollecting = true;
                     var files = await CollectFilesAsync(folder, includeSubfolders, Video.ExtensionTypes);
+                    transfers.ElementAt(index).IsCollecting = false;
                     transfers.ElementAt(index).AddTotalCount(files.Count());
                     AddFilesToVideoCollection(index, files);
 
+                    transfers.ElementAt(index).IsActive = false;
                     service.Update();
                     TransferCleanup();
                 });
@@ -72,6 +90,7 @@ namespace VidHub.Services.Logics
                     transfers.Enqueue(transfer);
                     service.Update();
 
+                    transfers.ElementAt(index).IsCollecting = true;
                     var files = items.OfType<StorageFile>().Where(f => Video.ExtensionTypes.Contains(f.FileType)).ToList();
                     foreach (var folder in items.OfType<StorageFolder>())
                     {
@@ -79,9 +98,11 @@ namespace VidHub.Services.Logics
                     }
                     if (files.Count > 0)
                     {
+                        transfers.ElementAt(index).IsCollecting = false;
                         transfers.ElementAt(index).AddTotalCount(files.Count);
                         AddFilesToVideoCollection(index, files);
                     }
+                    transfers.ElementAt(index).IsActive = false;
 
                     service.Update();
                     TransferCleanup();
@@ -152,7 +173,6 @@ namespace VidHub.Services.Logics
                 }
 
                 transfers.ElementAt(index).IsLoading = false;
-                transfers.ElementAt(index).IsActive = false;
                 service.Update();
             }
         }
