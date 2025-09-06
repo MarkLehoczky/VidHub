@@ -12,5 +12,8 @@
         TimeSpan? MaxDuration { get; set; }
         IEnumerable<string> GetSortOptions();
         void UpdateTextFilter(string text);
+        void Load();
+        void Save();
+        void Set(IVideoOrganizeService service);
     }
 }

@@ -50,6 +50,7 @@
                     <MenuFlyoutSubItem.Icon>
                         <FontIcon Glyph="&#xe71c;" FontFamily="Segoe Fluent Icons" />
                     </MenuFlyoutSubItem.Icon>
+                    <ToggleMenuFlyoutItem Text="Remember filters" ToolTipService.ToolTip="Keep the last used filter settings between sessions" IsChecked="{Binding KeepFilterStatus, Mode=TwoWay}" />
                     <ToggleMenuFlyoutItem Text="Live text filter" ToolTipService.ToolTip="Filter titles as you type (disable to filter only on submit)" IsChecked="{Binding LiveTextFiltering, Mode=TwoWay}" />
                     <ToggleMenuFlyoutItem Text="Case sensitive text" ToolTipService.ToolTip="Match title filter exactly (uppercase/lowercase matters)" IsChecked="{Binding CaseSensitiveTextFiltering, Mode=TwoWay}" />
                 </MenuFlyoutSubItem>

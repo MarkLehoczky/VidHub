@@ -42,13 +42,13 @@ namespace VidHub.ViewModels
             }
         }
 
-        public bool CaseSensitiveTextFiltering
+        public bool KeepFilterStatus
         {
-            get => settings.CaseSensitiveTextFiltering;
+            get => settings.KeepFilterStatus;
             set
             {
-                if (settings.CaseSensitiveTextFiltering == value) return;
-                settings.CaseSensitiveTextFiltering = value;
+                if (settings.KeepFilterStatus == value) return;
+                settings.KeepFilterStatus = value;
             }
         }
 
@@ -59,6 +59,16 @@ namespace VidHub.ViewModels
             {
                 if (settings.LiveTextFiltering == value) return;
                 settings.LiveTextFiltering = value;
+            }
+        }
+
+        public bool CaseSensitiveTextFiltering
+        {
+            get => settings.CaseSensitiveTextFiltering;
+            set
+            {
+                if (settings.CaseSensitiveTextFiltering == value) return;
+                settings.CaseSensitiveTextFiltering = value;
             }
         }
 

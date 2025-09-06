@@ -1,4 +1,5 @@
-﻿using VidHub.Core;
+﻿using System.Text.Json;
+using VidHub.Core;
 using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Logics.Interfaces;
 using VidHub.Services.Settings.Interfaces;
@@ -123,7 +124,7 @@ namespace VidHub.Services.Logics
         }
 
 
-        private void UpdateOrganizers()
+        private void UpdateOrganizers(bool updateUI = true)
         {
             service.Predicate = video =>
             {
@@ -146,7 +147,50 @@ namespace VidHub.Services.Logics
 
             service.Comparer = sortOptions.GetValueOrDefault(currentSortOption ?? string.Empty, Comparer<Video>.Default);
 
-            service.Update();
+            if (updateUI)
+            {
+                service.Update();
+            }
+        }
+
+        public void Load()
+        {
+            var appDataDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "VidHub");
+            var appDataSettings = Path.Combine(appDataDirectory, "VidHub_organizing.json");
+
+            Directory.CreateDirectory(appDataDirectory);
+
+            if (File.Exists(appDataSettings) && settings.KeepFilterStatus)
+            {
+                string json = File.ReadAllText(appDataSettings);
+                var organizer = JsonSerializer.Deserialize<VideoOrganizeLoader>(json);
+                Set(organizer);
+            }
+        }
+
+        public void Save()
+        {
+            var appDataDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "VidHub");
+            var appDataSettings = Path.Combine(appDataDirectory, "VidHub_organizing.json");
+
+            Directory.CreateDirectory(appDataDirectory);
+
+            string json = JsonSerializer.Serialize(this);
+            File.WriteAllText(appDataSettings, json);
+        }
+
+        public void Set(IVideoOrganizeService service)
+        {
+            currentSortOption = service.CurrentSortOption;
+            searchText = service.SearchText;
+            filterDate = service.FilterDate;
+            startDate = service.StartDate;
+            endDate = service.EndDate;
+            filterDuration = service.FilterDuration;
+            minDuration = service.MinDuration;
+            maxDuration = service.MaxDuration;
+
+            UpdateOrganizers(false);
         }
     }
 }

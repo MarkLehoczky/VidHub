@@ -45,6 +45,8 @@ namespace VidHub.WinUI
             _window.Activate();
             Context.MainWindow = new WindowContext(_window);
             _window.Activated += (s, e) => Context.MainWindow.IsActive = e.WindowActivationState != WindowActivationState.Deactivated;
+            AppDomain.CurrentDomain.ProcessExit += (_, _) => Context.MainHost.GetService<IVideoOrganizeService>().Save();
+            AppDomain.CurrentDomain.ProcessExit += (_, _) => Context.MainHost.GetService<ISettingsService>().Save();
         }
     }
 
