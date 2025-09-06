@@ -23,19 +23,19 @@ namespace VidHub.Services.Base
             Update();
         }
 
-        public IEnumerable<Video> GetAllVideos()
+        public List<Video> GetAllVideos()
         {
             lock (locker)
             {
-                return videos;
+                return [.. videos];
             }
         }
 
-        public IEnumerable<Video> GetDisplayVideos()
+        public List<Video> GetDisplayVideos()
         {
             lock (locker)
             {
-                return videos.Where(Predicate).Order(Comparer);
+                return [.. videos.Where(Predicate).Order(Comparer)];
             }
         }
 

@@ -28,7 +28,7 @@ namespace VidHub.Services.Logics
         {
             lock (locker)
             {
-                var nextDisplayVideos = service.GetDisplayVideos().ToList();
+                var nextDisplayVideos = service.GetDisplayVideos();
 
                 for (int i = 0; i < Math.Min(DisplayedVideos.Count, nextDisplayVideos.Count); i++)
                 {

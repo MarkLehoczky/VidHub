@@ -7,7 +7,7 @@ namespace VidHub.Services.Base.Interfaces
         Func<Video, bool> Predicate { get; set; }
         Comparer<Video> Comparer { get; set; }
         void AddVideo(Video video);
-        IEnumerable<Video> GetAllVideos();
-        IEnumerable<Video> GetDisplayVideos();
+        List<Video> GetAllVideos();
+        List<Video> GetDisplayVideos();
     }
 }

@@ -4,6 +4,7 @@
     {
         object Window { get; }
         nint HWND { get; }
+        bool IsActive { get; set; }
         bool TryEnqueue(Action callback);
     }
 }

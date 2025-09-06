@@ -2,11 +2,14 @@
 using VidHub.Platform;
 using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Logics.Interfaces;
+using VidHub.Services.Settings.Interfaces;
 
 namespace VidHub.ViewModels
 {
-    public partial class SidepanelViewModel(IVideoOrganizeService organizeService, IVideoLoadService loadService) : ObservableRecipient
+    public partial class SidepanelViewModel(IVideoOrganizeService organizeService, IVideoLoadService loadService, ISettingsService settingsService) : ObservableRecipient
     {
+        public bool OpenPanel => settingsService.OpenPanel;
+
         #region Organizer section
         public IEnumerable<string> SortOptions => organizeService.GetSortOptions();
 
@@ -69,7 +72,8 @@ namespace VidHub.ViewModels
 
         public SidepanelViewModel() : this(
             Context.MainHost.GetService<IVideoOrganizeService>(),
-            Context.MainHost.GetService<IVideoLoadService>())
+            Context.MainHost.GetService<IVideoLoadService>(),
+            Context.MainHost.GetService<ISettingsService>())
         {
             Context.MainHost.GetService<IMainService>().SubscribeToUpdateEvent(UpdateProperties);
         }
@@ -80,8 +84,15 @@ namespace VidHub.ViewModels
         }
 
 
+        public void UpdateTextFilter(string text)
+        {
+            organizeService.UpdateTextFilter(text);
+        }
+
+
         private void UpdateProperties()
         {
+            OnPropertyChanged(nameof(OpenPanel));
             OnPropertyChanged(nameof(TransferDescription));
             OnPropertyChanged(nameof(HasTransfer));
             OnPropertyChanged(nameof(HasActiveTransfer));

@@ -1,4 +1,5 @@
 using Microsoft.UI.Xaml.Controls;
+using VidHub.ViewModels;
 
 namespace VidHub.WinUI.UserControls
 {
@@ -7,6 +8,14 @@ namespace VidHub.WinUI.UserControls
         public SidepanelUserControl()
         {
             InitializeComponent();
+        }
+
+        private void UpdateTextFilter(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+        {
+            if (DataContext is SidepanelViewModel viewModel)
+            {
+                viewModel.UpdateTextFilter(sender.Text);
+            }
         }
     }
 }

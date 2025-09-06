@@ -13,7 +13,7 @@
         <viewmodel:SidepanelViewModel />
     </UserControl.DataContext>
 
-    <Grid Margin="10">
+    <Grid Visibility="{Binding OpenPanel}" Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="auto" />
@@ -22,7 +22,7 @@
         <StackPanel Grid.Row="0">
             <ComboBox SelectedItem="{Binding CurrentSortOption, Mode=TwoWay}" ItemsSource="{Binding SortOptions}" PlaceholderText="Sort by" Margin="0 0 0 5" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" />
 
-            <TextBox Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="Search for a video title" Margin="0 5 0 5" HorizontalAlignment="Stretch" />
+            <AutoSuggestBox Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" QueryIcon="Find" QuerySubmitted="UpdateTextFilter"  PlaceholderText="Search for a video title" Margin="0 5 0 5" HorizontalAlignment="Stretch" />
 
             <Grid HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>

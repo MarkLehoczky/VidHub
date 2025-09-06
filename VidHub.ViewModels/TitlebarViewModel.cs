@@ -2,11 +2,77 @@
 using CommunityToolkit.Mvvm.Input;
 using VidHub.Platform;
 using VidHub.Services.Logics.Interfaces;
+using VidHub.Services.Settings.Interfaces;
 
 namespace VidHub.ViewModels
 {
-    public partial class TitlebarViewModel(IVideoLoadService service) : ObservableRecipient
+    public partial class TitlebarViewModel(IVideoLoadService service, ISettingsService settings) : ObservableRecipient
     {
+        private bool CanOpenSidePanel() => !settings.OpenPanel;
+        private bool CanCloseSidePanel() => settings.OpenPanel;
+
+
+        public bool SystemNotifications
+        {
+            get => settings.SystemNotifications;
+            set
+            {
+                if (settings.SystemNotifications == value) return;
+                settings.SystemNotifications = value;
+            }
+        }
+
+        public bool CacheLoad
+        {
+            get => settings.CacheLoad;
+            set
+            {
+                if (settings.CacheLoad == value) return;
+                settings.CacheLoad = value;
+            }
+        }
+
+        public bool ConcurrentVideoLoading
+        {
+            get => settings.ConcurrentVideoLoading;
+            set
+            {
+                if (settings.ConcurrentVideoLoading == value) return;
+                settings.ConcurrentVideoLoading = value;
+            }
+        }
+
+        public bool KeepFilterStatus
+        {
+            get => settings.KeepFilterStatus;
+            set
+            {
+                if (settings.KeepFilterStatus == value) return;
+                settings.KeepFilterStatus = value;
+            }
+        }
+
+        public bool LiveTextFiltering
+        {
+            get => settings.LiveTextFiltering;
+            set
+            {
+                if (settings.LiveTextFiltering == value) return;
+                settings.LiveTextFiltering = value;
+            }
+        }
+
+        public bool CaseSensitiveTextFiltering
+        {
+            get => settings.CaseSensitiveTextFiltering;
+            set
+            {
+                if (settings.CaseSensitiveTextFiltering == value) return;
+                settings.CaseSensitiveTextFiltering = value;
+            }
+        }
+
+
         [RelayCommand(AllowConcurrentExecutions = true)]
         private async Task LoadFilesAsync()
         {
@@ -26,6 +92,25 @@ namespace VidHub.ViewModels
         }
 
 
-        public TitlebarViewModel() : this(Context.MainHost.GetService<IVideoLoadService>()) { }
+        [RelayCommand(CanExecute = nameof(CanOpenSidePanel))]
+        private void OpenSidePanel()
+        {
+            settings.OpenPanel = true;
+            OpenSidePanelCommand.NotifyCanExecuteChanged();
+            CloseSidePanelCommand.NotifyCanExecuteChanged();
+        }
+
+        [RelayCommand(CanExecute = nameof(CanCloseSidePanel))]
+        private void CloseSidePanel()
+        {
+            settings.OpenPanel = false;
+            OpenSidePanelCommand.NotifyCanExecuteChanged();
+            CloseSidePanelCommand.NotifyCanExecuteChanged();
+        }
+
+
+        public TitlebarViewModel() : this(
+            Context.MainHost.GetService<IVideoLoadService>(),
+            Context.MainHost.GetService<ISettingsService>()) { }
     }
 }

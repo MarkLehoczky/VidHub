@@ -20,6 +20,41 @@
                 <MenuFlyoutItem Text="Load folder" Icon="OpenLocal" Command="{Binding LoadSingleFolderCommand}" />
                 <MenuFlyoutItem Text="Load folder &amp; sub-folders" Icon="OpenLocal" Command="{Binding LoadAllFolderCommand}" />
             </MenuBarItem>
+            <MenuBarItem Title="View" Height="32" Margin="0">
+                <MenuFlyoutItem Text="Open side panel" Command="{Binding OpenSidePanelCommand}">
+                    <MenuFlyoutItem.Icon>
+                        <FontIcon Glyph="&#xea5b;" FontFamily="Segoe Fluent Icons" />
+                    </MenuFlyoutItem.Icon>
+                </MenuFlyoutItem>
+                <MenuFlyoutItem Text="Close side panel" Command="{Binding CloseSidePanelCommand}">
+                    <MenuFlyoutItem.Icon>
+                        <FontIcon Glyph="&#xea49;" FontFamily="Segoe Fluent Icons" />
+                    </MenuFlyoutItem.Icon>
+                </MenuFlyoutItem>
+            </MenuBarItem>
+            <MenuBarItem Title="Settings" Height="32" Margin="0">
+                <MenuFlyoutSubItem Text="System settings">
+                    <MenuFlyoutSubItem.Icon>
+                        <FontIcon Glyph="&#xe713;" FontFamily="Segoe Fluent Icons" />
+                    </MenuFlyoutSubItem.Icon>
+                    <ToggleMenuFlyoutItem Text="Notifications" ToolTipService.ToolTip="Show system notifications for important events" IsChecked="{Binding SystemNotifications, Mode=TwoWay}" />
+                </MenuFlyoutSubItem>
+                <MenuFlyoutSubItem Text="Video settings">
+                    <MenuFlyoutSubItem.Icon>
+                        <FontIcon Glyph="&#xe786;" FontFamily="Segoe Fluent Icons" />
+                    </MenuFlyoutSubItem.Icon>
+                    <ToggleMenuFlyoutItem Text="Fast load" ToolTipService.ToolTip="Use cached data to load files faster (skips metadata processing)" IsChecked="{Binding CacheLoad, Mode=TwoWay}" />
+                    <ToggleMenuFlyoutItem Text="Concurrent load" ToolTipService.ToolTip="Load multiple files at the same time to speed up processing" IsChecked="{Binding ConcurrentVideoLoading, Mode=TwoWay}" />
+                </MenuFlyoutSubItem>
+                <MenuFlyoutSubItem Text="Filter settings">
+                    <MenuFlyoutSubItem.Icon>
+                        <FontIcon Glyph="&#xe71c;" FontFamily="Segoe Fluent Icons" />
+                    </MenuFlyoutSubItem.Icon>
+                    <ToggleMenuFlyoutItem Text="Remember filters" ToolTipService.ToolTip="Keep the last used filter settings between sessions" IsChecked="{Binding KeepFilterStatus, Mode=TwoWay}" />
+                    <ToggleMenuFlyoutItem Text="Live text filter" ToolTipService.ToolTip="Filter titles as you type (disable to filter only on submit)" IsChecked="{Binding LiveTextFiltering, Mode=TwoWay}" />
+                    <ToggleMenuFlyoutItem Text="Case sensitive text" ToolTipService.ToolTip="Match title filter exactly (uppercase/lowercase matters)" IsChecked="{Binding CaseSensitiveTextFiltering, Mode=TwoWay}" />
+                </MenuFlyoutSubItem>
+            </MenuBarItem>
         </MenuBar>
     </Grid>
 
