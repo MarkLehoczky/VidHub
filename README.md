@@ -2,7 +2,7 @@
 
 # VIDHUB
 
-**VidHub** is a video collector, manager and organizer application designed for Windows using *WinUI 3* with *.NET 8.0*.
+**VidHub** is a video collector and organizer application designed for Windows using *WinUI 3* with *.NET 8.0*.
 
 ---
 
@@ -18,28 +18,43 @@
 
 ## Features
 
-- 🖥️ Video displaying
-- 📂 Video loading
-   - With explicit button
-   - With clipboard content
-   - With drag&drop method
+### 🖥️ UI-Focused Features
+
+- 🖥️ **Video Display UI** – Display loaded videos in an intuitive interface
+- 📂 **Drag & Drop Video Loading** – Add videos by dragging files into the app
+- 📋 **Clipboard Video Loading** – Load videos directly from clipboard URLs
+- 📁 **File/Folder Picker Video Loading** – Use a picker dialog to load videos from files or folders
+- 🔢 **Sorting & Filtering** – Organize content using basic sort and filter options
+- 🔍 **Text Filter Settings** – Filter videos or items based on text input
+- 🔄 **Transfer Displaying** – Basic UI for displaying ongoing transfers
+
+### ⚡ Core Functionality
+
+- ⚙️ **Settings Persistence** – Keep set values for settings and optionally for filters and sorter
+- 🗄️ **Cached Loading** – Enable cached loading for improved performance
+- 🎥 **Concurrent Video Loading** – Load multiple videos simultaneously
+- 📌 **Taskbar Status Interactions** – Show status and interactions directly from the taskbar
+- 🔔 **System Notifications** – Get alert notifications for important events
   
 ## Screenshots
 
-| Default view | Loaded videos | Load options |
-| :----------: | :-----------: | :----------: |
-| <img width="1426" height="746" alt="{DFBF8D4F-4CAD-4822-88CC-17959590D05C}" src="https://github.com/user-attachments/assets/078056d4-3836-4323-8a8a-a6059e11ac70" /> | <img width="1426" height="746" alt="{DE832E05-5B60-4637-8917-D837975BCB60}" src="https://github.com/user-attachments/assets/5b784242-9829-46b3-ada5-0303671c9b79" /> | <img width="1426" height="746" alt="{AB7DBC9B-7158-47DE-8F64-FF273016AB4E}" src="https://github.com/user-attachments/assets/65d242ad-aaeb-4f66-8125-19d82f188667" /> |
+| Description                         |                                Light Mode                                 |                                Dark Mode                                 |
+| :---------------------------------- | :-----------------------------------------------------------------------: | :----------------------------------------------------------------------: |
+| Empty view with w/o side panel      | ![Empty view with with side panel](./Screenshots/Light/Empty.png)         | ![Empty view with with side panel](./Screenshots/Dark/Empty.png)         |
+| Loaded videos w/o side panel        | ![Loaded videos without side panel](./Screenshots/Light/Loaded.png)       | ![Loaded videos without side panel](./Screenshots/Dark/Loaded.png)       |
+| Filtered videos w/ side panel       | ![Filtered videos with with side panel](./Screenshots/Light/Filtered.png) | ![Filtered videos with with side panel](./Screenshots/Dark/Filtered.png) |
+| Active video loading                | ![Active video loading](./Screenshots/Light/Transfer.png)                 | ![Active video loading](./Screenshots/Dark/Transfer.png)                 |
 
 ## License
 
 This project is licensed under [MIT License](LICENSE.txt).
 
-[license-link]:  https://github.com/MarkLehoczky/gherkin-processor/blob/main/LICENSE.txt
-[release-link]:  https://github.com/MarkLehoczky/gherkin-processor/releases
-[build-link]:https://github.com/MarkLehoczky/gherkin-processor/actions
-[issue-link]:   https://github.com/MarkLehoczky/gherkin-processor/issues
+[license-link]: https://github.com/MarkLehoczky/VidHub/blob/main/LICENSE.txt
+[release-link]: https://github.com/MarkLehoczky/VidHub/releases
+[build-link]:   https://github.com/MarkLehoczky/VidHub/actions
+[issue-link]:   https://github.com/MarkLehoczky/VidHub/issues
 
-[license-badge]: https://img.shields.io/github/license/marklehoczky/gherkin-processor?style=for-the-badge&color=success
-[release-badge]: https://img.shields.io/github/v/release/marklehoczky/gherkin-processor?include_prereleases&sort=date&display_name=tag&style=for-the-badge&color=success
-[build-badge]:   https://img.shields.io/github/actions/workflow/status/marklehoczky/gherkin-processor/ci_main.yml?style=for-the-badge
-[issue-badge]:  https://img.shields.io/github/issues/marklehoczky/gherkin-processor?style=for-the-badge
+[license-badge]: https://img.shields.io/github/license/MarkLehoczky/VidHub?style=for-the-badge&color=success
+[release-badge]: https://img.shields.io/github/v/release/MarkLehoczky/VidHub?include_prereleases&sort=date&display_name=tag&style=for-the-badge&color=success
+[build-badge]:   https://img.shields.io/github/actions/workflow/status/MarkLehoczky/VidHub/build.yml?style=for-the-badge
+[issue-badge]:  https://img.shields.io/github/issues/MarkLehoczky/VidHub?style=for-the-badge
