@@ -39,8 +39,8 @@
             <TimePicker Header="Minimum duration" SelectedTime="{Binding MinDuration, Mode=TwoWay}" IsEnabled="{Binding IsChecked, ElementName=DurationFilter}" ClockIdentifier="24HourClock" Margin="0 10 0 5" HorizontalAlignment="Stretch" />
             <TimePicker Header="Maximum duration" SelectedTime="{Binding MaxDuration, Mode=TwoWay}" IsEnabled="{Binding IsChecked, ElementName=DurationFilter}" ClockIdentifier="24HourClock" Margin="0 5 0 0" HorizontalAlignment="Stretch" />
         </StackPanel>
-        
-        <Border Visibility="{Binding HasTransfer}" Background="#1A808080" CornerRadius="4" Padding="10" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Grid.Row="1">
+
+        <Border Visibility="{Binding HasTransfer}" Background="{ThemeResource ControlFillColorDefaultBrush}" BorderBrush="{ThemeResource ControlElevationBorderBrush}" CornerRadius="{ThemeResource ControlCornerRadius}" BorderThickness="1" Padding="10" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Grid.Row="1">
             <StackPanel>
                 <TextBlock Text="{Binding TransferDescription}" FontWeight="Bold" HorizontalAlignment="Center" />
 
