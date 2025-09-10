@@ -25,6 +25,7 @@ namespace VidHub.ViewModels
             get => organizeService.SearchText;
             set => organizeService.SearchText = value;
         }
+        public bool LiveTextFiltering => settingsService.LiveTextFiltering;
 
         public bool FilterDate
         {
@@ -93,6 +94,7 @@ namespace VidHub.ViewModels
         private void UpdateProperties()
         {
             OnPropertyChanged(nameof(OpenPanel));
+            OnPropertyChanged(nameof(LiveTextFiltering));
             OnPropertyChanged(nameof(TransferDescription));
             OnPropertyChanged(nameof(HasTransfer));
             OnPropertyChanged(nameof(HasActiveTransfer));

@@ -91,7 +91,12 @@ namespace VidHub.Services.Settings
         public bool LiveTextFiltering
         {
             get => liveTextFiltering;
-            set => liveTextFiltering = value;
+            set
+            {
+                if (liveTextFiltering == value) return;
+                liveTextFiltering = value;
+                service.Update();
+            }
         }
 
         public bool CaseSensitiveTextFiltering
