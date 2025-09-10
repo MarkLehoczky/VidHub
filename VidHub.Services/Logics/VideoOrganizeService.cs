@@ -20,12 +20,12 @@ namespace VidHub.Services.Logics
         private readonly Dictionary<string, Comparer<Video>> sortOptions = new()
             {
                 { "Default", Comparer<Video>.Create((x, y) => x.CompareTo(y)) },
-                { "⮝ Title", Comparer<Video>.Create((x, y) => string.Compare(x.Title, y.Title, StringComparison.OrdinalIgnoreCase)) },
-                { "⮟ Title", Comparer<Video>.Create((x, y) => string.Compare(y.Title, x.Title, StringComparison.OrdinalIgnoreCase)) },
-                { "⮝ Date", Comparer<Video>.Create((x, y) => DateTime.Compare(x.Date, y.Date)) },
-                { "⮟ Date", Comparer<Video>.Create((x, y) => DateTime.Compare(y.Date, x.Date)) },
-                { "⮝ Duration", Comparer<Video>.Create((x, y) => TimeSpan.Compare(x.Duration, y.Duration)) },
-                { "⮟ Duration", Comparer<Video>.Create((x, y) => TimeSpan.Compare(y.Duration, x.Duration)) }
+                { "▲ Title", Comparer<Video>.Create((x, y) => string.Compare(x.Title, y.Title, StringComparison.OrdinalIgnoreCase)) },
+                { "▼ Title", Comparer<Video>.Create((x, y) => string.Compare(y.Title, x.Title, StringComparison.OrdinalIgnoreCase)) },
+                { "▲ Date", Comparer<Video>.Create((x, y) => DateTime.Compare(x.Date, y.Date)) },
+                { "▼ Date", Comparer<Video>.Create((x, y) => DateTime.Compare(y.Date, x.Date)) },
+                { "▲ Duration", Comparer<Video>.Create((x, y) => TimeSpan.Compare(x.Duration, y.Duration)) },
+                { "▼ Duration", Comparer<Video>.Create((x, y) => TimeSpan.Compare(y.Duration, x.Duration)) }
             };
 
 
