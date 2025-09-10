@@ -10,7 +10,7 @@ namespace VidHub.WinUI.Converters
         {
             if (value is bool liveFiltering)
             {
-                if (!liveFiltering)
+                if (liveFiltering)
                 {
                     return null;
                 }
