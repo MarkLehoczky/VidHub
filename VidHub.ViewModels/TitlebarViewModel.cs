@@ -25,51 +25,37 @@ namespace VidHub.ViewModels
         public bool CacheLoad
         {
             get => settings.CacheLoad;
-            set
-            {
-                if (settings.CacheLoad == value) return;
-                settings.CacheLoad = value;
-            }
+            set => settings.CacheLoad = value;
         }
 
         public bool ConcurrentVideoLoading
         {
             get => settings.ConcurrentVideoLoading;
-            set
-            {
-                if (settings.ConcurrentVideoLoading == value) return;
-                settings.ConcurrentVideoLoading = value;
-            }
+            set => settings.ConcurrentVideoLoading = value;
         }
 
         public bool KeepFilterStatus
         {
             get => settings.KeepFilterStatus;
-            set
-            {
-                if (settings.KeepFilterStatus == value) return;
-                settings.KeepFilterStatus = value;
-            }
+            set => settings.KeepFilterStatus = value;
         }
 
         public bool LiveTextFiltering
         {
             get => settings.LiveTextFiltering;
-            set
-            {
-                if (settings.LiveTextFiltering == value) return;
-                settings.LiveTextFiltering = value;
-            }
+            set => settings.LiveTextFiltering = value;
         }
 
         public bool CaseSensitiveTextFiltering
         {
             get => settings.CaseSensitiveTextFiltering;
-            set
-            {
-                if (settings.CaseSensitiveTextFiltering == value) return;
-                settings.CaseSensitiveTextFiltering = value;
-            }
+            set => settings.CaseSensitiveTextFiltering = value;
+        }
+
+        public bool TextSuggestions
+        {
+            get => settings.TextSuggestions;
+            set => settings.TextSuggestions = value;
         }
 
 

@@ -13,6 +13,7 @@ namespace VidHub.Services.Settings
         private bool keepFilterStatus = true;
         private bool liveTextFiltering = true;
         private bool caseSensitiveTextFiltering = false;
+        private bool textSuggestions = true;
 
         public void Load()
         {
@@ -49,6 +50,7 @@ namespace VidHub.Services.Settings
             keepFilterStatus = service.KeepFilterStatus;
             liveTextFiltering = service.LiveTextFiltering;
             caseSensitiveTextFiltering = service.CaseSensitiveTextFiltering;
+            textSuggestions = service.TextSuggestions;
         }
 
 
@@ -102,7 +104,18 @@ namespace VidHub.Services.Settings
         public bool CaseSensitiveTextFiltering
         {
             get => caseSensitiveTextFiltering;
-            set => caseSensitiveTextFiltering = value;
+            set
+            {
+                if (caseSensitiveTextFiltering == value) return;
+                caseSensitiveTextFiltering = value;
+                service.Update();
+            }
+        }
+
+        public bool TextSuggestions
+        {
+            get => textSuggestions;
+            set => textSuggestions = value;
         }
     }
 }
