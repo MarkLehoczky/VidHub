@@ -11,6 +11,7 @@ namespace VidHub.Services.Logics
         private readonly object locker = new();
         private string? currentSortOption = null;
         private string? searchText = null;
+        private string activeSearchText = string.Empty;
         private bool filterDate = false;
         private DateTimeOffset? startDate = null;
         private DateTimeOffset? endDate = null;
@@ -45,7 +46,8 @@ namespace VidHub.Services.Logics
             get => searchText;
             set
             {
-                if (searchText == value || !settings.LiveTextFiltering) return;
+                if (searchText == value) return;
+                if (settings.LiveTextFiltering) activeSearchText = value;
                 searchText = value;
                 UpdateOrganizers();
             }
@@ -118,7 +120,7 @@ namespace VidHub.Services.Logics
 
         public void UpdateTextFilter(string text)
         {
-            searchText = text;
+            activeSearchText = text;
             UpdateOrganizers();
         }
 
@@ -129,7 +131,7 @@ namespace VidHub.Services.Logics
             {
                 if (!string.IsNullOrEmpty(searchText))
                 {
-                    if (!video.Title.Contains(searchText, settings.CaseSensitiveTextFiltering ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase)) return false;
+                    if (!video.Title.Contains(activeSearchText, settings.CaseSensitiveTextFiltering ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase)) return false;
                 }
                 if (FilterDate)
                 {
@@ -190,6 +192,19 @@ namespace VidHub.Services.Logics
             maxDuration = service.MaxDuration;
 
             UpdateOrganizers(false);
+        }
+
+        public IEnumerable<string> Suggestions()
+        {
+            var startsWith = service.GetAllVideos().Select(v => v.Title).Where(v => v.StartsWith(SearchText ?? string.Empty, settings.CaseSensitiveTextFiltering ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase));
+            var contains = service.GetAllVideos().Select(v => v.Title).Except(startsWith).Where(v => v.Contains(SearchText ?? string.Empty, settings.CaseSensitiveTextFiltering ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase));
+            var union = startsWith.Union(contains);
+            if (union.Any())
+            {
+                return union;
+            }
+
+            return ["No results found"];
         }
     }
 }

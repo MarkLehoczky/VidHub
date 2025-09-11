@@ -23,9 +23,14 @@ namespace VidHub.ViewModels
         public string? SearchText
         {
             get => organizeService.SearchText;
-            set => organizeService.SearchText = value;
+            set
+            {
+                organizeService.SearchText = value;
+                OnPropertyChanged(nameof(Suggestions));
+            }
         }
         public bool LiveTextFiltering => settingsService.LiveTextFiltering;
+        public IEnumerable<string> Suggestions => organizeService.Suggestions();
 
         public bool FilterDate
         {
