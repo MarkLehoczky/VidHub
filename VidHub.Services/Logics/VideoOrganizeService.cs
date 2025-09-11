@@ -11,6 +11,7 @@ namespace VidHub.Services.Logics
         private readonly object locker = new();
         private string? currentSortOption = null;
         private string? searchText = null;
+        private string activeSearchText = string.Empty;
         private bool filterDate = false;
         private DateTimeOffset? startDate = null;
         private DateTimeOffset? endDate = null;
@@ -19,14 +20,13 @@ namespace VidHub.Services.Logics
         private TimeSpan? maxDuration = null;
         private readonly Dictionary<string, Comparer<Video>> sortOptions = new()
             {
-                { "⮝ Title", Comparer<Video>.Create((x, y) => string.Compare(x.Title, y.Title, StringComparison.OrdinalIgnoreCase)) },
-                { "⮟ Title", Comparer<Video>.Create((x, y) => string.Compare(y.Title, x.Title, StringComparison.OrdinalIgnoreCase)) },
-                { "⮝ Date", Comparer<Video>.Create((x, y) => DateTime.Compare(x.Date, y.Date)) },
-                { "⮟ Date", Comparer<Video>.Create((x, y) => DateTime.Compare(y.Date, x.Date)) },
-                { "⮝ Duration", Comparer<Video>.Create((x, y) => TimeSpan.Compare(x.Duration, y.Duration)) },
-                { "⮟ Duration", Comparer<Video>.Create((x, y) => TimeSpan.Compare(y.Duration, x.Duration)) },
-                { "⮝ Default", Comparer<Video>.Create((x, y) => x.CompareTo(y)) },
-                { "⮟ Default", Comparer<Video>.Create((x, y) => y.CompareTo(x)) }
+                { "Default", Comparer<Video>.Create((x, y) => x.CompareTo(y)) },
+                { "▲ Title", Comparer<Video>.Create((x, y) => string.Compare(x.Title, y.Title, StringComparison.OrdinalIgnoreCase)) },
+                { "▼ Title", Comparer<Video>.Create((x, y) => string.Compare(y.Title, x.Title, StringComparison.OrdinalIgnoreCase)) },
+                { "▲ Date", Comparer<Video>.Create((x, y) => DateTime.Compare(x.Date, y.Date)) },
+                { "▼ Date", Comparer<Video>.Create((x, y) => DateTime.Compare(y.Date, x.Date)) },
+                { "▲ Duration", Comparer<Video>.Create((x, y) => TimeSpan.Compare(x.Duration, y.Duration)) },
+                { "▼ Duration", Comparer<Video>.Create((x, y) => TimeSpan.Compare(y.Duration, x.Duration)) }
             };
 
 
@@ -46,7 +46,8 @@ namespace VidHub.Services.Logics
             get => searchText;
             set
             {
-                if (searchText == value || !settings.LiveTextFiltering) return;
+                if (searchText == value) return;
+                if (settings.LiveTextFiltering) activeSearchText = value;
                 searchText = value;
                 UpdateOrganizers();
             }
@@ -119,7 +120,7 @@ namespace VidHub.Services.Logics
 
         public void UpdateTextFilter(string text)
         {
-            searchText = text;
+            activeSearchText = text;
             UpdateOrganizers();
         }
 
@@ -130,7 +131,7 @@ namespace VidHub.Services.Logics
             {
                 if (!string.IsNullOrEmpty(searchText))
                 {
-                    if (!video.Title.Contains(searchText, settings.CaseSensitiveTextFiltering ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase)) return false;
+                    if (!video.Title.Contains(activeSearchText, settings.CaseSensitiveTextFiltering ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase)) return false;
                 }
                 if (FilterDate)
                 {
@@ -191,6 +192,13 @@ namespace VidHub.Services.Logics
             maxDuration = service.MaxDuration;
 
             UpdateOrganizers(false);
+        }
+
+        public IEnumerable<string> Suggestions()
+        {
+            var startsWith = service.GetAllVideos().Select(v => v.Title).Where(v => v.StartsWith(SearchText ?? string.Empty, settings.CaseSensitiveTextFiltering ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase));
+            var contains = service.GetAllVideos().Select(v => v.Title).Except(startsWith).Where(v => v.Contains(SearchText ?? string.Empty, settings.CaseSensitiveTextFiltering ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase));
+            return startsWith.Union(contains);
         }
     }
 }

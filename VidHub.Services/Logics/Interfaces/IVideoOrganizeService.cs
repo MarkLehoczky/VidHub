@@ -15,5 +15,6 @@
         void Load();
         void Save();
         void Set(IVideoOrganizeService service);
+        IEnumerable<string> Suggestions();
     }
 }

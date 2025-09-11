@@ -33,6 +33,11 @@ namespace VidHub.Services.Logics
             throw new NotImplementedException();
         }
 
+        public IEnumerable<string> Suggestions()
+        {
+            throw new NotImplementedException();
+        }
+
         public void UpdateTextFilter(string text)
         {
             throw new NotImplementedException();
