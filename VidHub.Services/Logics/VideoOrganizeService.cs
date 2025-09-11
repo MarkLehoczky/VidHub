@@ -196,9 +196,15 @@ namespace VidHub.Services.Logics
 
         public IEnumerable<string> Suggestions()
         {
-            var startsWith = service.GetAllVideos().Select(v => v.Title).Where(v => v.StartsWith(SearchText ?? string.Empty, settings.CaseSensitiveTextFiltering ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase));
-            var contains = service.GetAllVideos().Select(v => v.Title).Except(startsWith).Where(v => v.Contains(SearchText ?? string.Empty, settings.CaseSensitiveTextFiltering ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase));
-            return startsWith.Union(contains);
+            if (settings.TextSuggestions)
+            {
+                var startsWith = service.GetAllVideos().Select(v => v.Title).Where(v => v.StartsWith(SearchText ?? string.Empty, settings.CaseSensitiveTextFiltering ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase));
+                var contains = service.GetAllVideos().Select(v => v.Title).Except(startsWith).Where(v => v.Contains(SearchText ?? string.Empty, settings.CaseSensitiveTextFiltering ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase));
+                return startsWith.Union(contains);
+            }
+
+            return [];
         }
+
     }
 }

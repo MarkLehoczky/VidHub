@@ -9,6 +9,7 @@
         bool KeepFilterStatus { get; set; }
         bool CaseSensitiveTextFiltering { get; set; }
         bool LiveTextFiltering { get; set; }
+        bool TextSuggestions {  get; set; }
         void Load();
         void Save();
         void Set(ISettingsService service);

@@ -11,6 +11,7 @@ namespace VidHub.Services.Settings
         public bool KeepFilterStatus { get; set; }
         public bool CaseSensitiveTextFiltering { get; set; }
         public bool LiveTextFiltering { get; set; }
+        public bool TextSuggestions { get; set; }
 
         public void Load()
         {
