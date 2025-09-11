@@ -198,13 +198,7 @@ namespace VidHub.Services.Logics
         {
             var startsWith = service.GetAllVideos().Select(v => v.Title).Where(v => v.StartsWith(SearchText ?? string.Empty, settings.CaseSensitiveTextFiltering ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase));
             var contains = service.GetAllVideos().Select(v => v.Title).Except(startsWith).Where(v => v.Contains(SearchText ?? string.Empty, settings.CaseSensitiveTextFiltering ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase));
-            var union = startsWith.Union(contains);
-            if (union.Any())
-            {
-                return union;
-            }
-
-            return ["No results found"];
+            return startsWith.Union(contains);
         }
     }
 }
