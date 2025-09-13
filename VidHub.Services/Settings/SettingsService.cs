@@ -14,6 +14,9 @@ namespace VidHub.Services.Settings
         private bool liveTextFiltering = true;
         private bool caseSensitiveTextFiltering = false;
         private bool textSuggestions = true;
+        private bool showTitles = true;
+        private bool showDates = true;
+        private bool showDurations = true;
 
         public void Load()
         {
@@ -116,6 +119,39 @@ namespace VidHub.Services.Settings
         {
             get => textSuggestions;
             set => textSuggestions = value;
+        }
+
+        public bool ShowTitles
+        {
+            get => showTitles;
+            set
+            {
+                if (showTitles == value) return;
+                showTitles = value;
+                service.Update();
+            }
+        }
+
+        public bool ShowDates
+        {
+            get => showDates;
+            set
+            {
+                if (showDates == value) return;
+                showDates = value;
+                service.Update();
+            }
+        }
+
+        public bool ShowDurations
+        {
+            get => showDurations;
+            set
+            {
+                if (showDurations == value) return;
+                showDurations = value;
+                service.Update();
+            }
         }
     }
 }

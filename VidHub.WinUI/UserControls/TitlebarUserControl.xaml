@@ -61,9 +61,9 @@
                     <MenuFlyoutSubItem.Icon>
                         <FontIcon Glyph="&#xe786;" FontFamily="Segoe Fluent Icons" />
                     </MenuFlyoutSubItem.Icon>
-                    <ToggleMenuFlyoutItem Text="Show Titles" ToolTipService.ToolTip="Display video titles in the collection." IsChecked="False" />
-                    <ToggleMenuFlyoutItem Text="Show Duration" ToolTipService.ToolTip="Display video playback duration in the collection." />
-                    <ToggleMenuFlyoutItem Text="Show Date" ToolTipService.ToolTip="Display video creation date in the collection." IsChecked="False" />
+                    <ToggleMenuFlyoutItem Text="Show Titles" ToolTipService.ToolTip="Display video titles in the collection." IsChecked="{Binding ShowTitles, Mode=TwoWay}" />
+                    <ToggleMenuFlyoutItem Text="Show Dates" ToolTipService.ToolTip="Display video creation date in the collection." IsChecked="{Binding ShowDates, Mode=TwoWay}" />
+                    <ToggleMenuFlyoutItem Text="Show Durations" ToolTipService.ToolTip="Display video playback duration in the collection." IsChecked="{Binding ShowDurations, Mode=TwoWay}" />
                     <!--ToggleMenuFlyoutItem Text="Format Date" ToolTipService.ToolTip="Choose how video creation dates are displayed." IsChecked="False" />
                     <ToggleMenuFlyoutItem Text="Format Duration" ToolTipService.ToolTip="Choose how video creation dates are displayed." IsChecked="False" /-->
                 </MenuFlyoutSubItem>

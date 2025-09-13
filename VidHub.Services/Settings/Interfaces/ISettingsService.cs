@@ -10,6 +10,9 @@
         bool CaseSensitiveTextFiltering { get; set; }
         bool LiveTextFiltering { get; set; }
         bool TextSuggestions {  get; set; }
+        bool ShowTitles { get; set; }
+        bool ShowDates { get; set; }
+        bool ShowDurations { get; set; }
         void Load();
         void Save();
         void Set(ISettingsService service);
