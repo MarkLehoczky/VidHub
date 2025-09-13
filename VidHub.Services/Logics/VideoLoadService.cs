@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Text.Json;
+using System.Xml.Serialization;
 using VidHub.Core;
 using VidHub.Core.Helpers;
 using VidHub.Platform;
@@ -118,6 +120,54 @@ namespace VidHub.Services.Logics
             }
         }
 
+        public async Task ImportCollectionAsync()
+        {
+            StorageFile? file = await PickFileOpen("Import", [".vhc"]);
+
+            if (file != null)
+            {
+                await Task.Run(() =>
+                {
+                    var index = transfers.Count;
+                    var transfer = new Transfer();
+                    transfers.Enqueue(transfer);
+                    manager.SetTaskbar(transfers);
+                    service.Update();
+
+                    transfers.ElementAt(index).IsCollecting = true;
+
+                    var rawContent = File.ReadLines(file.Path);
+                    var files = rawContent.Select(p =>
+                    {
+                        var awaiter = StorageFile.GetFileFromPathAsync(p);
+                        awaiter.Wait();
+                        return awaiter.GetResults();
+                    });
+
+                    transfer.AddTotalCount(files.Count());
+                    transfers.Enqueue(transfer);
+                    manager.SetTaskbar(transfers);
+                    service.Update();
+
+                    AddFilesToVideoCollection(index, files);
+
+                    transfers.ElementAt(index).IsActive = false;
+                    manager.SetTaskbar(transfers);
+                    service.Update();
+                    TransferCleanup();
+                });
+            }
+        }
+        public async Task ExportCollectionAsync()
+        {
+            StorageFile? file = await PickFileSave("Export", ".vhc", "VidHub Collection");
+
+            if (file != null)
+            {
+                await FileIO.WriteTextAsync(file, string.Join('\n', service.GetAllVideos().Select(v => v.FilePath)));
+            }
+        }
+
 
         private static async Task<IReadOnlyList<StorageFile>> PickFilesOpen(string commitButtonText, List<string> fileTypeFilters)
         {
@@ -147,6 +197,38 @@ namespace VidHub.Services.Logics
 
             InitializeWithWindow.Initialize(picker, Context.MainWindow.HWND);
             return await picker.PickSingleFolderAsync();
+        }
+
+        private static async Task<StorageFile?> PickFileOpen(string commitButtonText, List<string> fileTypeFilters)
+        {
+            var picker = new FileOpenPicker
+            {
+                CommitButtonText = commitButtonText,
+                SuggestedStartLocation = PickerLocationId.HomeGroup,
+                ViewMode = PickerViewMode.Thumbnail
+            };
+            foreach (var filter in fileTypeFilters)
+            {
+                picker.FileTypeFilter.Add(filter);
+            }
+
+            InitializeWithWindow.Initialize(picker, Context.MainWindow.HWND);
+            return await picker.PickSingleFileAsync();
+        }
+
+        private static async Task<StorageFile?> PickFileSave(string commitButtonText, string defaultFileExtension, string suggestedFileName)
+        {
+            var picker = new FileSavePicker
+            {
+                CommitButtonText = commitButtonText,
+                DefaultFileExtension = defaultFileExtension,
+                SuggestedFileName = suggestedFileName,
+                SuggestedStartLocation = PickerLocationId.HomeGroup
+            };
+            picker.FileTypeChoices.Add(suggestedFileName, [defaultFileExtension]);
+
+            InitializeWithWindow.Initialize(picker, Context.MainWindow.HWND);
+            return await picker.PickSaveFileAsync();
         }
 
 

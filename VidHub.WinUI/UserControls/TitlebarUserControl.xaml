@@ -16,9 +16,15 @@
     <Grid Height="32">
         <MenuBar HorizontalAlignment="Left" VerticalAlignment="Center">
             <MenuBarItem Title="File" Height="32" Margin="0">
+                <MenuFlyoutItem Text="Import collection" Icon="Import" Command="{Binding ImportCollectionCommand}" />
                 <MenuFlyoutItem Text="Load Files" Icon="OpenFile" Command="{Binding LoadFilesCommand}" />
                 <MenuFlyoutItem Text="Load Folder" Icon="OpenLocal" Command="{Binding LoadSingleFolderCommand}" />
-                <MenuFlyoutItem Text="Load Folder &amp; Sub-folders" Icon="OpenLocal" Command="{Binding LoadAllFolderCommand}" />
+                <MenuFlyoutItem Text="Load Folder &amp; Sub-Folders" Icon="OpenLocal" Command="{Binding LoadAllFolderCommand}" />
+                <MenuFlyoutItem Text="Export collection" Command="{Binding ExportCollectionCommand}">
+                    <MenuFlyoutItem.Icon>
+                        <FontIcon Glyph="&#xede1;" FontFamily="Segoe Fluent Icons" />
+                    </MenuFlyoutItem.Icon>
+                </MenuFlyoutItem>
             </MenuBarItem>
             <MenuBarItem Title="View" Height="32" Margin="0">
                 <MenuFlyoutItem Text="Open Side Panel" Command="{Binding OpenSidePanelCommand}">

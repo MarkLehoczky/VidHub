@@ -89,6 +89,18 @@ namespace VidHub.ViewModels
             await service.LoadFoldersAsync(true);
         }
 
+        [RelayCommand]
+        private async Task ImportCollectionAsync()
+        {
+            await service.ImportCollectionAsync();
+        }
+
+        [RelayCommand]
+        private async Task ExportCollectionAsync()
+        {
+            await service.ExportCollectionAsync();
+        }
+
 
         [RelayCommand(CanExecute = nameof(CanOpenSidePanel))]
         private void OpenSidePanel()
