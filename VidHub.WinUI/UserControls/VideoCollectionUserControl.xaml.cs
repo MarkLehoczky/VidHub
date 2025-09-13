@@ -67,5 +67,17 @@ namespace VidHub.WinUI.UserControls
         {
             Context.MainHost.GetService<IVideoLoadService>().LoadExternal(items);
         }
+
+        private void TextTrimmingChanged(TextBlock sender, IsTextTrimmedChangedEventArgs args)
+        {
+            if (sender.IsTextTrimmed)
+            {
+                ToolTipService.SetToolTip(sender, sender.Text);
+            }
+            else
+            {
+                ToolTipService.SetToolTip(sender, null);
+            }
+        }
     }
 }
