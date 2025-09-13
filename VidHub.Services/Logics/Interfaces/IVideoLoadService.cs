@@ -12,5 +12,7 @@ namespace VidHub.Services.Logics.Interfaces
         Task LoadFilesAsync();
         Task LoadFoldersAsync(bool includeSubfolders);
         Task LoadExternal(IEnumerable<IStorageItem> items);
+        Task ImportCollectionAsync();
+        Task ExportCollectionAsync();
     }
 }
