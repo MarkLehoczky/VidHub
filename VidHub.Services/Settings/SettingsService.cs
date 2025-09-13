@@ -54,6 +54,9 @@ namespace VidHub.Services.Settings
             liveTextFiltering = service.LiveTextFiltering;
             caseSensitiveTextFiltering = service.CaseSensitiveTextFiltering;
             textSuggestions = service.TextSuggestions;
+            showTitles = service.ShowTitles;
+            showDates = service.ShowDates;
+            showDurations = service.ShowDurations;
         }
 
 

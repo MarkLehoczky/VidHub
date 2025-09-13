@@ -121,6 +121,7 @@ namespace VidHub.ViewModels
 
         public TitlebarViewModel() : this(
             Context.MainHost.GetService<IVideoLoadService>(),
-            Context.MainHost.GetService<ISettingsService>()) { }
+            Context.MainHost.GetService<ISettingsService>())
+        { }
     }
 }

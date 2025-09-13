@@ -9,7 +9,7 @@
         bool KeepFilterStatus { get; set; }
         bool CaseSensitiveTextFiltering { get; set; }
         bool LiveTextFiltering { get; set; }
-        bool TextSuggestions {  get; set; }
+        bool TextSuggestions { get; set; }
         bool ShowTitles { get; set; }
         bool ShowDates { get; set; }
         bool ShowDurations { get; set; }
