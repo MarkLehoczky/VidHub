@@ -45,7 +45,7 @@
                                 </Grid>
                             </Border>
 
-                            <TextBlock Text="{Binding Title}" FontWeight="Bold" TextTrimming="CharacterEllipsis" ToolTipService.ToolTip="{Binding Title}" Visibility="{Binding ElementName=videocollection, Path=DataContext.ShowTitles}" IsTextSelectionEnabled="True" Margin="10 5 10 0" Grid.Row="1" />
+                            <TextBlock Text="{Binding Title}" FontWeight="Bold" TextTrimming="CharacterEllipsis" IsTextTrimmedChanged="TextTrimmingChanged" Visibility="{Binding ElementName=videocollection, Path=DataContext.ShowTitles}" IsTextSelectionEnabled="True" Margin="10 5 10 0" Grid.Row="1" />
                             <TextBlock Text="{Binding Date, Converter={StaticResource FormatDate}}" Visibility="{Binding ElementName=videocollection, Path=DataContext.ShowDates}" IsTextSelectionEnabled="True" FontStyle="Italic" Margin="10 5 10 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="2" />
                         </Grid>
                     </DataTemplate>
