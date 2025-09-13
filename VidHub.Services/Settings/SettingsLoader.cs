@@ -12,6 +12,9 @@ namespace VidHub.Services.Settings
         public bool CaseSensitiveTextFiltering { get; set; }
         public bool LiveTextFiltering { get; set; }
         public bool TextSuggestions { get; set; }
+        public bool ShowTitles { get; set; }
+        public bool ShowDates { get; set; }
+        public bool ShowDurations { get; set; }
 
         public void Load()
         {

@@ -15,11 +15,7 @@ namespace VidHub.ViewModels
         public bool SystemNotifications
         {
             get => settings.SystemNotifications;
-            set
-            {
-                if (settings.SystemNotifications == value) return;
-                settings.SystemNotifications = value;
-            }
+            set => settings.SystemNotifications = value;
         }
 
         public bool CacheLoad
@@ -56,6 +52,22 @@ namespace VidHub.ViewModels
         {
             get => settings.TextSuggestions;
             set => settings.TextSuggestions = value;
+        }
+
+        public bool ShowTitles
+        {
+            get => settings.ShowTitles;
+            set => settings.ShowTitles = value;
+        }
+        public bool ShowDates
+        {
+            get => settings.ShowDates;
+            set => settings.ShowDates = value;
+        }
+        public bool ShowDurations
+        {
+            get => settings.ShowDurations;
+            set => settings.ShowDurations = value;
         }
 
 
