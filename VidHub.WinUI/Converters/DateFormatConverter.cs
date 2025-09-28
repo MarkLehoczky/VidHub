@@ -11,7 +11,7 @@ namespace VidHub.WinUI.Converters
         {
             try
             {
-                DateTimeOffset date = (DateTimeOffset)value;
+                DateTime date = (DateTime)value;
                 return date.ToString(Context.MainHost.GetService<ISettingsService>().DateFormat);
             }
             catch
