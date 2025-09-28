@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using VidHub.Core.Helpers;
 using VidHub.Platform;
 using VidHub.Services.Logics.Interfaces;
 using VidHub.Services.Settings.Interfaces;
@@ -116,6 +117,18 @@ namespace VidHub.ViewModels
             settings.OpenPanel = false;
             OpenSidePanelCommand.NotifyCanExecuteChanged();
             CloseSidePanelCommand.NotifyCanExecuteChanged();
+        }
+
+        [RelayCommand]
+        private async Task FormatDateAsync()
+        {
+            await Context.MainWindow.ShowDialogAsync(ModalType.FormatDate, "Date format", "Close");
+        }
+
+        [RelayCommand]
+        private async Task FormatDurationAsync()
+        {
+            await Context.MainWindow.ShowDialogAsync(ModalType.FormatDuration, "Duration format", "Close");
         }
 
 

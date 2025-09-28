@@ -1,7 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using System;
+using System.Reflection.Metadata.Ecma335;
+using System.Threading.Tasks;
+using VidHub.Core.Helpers;
 using VidHub.Platform;
 using VidHub.Platform.Interfaces;
 using VidHub.Services.Base;
@@ -13,6 +17,7 @@ using VidHub.Services.Settings.Interfaces;
 using VidHub.Services.System;
 using VidHub.Services.System.Interfaces;
 using VidHub.ViewModels;
+using VidHub.WinUI.UserControls.Modals;
 using WinRT.Interop;
 
 namespace VidHub.WinUI
@@ -64,6 +69,28 @@ namespace VidHub.WinUI
         public bool TryEnqueue(Action callback)
         {
             return window.DispatcherQueue.TryEnqueue(callback.Invoke);
+        }
+
+        public async Task ShowDialogAsync(ModalType type, string title, string closeButton)
+        {
+            object content = new();
+
+            switch (type)
+            {
+                case ModalType.FormatDate: content = new DateCustomizationUserControl(); break;
+                case ModalType.FormatDuration: content = new DurationCustomizationUserControl(); break;
+            }
+
+            var dialog = new ContentDialog()
+            {
+                Title = title,
+                CloseButtonText = closeButton,
+                DefaultButton = ContentDialogButton.Close,
+                Content = content,
+                XamlRoot = window.Content.XamlRoot
+            };
+
+            await dialog.ShowAsync();
         }
     }
 

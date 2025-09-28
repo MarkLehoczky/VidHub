@@ -17,6 +17,11 @@ namespace VidHub.Services.Settings
         private bool showTitles = true;
         private bool showDates = true;
         private bool showDurations = true;
+        private string? dateFormat = "yyyy. MMMM. dd.";
+        private string? durationDayFormat = "d\\d\\ hh\\h\\ mm\\m\\ ss\\s";
+        private string? durationHourFormat = "h\\:mm\\:ss";
+        private string? durationMinuteFormat = "m\\:ss";
+        private string? durationSecondFormat = "s\\.fff";
 
         public void Load()
         {
@@ -57,6 +62,11 @@ namespace VidHub.Services.Settings
             showTitles = service.ShowTitles;
             showDates = service.ShowDates;
             showDurations = service.ShowDurations;
+            dateFormat = service.DateFormat;
+            durationDayFormat = service.DurationDayFormat;
+            durationHourFormat = service.DurationHourFormat;
+            durationMinuteFormat = service.DurationMinuteFormat;
+            durationSecondFormat = service.DurationSecondFormat;
         }
 
 
@@ -153,6 +163,61 @@ namespace VidHub.Services.Settings
             {
                 if (showDurations == value) return;
                 showDurations = value;
+                service.Update();
+            }
+        }
+
+        public string? DateFormat
+        {
+            get => dateFormat;
+            set
+            {
+                if (dateFormat == value) return;
+                dateFormat = value;
+                service.Update();
+            }
+        }
+
+        public string? DurationDayFormat
+        {
+            get => durationDayFormat;
+            set
+            {
+                if (durationDayFormat == value) return;
+                durationDayFormat = value;
+                service.Update();
+            }
+        }
+
+        public string? DurationHourFormat
+        {
+            get => durationHourFormat;
+            set
+            {
+                if (durationHourFormat == value) return;
+                durationHourFormat = value;
+                service.Update();
+            }
+        }
+
+        public string? DurationMinuteFormat
+        {
+            get => durationMinuteFormat;
+            set
+            {
+                if (durationMinuteFormat == value) return;
+                durationMinuteFormat = value;
+                service.Update();
+            }
+        }
+
+        public string? DurationSecondFormat
+        {
+            get => durationSecondFormat;
+            set
+            {
+                if (durationSecondFormat == value) return;
+                durationSecondFormat = value;
                 service.Update();
             }
         }

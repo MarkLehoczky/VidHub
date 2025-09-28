@@ -15,6 +15,11 @@ namespace VidHub.Services.Settings
         public bool ShowTitles { get; set; }
         public bool ShowDates { get; set; }
         public bool ShowDurations { get; set; }
+        public string? DateFormat { get; set; }
+        public string? DurationDayFormat { get; set; }
+        public string? DurationHourFormat { get; set; }
+        public string? DurationMinuteFormat { get; set; }
+        public string? DurationSecondFormat { get; set; }
 
         public void Load()
         {

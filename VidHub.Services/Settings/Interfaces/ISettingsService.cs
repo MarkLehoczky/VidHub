@@ -13,6 +13,11 @@
         bool ShowTitles { get; set; }
         bool ShowDates { get; set; }
         bool ShowDurations { get; set; }
+        string? DateFormat { get; set; }
+        string? DurationDayFormat { get; set; }
+        string? DurationHourFormat { get; set; }
+        string? DurationMinuteFormat { get; set; }
+        string? DurationSecondFormat { get; set; }
         void Load();
         void Save();
         void Set(ISettingsService service);
