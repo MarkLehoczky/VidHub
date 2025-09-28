@@ -26,12 +26,13 @@
         </Grid.ColumnDefinitions>
 
         <TextBlock Text="Above 1 day" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5" Grid.Row="0" Grid.Column="0"  />
-        <TextBox Text="{Binding DurationDayFormat, Mode=TwoWay}" PlaceholderText="E.g. d\:h\:mm\:ss" Width="150" Margin="5" Grid.Row="0" Grid.Column="1"  />
         <TextBlock Text="Above 1 hour" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5" Grid.Row="1" Grid.Column="0"  />
-        <TextBox Text="{Binding DurationHourFormat, Mode=TwoWay}" PlaceholderText="E.g. h\:mm\:ss" Width="150" Margin="5" Grid.Row="1" Grid.Column="1"  />
         <TextBlock Text="Above 1 minute" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5" Grid.Row="2" Grid.Column="0"  />
-        <TextBox Text="{Binding DurationMinuteFormat, Mode=TwoWay}" PlaceholderText="E.g. h\:mm\:ss" Width="150" Margin="5" Grid.Row="2" Grid.Column="1"  />
         <TextBlock Text="Below 1 minute" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5" Grid.Row="3" Grid.Column="0"  />
+        
+        <TextBox Text="{Binding DurationDayFormat, Mode=TwoWay}" PlaceholderText="E.g. d\:h\:mm\:ss" Width="150" Margin="5" Grid.Row="0" Grid.Column="1"  />
+        <TextBox Text="{Binding DurationHourFormat, Mode=TwoWay}" PlaceholderText="E.g. h\:mm\:ss" Width="150" Margin="5" Grid.Row="1" Grid.Column="1"  />
+        <TextBox Text="{Binding DurationMinuteFormat, Mode=TwoWay}" PlaceholderText="E.g. h\:mm\:ss" Width="150" Margin="5" Grid.Row="2" Grid.Column="1"  />
         <TextBox Text="{Binding DurationSecondFormat, Mode=TwoWay}" PlaceholderText="E.g. s.fff" Width="150" Margin="5" Grid.Row="3" Grid.Column="1" />
     </Grid>
 </UserControl>

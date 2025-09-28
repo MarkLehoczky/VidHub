@@ -22,6 +22,8 @@ namespace VidHub.Services.Settings
         private string? durationHourFormat = "h\\:mm\\:ss";
         private string? durationMinuteFormat = "m\\:ss";
         private string? durationSecondFormat = "s\\.fff";
+        private double fieldWidth = 480;
+        private double fieldHeight = 270;
 
         public void Load()
         {
@@ -67,6 +69,8 @@ namespace VidHub.Services.Settings
             durationHourFormat = service.DurationHourFormat;
             durationMinuteFormat = service.DurationMinuteFormat;
             durationSecondFormat = service.DurationSecondFormat;
+            fieldWidth = service.FieldWidth;
+            fieldHeight = service.FieldHeight;
         }
 
 
@@ -218,6 +222,28 @@ namespace VidHub.Services.Settings
             {
                 if (durationSecondFormat == value) return;
                 durationSecondFormat = value;
+                service.Update();
+            }
+        }
+
+        public double FieldWidth
+        {
+            get => fieldWidth;
+            set
+            {
+                if (fieldWidth == value) return;
+                fieldWidth = value;
+                service.Update();
+            }
+        }
+
+        public double FieldHeight
+        {
+            get => fieldHeight;
+            set
+            {
+                if (fieldHeight == value) return;
+                fieldHeight = value;
                 service.Update();
             }
         }

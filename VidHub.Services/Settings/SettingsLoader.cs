@@ -20,6 +20,8 @@ namespace VidHub.Services.Settings
         public string? DurationHourFormat { get; set; }
         public string? DurationMinuteFormat { get; set; }
         public string? DurationSecondFormat { get; set; }
+        public double FieldWidth { get; set; }
+        public double FieldHeight { get; set; }
 
         public void Load()
         {

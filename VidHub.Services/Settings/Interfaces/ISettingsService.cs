@@ -18,6 +18,8 @@
         string? DurationHourFormat { get; set; }
         string? DurationMinuteFormat { get; set; }
         string? DurationSecondFormat { get; set; }
+        double FieldWidth { get; set; }
+        double FieldHeight { get; set; }
         void Load();
         void Save();
         void Set(ISettingsService service);

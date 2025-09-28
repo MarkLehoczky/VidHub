@@ -131,6 +131,12 @@ namespace VidHub.ViewModels
             await Context.MainWindow.ShowDialogAsync(ModalType.FormatDuration, "Duration format", "Close");
         }
 
+        [RelayCommand]
+        private async Task FormatSizeAsync()
+        {
+            await Context.MainWindow.ShowDialogAsync(ModalType.FormatFieldSize, "Video size format", "Close");
+        }
+
 
         public TitlebarViewModel() : this(
             Context.MainHost.GetService<IVideoLoadService>(),

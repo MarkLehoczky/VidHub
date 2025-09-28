@@ -14,6 +14,8 @@ namespace VidHub.ViewModels
         public bool ShowTitles => settings.ShowTitles;
         public bool ShowDates => settings.ShowDates;
         public bool ShowDurations => settings.ShowDurations;
+        public double PreviewWidth => settings.FieldWidth;
+        public double PreviewHeight => settings.FieldHeight;
 
 
         public VideoCollectionViewModel() : this(Context.MainHost.GetService<IVideoCollectionService>(),
@@ -33,6 +35,8 @@ namespace VidHub.ViewModels
             OnPropertyChanged(nameof(ShowTitles));
             OnPropertyChanged(nameof(ShowDates));
             OnPropertyChanged(nameof(ShowDurations));
+            OnPropertyChanged(nameof(PreviewWidth));
+            OnPropertyChanged(nameof(PreviewHeight));
         }
     }
 }

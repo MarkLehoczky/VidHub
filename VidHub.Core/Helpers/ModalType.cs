@@ -3,6 +3,7 @@
     public enum ModalType
     {
         FormatDate,
-        FormatDuration
+        FormatDuration,
+        FormatFieldSize
     }
 }

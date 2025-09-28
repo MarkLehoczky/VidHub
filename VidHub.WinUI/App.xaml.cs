@@ -73,12 +73,13 @@ namespace VidHub.WinUI
 
         public async Task ShowDialogAsync(ModalType type, string title, string closeButton)
         {
-            object content = new();
+            UserControl content = new();
 
             switch (type)
             {
                 case ModalType.FormatDate: content = new DateCustomizationUserControl(); break;
                 case ModalType.FormatDuration: content = new DurationCustomizationUserControl(); break;
+                case ModalType.FormatFieldSize: content = new FieldSizeCustomizationUserControl(); break;
             }
 
             var dialog = new ContentDialog()

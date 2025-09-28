@@ -72,6 +72,7 @@
                     <ToggleMenuFlyoutItem Text="Show Durations" ToolTipService.ToolTip="Display video playback duration in the collection." IsChecked="{Binding ShowDurations, Mode=TwoWay}" />
                     <MenuFlyoutItem Text="Format Date" ToolTipService.ToolTip="Choose how video creation dates are displayed." Command="{Binding FormatDateCommand}" />
                     <MenuFlyoutItem Text="Format Duration" ToolTipService.ToolTip="Choose how video creation dates are displayed." Command="{Binding FormatDurationCommand}" />
+                    <MenuFlyoutItem Text="Format Video Size" ToolTipService.ToolTip="Choose The size of the video preview images." Command="{Binding FormatSizeCommand}" />
                 </MenuFlyoutSubItem>
 
                 <MenuFlyoutSubItem Text="Filtering &amp; Search">
