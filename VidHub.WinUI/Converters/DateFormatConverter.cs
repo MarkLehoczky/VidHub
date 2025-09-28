@@ -9,9 +9,15 @@ namespace VidHub.WinUI.Converters
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            return value is DateTime date
-                ? date.ToString(Context.MainHost.GetService<ISettingsService>().DateFormat)
-                : "n/a";
+            try
+            {
+                DateTimeOffset date = (DateTimeOffset)value;
+                return date.ToString(Context.MainHost.GetService<ISettingsService>().DateFormat);
+            }
+            catch
+            {
+                return "n/a";
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
