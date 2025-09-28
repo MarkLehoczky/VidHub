@@ -43,13 +43,13 @@ namespace VidHub.Services.Logics
                     transfer.AddTotalCount(files.Count);
                     transfers.Enqueue(transfer);
                     manager.SetTaskbar(transfers);
-                    service.Update();
+                    service.Update(UpdateType.UpdateSidepanel);
 
                     AddFilesToVideoCollection(index, files);
 
                     transfers.ElementAt(index).IsActive = false;
                     manager.SetTaskbar(transfers);
-                    service.Update();
+                    service.Update(UpdateType.UpdateSidepanel);
                     TransferCleanup();
                 });
             }
@@ -68,7 +68,7 @@ namespace VidHub.Services.Logics
                     transfer.IsCollecting = true;
                     transfers.Enqueue(transfer);
                     manager.SetTaskbar(transfers);
-                    service.Update();
+                    service.Update(UpdateType.UpdateSidepanel);
 
                     transfers.ElementAt(index).IsCollecting = true;
                     var files = await CollectFilesAsync(folder, includeSubfolders, Video.ExtensionTypes);
@@ -78,7 +78,7 @@ namespace VidHub.Services.Logics
 
                     transfers.ElementAt(index).IsActive = false;
                     manager.SetTaskbar(transfers);
-                    service.Update();
+                    service.Update(UpdateType.UpdateSidepanel);
                     TransferCleanup();
                 });
             }
@@ -94,7 +94,7 @@ namespace VidHub.Services.Logics
                     var transfer = new Transfer();
                     transfers.Enqueue(transfer);
                     manager.SetTaskbar(transfers);
-                    service.Update();
+                    service.Update(UpdateType.UpdateSidepanel);
 
                     transfers.ElementAt(index).IsCollecting = true;
                     var files = items.OfType<StorageFile>().Where(f => Video.ExtensionTypes.Contains(f.FileType)).ToList();
@@ -111,7 +111,7 @@ namespace VidHub.Services.Logics
 
                     transfers.ElementAt(index).IsActive = false;
                     manager.SetTaskbar(transfers);
-                    service.Update();
+                    service.Update(UpdateType.UpdateSidepanel);
                     TransferCleanup();
                 });
             }
@@ -129,7 +129,7 @@ namespace VidHub.Services.Logics
                     var transfer = new Transfer();
                     transfers.Enqueue(transfer);
                     manager.SetTaskbar(transfers);
-                    service.Update();
+                    service.Update(UpdateType.UpdateSidepanel);
 
                     transfers.ElementAt(index).IsCollecting = true;
 
@@ -144,13 +144,13 @@ namespace VidHub.Services.Logics
                     transfer.AddTotalCount(files.Count());
                     transfers.Enqueue(transfer);
                     manager.SetTaskbar(transfers);
-                    service.Update();
+                    service.Update(UpdateType.UpdateSidepanel);
 
                     AddFilesToVideoCollection(index, files);
 
                     transfers.ElementAt(index).IsActive = false;
                     manager.SetTaskbar(transfers);
-                    service.Update();
+                    service.Update(UpdateType.UpdateSidepanel);
                     TransferCleanup();
                 });
             }
@@ -276,7 +276,7 @@ namespace VidHub.Services.Logics
 
                 transfers.ElementAt(index).IsLoading = false;
                 manager.SetTaskbar(transfers);
-                service.Update();
+                service.Update(UpdateType.UpdateSidepanel);
             }
         }
 
@@ -286,6 +286,7 @@ namespace VidHub.Services.Logics
             {
                 manager.DisplayToast("Video loading finished!", $"{LoadedCount} videos were loaded successfully.");
                 while (transfers.TryDequeue(out _)) ;
+                service.Update(UpdateType.UpdateSidepanel);
             }
         }
     }

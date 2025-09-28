@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using VidHub.Core.Helpers;
 using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Settings.Interfaces;
 
@@ -81,7 +82,7 @@ namespace VidHub.Services.Settings
             {
                 if (openPanel == value) return;
                 openPanel = value;
-                service.Update();
+                service.Update(UpdateType.UpdateSidepanel);
             }
         }
 
@@ -117,7 +118,7 @@ namespace VidHub.Services.Settings
             {
                 if (liveTextFiltering == value) return;
                 liveTextFiltering = value;
-                service.Update();
+                service.Update(UpdateType.UpdateAll);
             }
         }
 
@@ -128,7 +129,7 @@ namespace VidHub.Services.Settings
             {
                 if (caseSensitiveTextFiltering == value) return;
                 caseSensitiveTextFiltering = value;
-                service.Update();
+                service.Update(UpdateType.UpdateVideoCollection);
             }
         }
 
@@ -145,7 +146,7 @@ namespace VidHub.Services.Settings
             {
                 if (showTitles == value) return;
                 showTitles = value;
-                service.Update();
+                service.Update(UpdateType.UpdateVideoCollection);
             }
         }
 
@@ -156,7 +157,7 @@ namespace VidHub.Services.Settings
             {
                 if (showDates == value) return;
                 showDates = value;
-                service.Update();
+                service.Update(UpdateType.UpdateVideoCollection);
             }
         }
 
@@ -167,7 +168,7 @@ namespace VidHub.Services.Settings
             {
                 if (showDurations == value) return;
                 showDurations = value;
-                service.Update();
+                service.Update(UpdateType.UpdateVideoCollection);
             }
         }
 
@@ -178,7 +179,7 @@ namespace VidHub.Services.Settings
             {
                 if (dateFormat == value) return;
                 dateFormat = value;
-                service.Update();
+                service.Update(UpdateType.ResetVideoCollection);
             }
         }
 
@@ -189,7 +190,7 @@ namespace VidHub.Services.Settings
             {
                 if (durationDayFormat == value) return;
                 durationDayFormat = value;
-                service.Update();
+                service.Update(UpdateType.ResetVideoCollection);
             }
         }
 
@@ -200,7 +201,7 @@ namespace VidHub.Services.Settings
             {
                 if (durationHourFormat == value) return;
                 durationHourFormat = value;
-                service.Update();
+                service.Update(UpdateType.ResetVideoCollection);
             }
         }
 
@@ -211,7 +212,7 @@ namespace VidHub.Services.Settings
             {
                 if (durationMinuteFormat == value) return;
                 durationMinuteFormat = value;
-                service.Update();
+                service.Update(UpdateType.ResetVideoCollection);
             }
         }
 
@@ -222,7 +223,7 @@ namespace VidHub.Services.Settings
             {
                 if (durationSecondFormat == value) return;
                 durationSecondFormat = value;
-                service.Update();
+                service.Update(UpdateType.ResetVideoCollection);
             }
         }
 
@@ -233,7 +234,7 @@ namespace VidHub.Services.Settings
             {
                 if (fieldWidth == value) return;
                 fieldWidth = value;
-                service.Update();
+                service.Update(UpdateType.UpdateVideoCollection);
             }
         }
 
@@ -244,7 +245,7 @@ namespace VidHub.Services.Settings
             {
                 if (fieldHeight == value) return;
                 fieldHeight = value;
-                service.Update();
+                service.Update(UpdateType.UpdateVideoCollection);
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using VidHub.Core;
+using VidHub.Core.Helpers;
 using VidHub.Platform;
 using VidHub.Services.Base.Interfaces;
 
@@ -7,7 +8,7 @@ namespace VidHub.Services.Base
     public class MainService : IMainService
     {
         private readonly object locker = new();
-        private event Action? UpdateEvent;
+        private event Action<UpdateType>? UpdateEvent;
         private readonly List<Video> videos = [];
 
         public Func<Video, bool> Predicate { get; set; } = _ => true;
@@ -20,7 +21,7 @@ namespace VidHub.Services.Base
             {
                 videos.Add(video);
             }
-            Update();
+            Update(UpdateType.UpdateVideoCollection);
         }
 
         public List<Video> GetAllVideos()
@@ -40,21 +41,21 @@ namespace VidHub.Services.Base
         }
 
 
-        public void SubscribeToUpdateEvent(Action action)
+        public void SubscribeToUpdateEvent(Action<UpdateType> action)
         {
             UpdateEvent += action;
         }
 
-        public void UnsubscribeFromUpdateEvent(Action action)
+        public void UnsubscribeFromUpdateEvent(Action<UpdateType> action)
         {
             UpdateEvent -= action;
         }
 
-        public void Update()
+        public void Update(UpdateType type)
         {
             Context.MainWindow.TryEnqueue(() =>
             {
-                UpdateEvent?.Invoke();
+                UpdateEvent?.Invoke(type);
             });
         }
     }

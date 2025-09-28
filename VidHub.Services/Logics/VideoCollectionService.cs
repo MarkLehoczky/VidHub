@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using VidHub.Core;
+using VidHub.Core.Helpers;
 using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Logics.Interfaces;
 
@@ -24,28 +25,40 @@ namespace VidHub.Services.Logics
         }
 
 
-        private void UpdateDisplayedVideos()
+        private void UpdateDisplayedVideos(UpdateType type)
         {
             lock (locker)
             {
                 var nextDisplayVideos = service.GetDisplayVideos();
 
-                for (int i = 0; i < Math.Min(DisplayedVideos.Count, nextDisplayVideos.Count); i++)
+                if (type == UpdateType.UpdateVideoCollection || type == UpdateType.UpdateAll)
                 {
-                    if (!Equals(DisplayedVideos[i], nextDisplayVideos[i]))
+                    for (int i = 0; i < Math.Min(DisplayedVideos.Count, nextDisplayVideos.Count); i++)
                     {
-                        DisplayedVideos[i] = nextDisplayVideos[i];
+                        if (!Equals(DisplayedVideos[i], nextDisplayVideos[i]))
+                        {
+                            DisplayedVideos[i] = nextDisplayVideos[i];
+                        }
+                    }
+
+                    while (DisplayedVideos.Count > nextDisplayVideos.Count)
+                    {
+                        DisplayedVideos.RemoveAt(DisplayedVideos.Count - 1);
+                    }
+
+                    for (int i = DisplayedVideos.Count; i < nextDisplayVideos.Count; i++)
+                    {
+                        DisplayedVideos.Add(nextDisplayVideos[i]);
                     }
                 }
-
-                while (DisplayedVideos.Count > nextDisplayVideos.Count)
+                else if (type == UpdateType.ResetVideoCollection || type == UpdateType.ResetAll)
                 {
-                    DisplayedVideos.RemoveAt(DisplayedVideos.Count - 1);
-                }
+                    DisplayedVideos.Clear();
 
-                for (int i = DisplayedVideos.Count; i < nextDisplayVideos.Count; i++)
-                {
-                    DisplayedVideos.Add(nextDisplayVideos[i]);
+                    for (int i = DisplayedVideos.Count; i < nextDisplayVideos.Count; i++)
+                    {
+                        DisplayedVideos.Add(nextDisplayVideos[i]);
+                    }
                 }
             }
         }
