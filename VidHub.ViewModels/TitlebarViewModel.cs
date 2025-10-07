@@ -120,27 +120,15 @@ namespace VidHub.ViewModels
         }
 
         [RelayCommand]
-        private async Task FormatDateAsync()
+        private async Task CustomizeVideoDisplayingAsync()
         {
-            await Context.MainWindow.ShowDialogAsync(ModalType.FormatDate, "Date format", "Close");
+            await Context.MainWindow.ShowDialogAsync(ModalType.CustomizeDisplaying, "Customize video displaying", "Confirm");
         }
 
         [RelayCommand]
-        private async Task FormatDurationAsync()
+        private async Task CustomizeVideoLoadingAsync()
         {
-            await Context.MainWindow.ShowDialogAsync(ModalType.FormatDuration, "Duration format", "Close");
-        }
-
-        [RelayCommand]
-        private async Task FormatSizeAsync()
-        {
-            await Context.MainWindow.ShowDialogAsync(ModalType.FormatFieldSize, "Video size format", "Close");
-        }
-
-        [RelayCommand]
-        private async Task FormatTitleAsync()
-        {
-            await Context.MainWindow.ShowDialogAsync(ModalType.FormatTitle, "Title customization during loading", "Apply");
+            await Context.MainWindow.ShowDialogAsync(ModalType.CustomizeLoading, "Customize video title when loading", "Confirm");
         }
 
 

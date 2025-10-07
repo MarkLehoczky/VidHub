@@ -70,10 +70,8 @@
                     <ToggleMenuFlyoutItem Text="Show Titles" ToolTipService.ToolTip="Display video titles in the collection." IsChecked="{Binding ShowTitles, Mode=TwoWay}" />
                     <ToggleMenuFlyoutItem Text="Show Dates" ToolTipService.ToolTip="Display video creation date in the collection." IsChecked="{Binding ShowDates, Mode=TwoWay}" />
                     <ToggleMenuFlyoutItem Text="Show Durations" ToolTipService.ToolTip="Display video playback duration in the collection." IsChecked="{Binding ShowDurations, Mode=TwoWay}" />
-                    <MenuFlyoutItem Text="Format Date" ToolTipService.ToolTip="Choose how video creation dates are displayed." Command="{Binding FormatDateCommand}" />
-                    <MenuFlyoutItem Text="Format Duration" ToolTipService.ToolTip="Choose how video creation dates are displayed." Command="{Binding FormatDurationCommand}" />
-                    <MenuFlyoutItem Text="Format Video Size" ToolTipService.ToolTip="Choose The size of the video preview images." Command="{Binding FormatSizeCommand}" />
-                    <MenuFlyoutItem Text="Format Title at Loading" ToolTipService.ToolTip="Choose how to format the video titles at loading." Command="{Binding FormatTitleCommand}" />
+                    <MenuFlyoutItem Text="Customize Video Displaying" ToolTipService.ToolTip="" Command="{Binding CustomizeVideoDisplayingCommand}" />
+                    <MenuFlyoutItem Text="Customize Video Loading" ToolTipService.ToolTip="" Command="{Binding CustomizeVideoLoadingCommand}" />
                 </MenuFlyoutSubItem>
 
                 <MenuFlyoutSubItem Text="Filtering &amp; Search">

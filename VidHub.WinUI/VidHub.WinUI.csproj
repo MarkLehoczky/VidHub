@@ -14,10 +14,8 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Pages\MainPage.xaml" />
-    <None Remove="UserControls\Modals\DateCustomizationUserControl.xaml" />
-    <None Remove="UserControls\Modals\DurationCustomizationUserControl.xaml" />
-    <None Remove="UserControls\Modals\FieldSizeCustomizationUserControl.xaml" />
     <None Remove="UserControls\Modals\TitleCustomizationUserControl.xaml" />
+    <None Remove="UserControls\Modals\VideoCustomizationUserControl.xaml" />
     <None Remove="UserControls\SidepanelUserControl.xaml" />
     <None Remove="UserControls\TitlebarUserControl.xaml" />
     <None Remove="UserControls\VideoCollectionUserControl.xaml" />
@@ -56,17 +54,12 @@
     <ProjectReference Include="..\VidHub.ViewModels\VidHub.ViewModels.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Page Update="UserControls\Modals\VideoCustomizationUserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
     <Page Update="UserControls\Modals\TitleCustomizationUserControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="UserControls\Modals\FieldSizeCustomizationUserControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="UserControls\Modals\DurationCustomizationUserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
@@ -87,11 +80,6 @@
   </ItemGroup>
   <ItemGroup>
     <Page Update="Pages\MainPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="UserControls\Modals\DateCustomizationUserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

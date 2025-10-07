@@ -98,18 +98,15 @@ namespace VidHub.ViewModels.Modals
                 UpdateFormats();
             }
         }
-        public bool InvalidRegex
-        {
-            get => invalidPattern || invalidReplacement;
-        }
-        public string InvalidRegexText
-        {
-            get => invalidPattern && invalidReplacement
-                ? "Invalid pattern and replacement regex format"
+        public bool InvalidRegex => InvalidRegexText != "";
+        public string InvalidRegexText =>
+            invalidPattern && invalidReplacement
+                ? "Invalid regex pattern and replacement"
                 : invalidPattern
-                    ? "Invalid pattern regex format"
-                    : "Invalid replacement regex format";
-        }
+                    ? "Invalid regex pattern"
+                    : invalidReplacement
+                        ? "Invalid regex replacement"
+                        : "";
 
         public bool IsRegexEnabled
         {

@@ -2,9 +2,9 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace VidHub.WinUI.UserControls.Modals
 {
-    public sealed partial class FieldSizeCustomizationUserControl : UserControl
+    public sealed partial class VideoCustomizationUserControl : UserControl
     {
-        public FieldSizeCustomizationUserControl()
+        public VideoCustomizationUserControl()
         {
             InitializeComponent();
         }

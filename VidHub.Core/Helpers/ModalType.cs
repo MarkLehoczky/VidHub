@@ -2,9 +2,7 @@
 {
     public enum ModalType
     {
-        FormatDate,
-        FormatDuration,
-        FormatFieldSize,
-        FormatTitle
+        CustomizeDisplaying,
+        CustomizeLoading,
     }
 }

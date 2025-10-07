@@ -76,10 +76,8 @@ namespace VidHub.WinUI
 
             switch (type)
             {
-                case ModalType.FormatDate: content = new DateCustomizationUserControl(); break;
-                case ModalType.FormatDuration: content = new DurationCustomizationUserControl(); break;
-                case ModalType.FormatFieldSize: content = new FieldSizeCustomizationUserControl(); break;
-                case ModalType.FormatTitle: content = new TitleCustomizationUserControl(); break;
+                case ModalType.CustomizeDisplaying: content = new VideoCustomizationUserControl(); break;
+                case ModalType.CustomizeLoading: content = new TitleCustomizationUserControl(); break;
             }
 
             var dialog = new ContentDialog()

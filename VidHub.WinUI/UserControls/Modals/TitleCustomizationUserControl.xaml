@@ -64,20 +64,13 @@
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="*" />
-                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <TextBlock Text="{Binding InvalidRegexText}" Foreground="Red" Visibility="{Binding InvalidRegex}" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Row="0" Grid.Column="1" />
-            <TextBlock Text="Pattern:" Margin="0 0 5 0" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="1" Grid.Column="0" />
-            <TextBlock Text="Replacement:" Margin="0 0 5 0" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="2" Grid.Column="0" />
-            <TextBox Text="{Binding Pattern, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="Regex pattern ( e.g.: `.*\\(.*)\..*` )" Margin="0 5" Grid.Row="1" Grid.Column="1" />
-            <TextBox Text="{Binding Replacement, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="Regex replacement ( e.g.: `$1` )" Margin="0 5" Grid.Row="2" Grid.Column="1" />
+            <TextBox Header="Regex pattern" Text="{Binding Pattern, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="e.g.: `\\`" Margin="0 5 0 0" Grid.Row="0" />
+            <TextBox Header="Regex replacement" Text="{Binding Replacement, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="e.g.: ` > `" Margin="0 5 0 5" Grid.Row="1" />
+            <TextBlock Text="{Binding InvalidRegexText}" Foreground="Red" Visibility="{Binding InvalidRegex}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0 0 0 5" Grid.Row="2" />
         </Grid>
         
-        <CheckBox x:Name="regex_toggle" Content="Enable regular expression customization" IsChecked="{Binding IsRegexEnabled, Mode=TwoWay}" ToolTipService.ToolTip="When enabled the titles of the videos will be changed according to the pattern below." Grid.Row="4" />
+        <CheckBox x:Name="regex_toggle" Content="Enable regex customization" IsChecked="{Binding IsRegexEnabled, Mode=TwoWay}" ToolTipService.ToolTip="When enabled the titles of the videos will be changed according to the pattern below." Grid.Row="4" />
 
         <CheckBox Content="Don't show modal again" ToolTipService.ToolTip="When checked this modal will not appear again. It can be turned on again in the Settings." IsChecked="{Binding DontShowAgain, Mode=TwoWay}" Grid.Row="5" />
 
