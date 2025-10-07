@@ -3,7 +3,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
-using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 using VidHub.Core.Helpers;
 using VidHub.Platform;
@@ -80,6 +79,7 @@ namespace VidHub.WinUI
                 case ModalType.FormatDate: content = new DateCustomizationUserControl(); break;
                 case ModalType.FormatDuration: content = new DurationCustomizationUserControl(); break;
                 case ModalType.FormatFieldSize: content = new FieldSizeCustomizationUserControl(); break;
+                case ModalType.FormatTitle: content = new TitleCustomizationUserControl(); break;
             }
 
             var dialog = new ContentDialog()

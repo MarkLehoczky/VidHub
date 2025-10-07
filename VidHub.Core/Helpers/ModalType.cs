@@ -4,6 +4,7 @@
     {
         FormatDate,
         FormatDuration,
-        FormatFieldSize
+        FormatFieldSize,
+        FormatTitle
     }
 }
