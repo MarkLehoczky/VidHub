@@ -20,6 +20,7 @@
         string? DurationSecondFormat { get; set; }
         double FieldWidth { get; set; }
         double FieldHeight { get; set; }
+        bool DontShowTitleCustomizationAgain { get; set; }
         void Load();
         void Save();
         void Set(ISettingsService service);

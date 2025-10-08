@@ -11,6 +11,7 @@ namespace VidHub.Services.Base
         private event Action<UpdateType>? UpdateEvent;
         private readonly List<Video> videos = [];
 
+        public List<int> LoadedID { get; set; } = [];
         public Func<Video, bool> Predicate { get; set; } = _ => true;
         public Comparer<Video> Comparer { get; set; } = Comparer<Video>.Default;
 
@@ -23,6 +24,12 @@ namespace VidHub.Services.Base
             }
             Update(UpdateType.UpdateVideoCollection);
         }
+
+        public Video GetVideo(int ID)
+        {
+            return videos.FirstOrDefault(v => v.ID == ID) ?? throw new ArgumentException("Video not found");
+        }
+        
 
         public List<Video> GetAllVideos()
         {
@@ -37,6 +44,14 @@ namespace VidHub.Services.Base
             lock (locker)
             {
                 return [.. videos.Where(Predicate).Order(Comparer)];
+            }
+        }
+
+        public List<Video> GetLastLoadedVideos()
+        {
+            lock (locker)
+            {
+                return [.. videos.Where(v => LoadedID.Contains(v.ID))];
             }
         }
 

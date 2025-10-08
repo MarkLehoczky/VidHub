@@ -25,6 +25,7 @@ namespace VidHub.Services.Settings
         private string? durationSecondFormat = "s\\.fff";
         private double fieldWidth = 480;
         private double fieldHeight = 270;
+        private bool dontShowTitleCustomizationAgain = false;
 
         public void Load()
         {
@@ -72,6 +73,7 @@ namespace VidHub.Services.Settings
             durationSecondFormat = service.DurationSecondFormat;
             fieldWidth = service.FieldWidth;
             fieldHeight = service.FieldHeight;
+            dontShowTitleCustomizationAgain = service.DontShowTitleCustomizationAgain;
         }
 
 
@@ -247,6 +249,12 @@ namespace VidHub.Services.Settings
                 fieldHeight = value;
                 service.Update(UpdateType.UpdateVideoCollection);
             }
+        }
+
+        public bool DontShowTitleCustomizationAgain
+        {
+            get => dontShowTitleCustomizationAgain;
+            set => dontShowTitleCustomizationAgain = value;
         }
     }
 }

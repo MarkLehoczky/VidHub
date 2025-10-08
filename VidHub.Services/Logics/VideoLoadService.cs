@@ -36,7 +36,7 @@ namespace VidHub.Services.Logics
 
             if (files.Count > 0)
             {
-                await Task.Run(() =>
+                await Task.Run(async () =>
                 {
                     var index = transfers.Count;
                     var transfer = new Transfer();
@@ -50,7 +50,7 @@ namespace VidHub.Services.Logics
                     transfers.ElementAt(index).IsActive = false;
                     manager.SetTaskbar(transfers);
                     service.Update(UpdateType.UpdateSidepanel);
-                    TransferCleanup();
+                    await TransferCleanup();
                 });
             }
         }
@@ -79,7 +79,7 @@ namespace VidHub.Services.Logics
                     transfers.ElementAt(index).IsActive = false;
                     manager.SetTaskbar(transfers);
                     service.Update(UpdateType.UpdateSidepanel);
-                    TransferCleanup();
+                    await TransferCleanup();
                 });
             }
         }
@@ -112,7 +112,7 @@ namespace VidHub.Services.Logics
                     transfers.ElementAt(index).IsActive = false;
                     manager.SetTaskbar(transfers);
                     service.Update(UpdateType.UpdateSidepanel);
-                    TransferCleanup();
+                    await TransferCleanup();
                 });
             }
         }
@@ -123,7 +123,7 @@ namespace VidHub.Services.Logics
 
             if (file != null)
             {
-                await Task.Run(() =>
+                await Task.Run(async () =>
                 {
                     var index = transfers.Count;
                     var transfer = new Transfer();
@@ -151,7 +151,7 @@ namespace VidHub.Services.Logics
                     transfers.ElementAt(index).IsActive = false;
                     manager.SetTaskbar(transfers);
                     service.Update(UpdateType.UpdateSidepanel);
-                    TransferCleanup();
+                    await TransferCleanup();
                 });
             }
         }
@@ -260,6 +260,7 @@ namespace VidHub.Services.Logics
                         service.AddVideo(video);
                         transfers.ElementAt(index).Increment();
                         manager.SetTaskbar(transfers);
+                        service.LoadedID.Add(video.ID);
                     });
                 }
                 else
@@ -271,6 +272,7 @@ namespace VidHub.Services.Logics
                         service.AddVideo(video);
                         transfers.ElementAt(index).Increment();
                         manager.SetTaskbar(transfers);
+                        service.LoadedID.Add(video.ID);
                     }
                 }
 
@@ -280,13 +282,17 @@ namespace VidHub.Services.Logics
             }
         }
 
-        private void TransferCleanup()
+        private async Task TransferCleanup()
         {
             if (transfers.All(t => !t.IsActive))
             {
+                Context.MainHost.GetService<IVideoCustomizationService>().IsTemplateMode = false;
+                Context.MainWindow.TryEnqueue(() => Context.MainWindow.ShowDialogAsync(ModalType.CustomizeLoading, "Customize video title", "Confirm"));
+
                 manager.DisplayToast("Video loading finished!", $"{LoadedCount} videos were loaded successfully.");
                 while (transfers.TryDequeue(out _)) ;
                 service.Update(UpdateType.UpdateSidepanel);
+                service.LoadedID.Clear();
             }
         }
     }

@@ -22,6 +22,7 @@ namespace VidHub.Services.Settings
         public string? DurationSecondFormat { get; set; }
         public double FieldWidth { get; set; }
         public double FieldHeight { get; set; }
+        public bool DontShowTitleCustomizationAgain { get; set; }
 
         public void Load()
         {

@@ -16,6 +16,7 @@ using VidHub.Services.Settings.Interfaces;
 using VidHub.Services.System;
 using VidHub.Services.System.Interfaces;
 using VidHub.ViewModels;
+using VidHub.ViewModels.Modals;
 using VidHub.WinUI.UserControls.Modals;
 using WinRT.Interop;
 
@@ -37,8 +38,12 @@ namespace VidHub.WinUI
                     services.AddSingleton<IVideoLoadService, VideoLoadService>();
                     services.AddSingleton<IVideoOrganizeService, VideoOrganizeService>();
                     services.AddSingleton<IVideoCollectionService, VideoCollectionService>();
+                    services.AddSingleton<IVideoCustomizationService, VideoCustomizationService>();
                     services.AddTransient<TitlebarViewModel>();
+                    services.AddTransient<SidepanelViewModel>();
                     services.AddTransient<VideoCollectionViewModel>();
+                    services.AddTransient<TitleCustomizationViewModel>();
+                    services.AddTransient<VideoCustomizationViewModel>();
                 })
                 .Build());
         }
@@ -72,7 +77,7 @@ namespace VidHub.WinUI
 
         public async Task ShowDialogAsync(ModalType type, string title, string closeButton)
         {
-            UserControl content = new();
+            object content = new();
 
             switch (type)
             {

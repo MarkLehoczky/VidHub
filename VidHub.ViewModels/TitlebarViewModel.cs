@@ -128,7 +128,8 @@ namespace VidHub.ViewModels
         [RelayCommand]
         private async Task CustomizeVideoLoadingAsync()
         {
-            await Context.MainWindow.ShowDialogAsync(ModalType.CustomizeLoading, "Customize video title when loading", "Confirm");
+            Context.MainHost.GetService<IVideoCustomizationService>().IsTemplateMode = true;
+            await Context.MainWindow.ShowDialogAsync(ModalType.CustomizeLoading, "Change video title customization", "Confirm");
         }
 
 
