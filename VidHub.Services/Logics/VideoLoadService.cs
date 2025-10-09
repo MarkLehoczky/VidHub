@@ -12,7 +12,7 @@ using WinRT.Interop;
 
 namespace VidHub.Services.Logics
 {
-    public class VideoLoadService(IMainService service, ISettingsService settings, ISystemManager manager) : IVideoLoadService
+    public class VideoLoadService(IMainService service, ISettingsService settings, ISystemManager manager, IVideoCustomizationService customization) : IVideoLoadService
     {
         private readonly object locker = new();
         private readonly ConcurrentQueue<Transfer> transfers = [];
@@ -257,6 +257,7 @@ namespace VidHub.Services.Logics
                     {
                         var video = new Video(file.Path);
                         video.TryLoad(settings.CacheLoad);
+                        customization.CustomizeTitle(video);
                         service.AddVideo(video);
                         transfers.ElementAt(index).Increment();
                         manager.SetTaskbar(transfers);
@@ -269,6 +270,7 @@ namespace VidHub.Services.Logics
                     {
                         var video = new Video(file.Path);
                         video.TryLoad(settings.CacheLoad);
+                        customization.CustomizeTitle(video);
                         service.AddVideo(video);
                         transfers.ElementAt(index).Increment();
                         manager.SetTaskbar(transfers);
@@ -286,8 +288,11 @@ namespace VidHub.Services.Logics
         {
             if (transfers.All(t => !t.IsActive))
             {
-                Context.MainHost.GetService<IVideoCustomizationService>().IsTemplateMode = false;
-                Context.MainWindow.TryEnqueue(() => Context.MainWindow.ShowDialogAsync(ModalType.CustomizeLoading, "Customize video title", "Confirm"));
+                if (!settings.DontShowTitleCustomizationAgain)
+                {
+                    customization.IsTemplateMode = false;
+                    Context.MainWindow.TryEnqueue(() => Context.MainWindow.ShowDialogAsync(ModalType.CustomizeLoading, "Customize video title", "Confirm"));
+                }
 
                 manager.DisplayToast("Video loading finished!", $"{LoadedCount} videos were loaded successfully.");
                 while (transfers.TryDequeue(out _)) ;

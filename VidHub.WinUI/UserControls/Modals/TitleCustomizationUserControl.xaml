@@ -72,7 +72,7 @@
         
         <CheckBox x:Name="regex_toggle" Content="Enable regex customization" IsChecked="{Binding IsRegexEnabled, Mode=TwoWay}" ToolTipService.ToolTip="When enabled the titles of the videos will be changed according to the pattern below." Grid.Row="4" />
 
-        <CheckBox Content="Don't show modal again" IsEnabled="False" ToolTipService.ToolTip="When checked this modal will not appear again. It can be turned on again in the Settings." IsChecked="{Binding DontShowAgain, Mode=TwoWay}" Grid.Row="5" />
+        <CheckBox Content="Don't show modal again" ToolTipService.ToolTip="When checked this modal will not appear again. It can be turned on again in the Settings." IsChecked="{Binding DontShowAgain, Mode=TwoWay}" Grid.Row="5" />
 
     </Grid>
 </UserControl>

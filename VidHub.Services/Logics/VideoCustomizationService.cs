@@ -26,81 +26,69 @@ namespace VidHub.Services.Logics
         }
 
         public ObservableCollection<FormattedVideo> Videos { get; } = [];
-        public bool IsTemplateMode { get; set; } = true;
-
-        private bool includePath = false;
-        private bool includeDate = false;
-        private bool includeFilename = true;
-        private bool includeMetadata = false;
-        private bool includeExtension = false;
-
-        string pattern = "";
-        string replacement = "";
-
-        bool isRegexEnabled = false;
-
+        public bool IsTemplateMode { get; set; }
 
         public bool IncludePath
         {
-            get => includePath;
-            set
+            get => settings.IncludePath;
+            set 
             {
-                includePath = value;
+                settings.IncludePath = value;
                 UpdateFormats();
             }
         }
         public bool IncludeDate
         {
-            get => includeDate;
+            get => settings.IncludeDate;
             set
             {
-                includeDate = value;
+                settings.IncludeDate = value;
                 UpdateFormats();
             }
         }
         public bool IncludeFilename
         {
-            get => includeFilename;
+            get => settings.IncludeFilename;
             set
             {
-                includeFilename = value;
+                settings.IncludeFilename = value;
                 UpdateFormats();
             }
         }
         public bool IncludeMetadata
         {
-            get => includeMetadata;
+            get => settings.IncludeMetadata;
             set
             {
-                includeMetadata = value;
+                settings.IncludeMetadata = value;
                 UpdateFormats();
             }
         }
         public bool IncludeExtension
         {
-            get => includeExtension;
+            get => settings.IncludeExtension;
             set
             {
-                includeExtension = value;
+                settings.IncludeExtension = value;
                 UpdateFormats();
             }
         }
 
         public string Pattern
         {
-            get => pattern;
+            get => settings.Pattern;
             set
             {
-                pattern = value;
+                settings.Pattern = value;
                 UpdateFormats();
             }
         }
         public string Replacement
         {
-            get => replacement;
+            get => settings.Replacement;
             set
             {
-                replacement = value;
+                settings.Replacement = value;
                 UpdateFormats();
             }
         }
@@ -108,10 +96,10 @@ namespace VidHub.Services.Logics
 
         public bool IsRegexEnabled
         {
-            get => isRegexEnabled;
+            get => settings.IsRegexEnabled;
             set
             {
-                isRegexEnabled = value;
+                settings.IsRegexEnabled = value;
                 UpdateFormats();
             }
         }
@@ -148,7 +136,7 @@ namespace VidHub.Services.Logics
         {
             try
             {
-                var regex = new Regex(pattern);
+                var regex = new Regex(Pattern);
                 InvalidRegex = false;
             }
             catch
@@ -167,7 +155,10 @@ namespace VidHub.Services.Logics
             }
         }
 
-
+        public void CustomizeTitle(Video video)
+        {
+            video.Title = CustomizeTitle(video.FilePath, IsRegexEnabled && !InvalidRegex);
+        }
         private string CustomizeTitle(string title, bool useRegex)
         {
             var newTitle = "";
@@ -181,7 +172,7 @@ namespace VidHub.Services.Logics
             }
             if (IncludeFilename)
             {
-                if (includeDate)
+                if (IncludeDate)
                     newTitle += "_";
                 newTitle += Path.GetFileNameWithoutExtension(title);
             }
@@ -195,9 +186,8 @@ namespace VidHub.Services.Logics
             }
             if (useRegex)
             {
-                var regex = new Regex(pattern);
-                regex.Replace("", replacement);
-                newTitle = regex.Replace(newTitle, replacement);
+                var regex = new Regex(Pattern);
+                newTitle = regex.Replace(newTitle, Replacement);
             }
             return newTitle;
         }

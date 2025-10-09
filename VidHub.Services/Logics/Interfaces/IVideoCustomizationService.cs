@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using VidHub.Core;
 using static VidHub.Services.Logics.VideoCustomizationService;
 
 namespace VidHub.Services.Logics.Interfaces
@@ -21,6 +22,7 @@ namespace VidHub.Services.Logics.Interfaces
         bool IsRegexEnabled { get; set; }
         bool DontShowAgain { get; set; }
 
+        void CustomizeTitle(Video video);
         void LoadFormats();
         void UpdateFormats();
     }

@@ -20,6 +20,14 @@
         string? DurationSecondFormat { get; set; }
         double FieldWidth { get; set; }
         double FieldHeight { get; set; }
+        bool IncludePath { get; set; }
+        bool IncludeDate { get; set; }
+        bool IncludeFilename { get; set; }
+        bool IncludeMetadata { get; set; }
+        bool IncludeExtension { get; set; }
+        string Pattern { get; set; }
+        string Replacement { get; set; }
+        bool IsRegexEnabled { get; set; }
         bool DontShowTitleCustomizationAgain { get; set; }
         void Load();
         void Save();

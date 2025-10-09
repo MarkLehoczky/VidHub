@@ -25,6 +25,18 @@ namespace VidHub.Services.Settings
         private string? durationSecondFormat = "s\\.fff";
         private double fieldWidth = 480;
         private double fieldHeight = 270;
+
+        private bool includePath = false;
+        private bool includeDate = false;
+        private bool includeFilename = true;
+        private bool includeMetadata = false;
+        private bool includeExtension = false;
+
+        string pattern = "";
+        string replacement = "";
+
+        bool isRegexEnabled = false;
+
         private bool dontShowTitleCustomizationAgain = false;
 
         public void Load()
@@ -73,6 +85,14 @@ namespace VidHub.Services.Settings
             durationSecondFormat = service.DurationSecondFormat;
             fieldWidth = service.FieldWidth;
             fieldHeight = service.FieldHeight;
+            includePath = service.IncludePath;
+            includeDate = service.IncludeDate;
+            includeFilename = service.IncludeFilename;
+            includeMetadata = service.IncludeMetadata;
+            includeExtension = service.IncludeExtension;
+            pattern = service.Pattern;
+            replacement = service.Replacement;
+            isRegexEnabled = service.IsRegexEnabled;
             dontShowTitleCustomizationAgain = service.DontShowTitleCustomizationAgain;
         }
 
@@ -249,6 +269,50 @@ namespace VidHub.Services.Settings
                 fieldHeight = value;
                 service.Update(UpdateType.UpdateVideoCollection);
             }
+        }
+
+        public bool IncludePath
+        {
+            get => includePath;
+            set => includePath = value;
+        }
+        public bool IncludeDate
+        {
+            get => includeDate;
+            set => includeDate = value;
+        }
+        public bool IncludeFilename
+        {
+            get => includeFilename;
+            set => includeFilename = value;
+        }
+        public bool IncludeMetadata
+        {
+            get => includeMetadata;
+            set => includeMetadata = value;
+        }
+        public bool IncludeExtension
+        {
+            get => includeExtension;
+            set => includeExtension = value;
+        }
+
+        public string Pattern
+        {
+            get => pattern;
+            set => pattern = value;
+        }
+        public string Replacement
+        {
+            get => replacement;
+            set => replacement = value;
+        }
+        public bool InvalidRegex { get; set; } = false;
+
+        public bool IsRegexEnabled
+        {
+            get => isRegexEnabled;
+            set => isRegexEnabled = value;
         }
 
         public bool DontShowTitleCustomizationAgain
