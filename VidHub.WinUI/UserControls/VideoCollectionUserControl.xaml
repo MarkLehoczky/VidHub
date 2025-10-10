@@ -44,10 +44,14 @@
                                     </MenuFlyoutItem>
                                     <MenuFlyoutItem Text="Open in File Explorer" Command="{Binding OpenFileExplorerCommand}">
                                         <MenuFlyoutItem.Icon>
-                                            <FontIcon Glyph="&#xe786;" FontFamily="Segoe Fluent Icons" />
+                                            <FontIcon Glyph="&#xec50;" FontFamily="Segoe Fluent Icons" />
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
-                                    <MenuFlyoutItem Text="Rename" Icon="Rename" Command="{Binding RenameCommand}" />
+                                    <MenuFlyoutItem Text="Rename" Command="{Binding RenameCommand}">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xe8ac;" FontFamily="Segoe Fluent Icons" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
                                     <MenuFlyoutItem Text="Copy Video File" Command="{Binding CopyFileCommand}">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xe8c8;" FontFamily="Segoe Fluent Icons" />
@@ -55,7 +59,7 @@
                                     </MenuFlyoutItem>
                                     <MenuFlyoutItem Text="Copy File Path" Command="{Binding CopyFilePathCommand}">
                                         <MenuFlyoutItem.Icon>
-                                            <FontIcon Glyph="&#xec50;" FontFamily="Segoe Fluent Icons" />
+                                            <FontIcon Glyph="&#xe756;" FontFamily="Segoe Fluent Icons" />
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
                                     <MenuFlyoutItem Text="Copy Thumbnail" Command="{Binding CopyThumbnailCommand}">
