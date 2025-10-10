@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using VidHub.Core;
+using VidHub.Core.Helpers;
 using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Logics.Interfaces;
 using VidHub.Services.Settings.Interfaces;
@@ -150,7 +151,7 @@ namespace VidHub.Services.Logics
 
             if (updateUI)
             {
-                service.Update();
+                service.Update(UpdateType.UpdateVideoCollection);
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using VidHub.Core.Helpers;
 using VidHub.Platform;
 using VidHub.Services.Logics.Interfaces;
 using VidHub.Services.Settings.Interfaces;
@@ -116,6 +117,19 @@ namespace VidHub.ViewModels
             settings.OpenPanel = false;
             OpenSidePanelCommand.NotifyCanExecuteChanged();
             CloseSidePanelCommand.NotifyCanExecuteChanged();
+        }
+
+        [RelayCommand]
+        private async Task CustomizeVideoDisplayingAsync()
+        {
+            await Context.MainWindow.ShowDialogAsync(ModalType.CustomizeDisplaying, "Customize video displaying", "Confirm");
+        }
+
+        [RelayCommand]
+        private async Task CustomizeVideoLoadingAsync()
+        {
+            Context.MainHost.GetService<IVideoCustomizationService>().IsTemplateMode = true;
+            await Context.MainWindow.ShowDialogAsync(ModalType.CustomizeLoading, "Change video title customization", "Confirm");
         }
 
 

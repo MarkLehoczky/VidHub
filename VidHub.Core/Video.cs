@@ -1,22 +1,67 @@
-﻿using System.Security.Cryptography;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using VidHub.Core.Helpers;
+using VidHub.Platform;
 
 namespace VidHub.Core
 {
-    public class Video : IComparable<Video>, IEquatable<Video>
+    public partial class Video : ObservableObject, IComparable<Video>, IEquatable<Video>
     {
+        
         public static List<string> ExtensionTypes => [".mp4", ".mov", ".wmv", ".mkv"];
         private static int IDProvider = 0;
 
-        public string Title { get; set; }
-        public DateTime Date { get; set; }
-        public TimeSpan Duration { get; set; }
-        public string ThumbnailPath { get; set; }
-        public string FilePath { get; set; }
-        [JsonIgnore] public int ID { get; set; }
-        [JsonIgnore] protected string Hash { get; set; }
+        private string title;
+        private DateTime date;
+        private TimeSpan duration;
+        private string thumbnailPath;
+        private string filePath;
+        private string hash;
+
+        public string Title
+        {
+            get => title;
+            set => SetProperty(ref title, value);
+        }
+
+        public DateTime Date
+        {
+            get => date;
+            set => SetProperty(ref date, value);
+        }
+
+        public TimeSpan Duration
+        {
+            get => duration;
+            set => SetProperty(ref duration, value);
+        }
+
+        public string ThumbnailPath
+        {
+            get => thumbnailPath;
+            set => SetProperty(ref thumbnailPath, value);
+        }
+
+        public string FilePath
+        {
+            get => filePath;
+            set => SetProperty(ref filePath, value);
+        }
+
+
+        [JsonIgnore]
+        public int ID { get; set; }
+
+        [JsonIgnore]
+        protected string Hash
+        {
+            get => hash;
+            set => SetProperty(ref hash, value);
+        }
 
 
         public Video()
@@ -174,6 +219,12 @@ namespace VidHub.Core
         public override string ToString()
         {
             return $"Title: {Title}    Date: {Date}    Duration: {Duration}";
+        }
+
+        [RelayCommand]
+        private async Task RenameAsync()
+        {
+            await Context.MainWindow.ShowDialogAsync(ModalType.RenameVideo, $"Rename '{Title}'", "Confirm", this);
         }
     }
 }

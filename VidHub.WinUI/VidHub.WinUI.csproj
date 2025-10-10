@@ -14,6 +14,9 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Pages\MainPage.xaml" />
+    <None Remove="UserControls\Modals\RenameUserControl.xaml" />
+    <None Remove="UserControls\Modals\TitleCustomizationUserControl.xaml" />
+    <None Remove="UserControls\Modals\VideoCustomizationUserControl.xaml" />
     <None Remove="UserControls\SidepanelUserControl.xaml" />
     <None Remove="UserControls\TitlebarUserControl.xaml" />
     <None Remove="UserControls\VideoCollectionUserControl.xaml" />
@@ -50,6 +53,21 @@
     <ProjectReference Include="..\VidHub.Core\VidHub.Core.csproj" />
     <ProjectReference Include="..\VidHub.Services\VidHub.Services.csproj" />
     <ProjectReference Include="..\VidHub.ViewModels\VidHub.ViewModels.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="UserControls\Modals\RenameUserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="UserControls\Modals\VideoCustomizationUserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="UserControls\Modals\TitleCustomizationUserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="UserControls\SidepanelUserControl.xaml">

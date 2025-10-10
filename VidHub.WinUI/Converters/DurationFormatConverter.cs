@@ -1,5 +1,7 @@
 ﻿using Microsoft.UI.Xaml.Data;
 using System;
+using VidHub.Platform;
+using VidHub.Services.Settings.Interfaces;
 
 namespace VidHub.WinUI.Converters
 {
@@ -7,13 +9,18 @@ namespace VidHub.WinUI.Converters
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            return value is TimeSpan duration
-                ? duration.TotalHours >= 1
-                    ? duration.ToString(@"h\:mm\:ss")
-                    : duration > TimeSpan.Zero
-                        ? duration.ToString(@"m\:ss")
-                        : "n/a"
-                : "n/a";
+            try
+            {
+                TimeSpan duration = (TimeSpan)value;
+                if (duration.TotalDays >= 1) return duration.ToString(Context.MainHost.GetService<ISettingsService>().DurationDayFormat);
+                if (duration.TotalHours >= 1) return duration.ToString(Context.MainHost.GetService<ISettingsService>().DurationHourFormat);
+                if (duration.TotalMinutes >= 1) return duration.ToString(Context.MainHost.GetService<ISettingsService>().DurationMinuteFormat);
+                return duration.ToString(Context.MainHost.GetService<ISettingsService>().DurationSecondFormat);
+            }
+            catch
+            {
+                return "n/a";
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

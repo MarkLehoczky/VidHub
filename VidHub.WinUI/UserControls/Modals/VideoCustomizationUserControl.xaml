@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="VidHub.WinUI.UserControls.Modals.VideoCustomizationUserControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:VidHub.WinUI.UserControls.Modals"
+    xmlns:viewmodel="using:VidHub.ViewModels.Modals"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <UserControl.DataContext>
+        <viewmodel:VideoCustomizationViewModel />
+    </UserControl.DataContext>
+
+    <StackPanel Orientation="Vertical">
+
+        <TextBox Header="Date format" Text="{Binding DateFormat, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="e.g.: yyyy. MMMM. dd." HorizontalAlignment="Stretch" Margin="0 5 0 0" />
+        <Grid Margin="10"/>
+
+        <TextBox Header="Duration format above 1 day" Text="{Binding DurationDayFormat, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="e.g.: d\:h\:mm\:ss" HorizontalAlignment="Stretch" Margin="0 5 0 0" />
+        <TextBox Header="Duration format above 1 hour" Text="{Binding DurationHourFormat, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="e.g.: h\:mm\:ss" HorizontalAlignment="Stretch" Margin="0 5 0 0" />
+        <TextBox Header="Duration format above 1 minute" Text="{Binding DurationMinuteFormat, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="e.g.: h\:mm\:ss" HorizontalAlignment="Stretch" Margin="0 5 0 0" />
+        <TextBox Header="Duration format below 1 minute" Text="{Binding DurationSecondFormat, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="e.g.: s.fff" HorizontalAlignment="Stretch" Margin="0 5 0 0" />
+        <Grid Margin="10"/>
+
+        <NumberBox Header="Preview image width" Value="{Binding FieldWidth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Minimum="10" SmallChange="10" SpinButtonPlacementMode="Inline" ValidationMode="InvalidInputOverwritten" PlaceholderText="e.g.: 480" HorizontalAlignment="Stretch" Margin="0 5 0 0" />
+        <NumberBox Header="Preview image height" Value="{Binding FieldHeight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Minimum="10" SmallChange="10" SpinButtonPlacementMode="Inline" ValidationMode="InvalidInputOverwritten" PlaceholderText="e.g.: 270" HorizontalAlignment="Stretch" Margin="0 5 0 0" />
+
+    </StackPanel>
+</UserControl>

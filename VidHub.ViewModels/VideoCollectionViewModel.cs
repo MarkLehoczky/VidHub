@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 using VidHub.Core;
+using VidHub.Core.Helpers;
 using VidHub.Platform;
 using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Logics.Interfaces;
@@ -14,6 +15,8 @@ namespace VidHub.ViewModels
         public bool ShowTitles => settings.ShowTitles;
         public bool ShowDates => settings.ShowDates;
         public bool ShowDurations => settings.ShowDurations;
+        public double PreviewWidth => settings.FieldWidth;
+        public double PreviewHeight => settings.FieldHeight;
 
 
         public VideoCollectionViewModel() : this(Context.MainHost.GetService<IVideoCollectionService>(),
@@ -27,12 +30,17 @@ namespace VidHub.ViewModels
             Context.MainHost.GetService<IMainService>().UnsubscribeFromUpdateEvent(UpdateProperties);
         }
 
-        private void UpdateProperties()
+        private void UpdateProperties(UpdateType type)
         {
-            OnPropertyChanged(nameof(Videos));
-            OnPropertyChanged(nameof(ShowTitles));
-            OnPropertyChanged(nameof(ShowDates));
-            OnPropertyChanged(nameof(ShowDurations));
+            if (type == UpdateType.UpdateVideoCollection || type == UpdateType.UpdateAll || type == UpdateType.ResetVideoCollection || type == UpdateType.ResetAll)
+            {
+                OnPropertyChanged(nameof(Videos));
+                OnPropertyChanged(nameof(ShowTitles));
+                OnPropertyChanged(nameof(ShowDates));
+                OnPropertyChanged(nameof(ShowDurations));
+                OnPropertyChanged(nameof(PreviewWidth));
+                OnPropertyChanged(nameof(PreviewHeight));
+            }
         }
     }
 }

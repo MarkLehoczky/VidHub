@@ -1,7 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using System;
+using System.Threading.Tasks;
+using VidHub.Core;
+using VidHub.Core.Helpers;
 using VidHub.Platform;
 using VidHub.Platform.Interfaces;
 using VidHub.Services.Base;
@@ -13,6 +17,8 @@ using VidHub.Services.Settings.Interfaces;
 using VidHub.Services.System;
 using VidHub.Services.System.Interfaces;
 using VidHub.ViewModels;
+using VidHub.ViewModels.Modals;
+using VidHub.WinUI.UserControls.Modals;
 using WinRT.Interop;
 
 namespace VidHub.WinUI
@@ -33,8 +39,12 @@ namespace VidHub.WinUI
                     services.AddSingleton<IVideoLoadService, VideoLoadService>();
                     services.AddSingleton<IVideoOrganizeService, VideoOrganizeService>();
                     services.AddSingleton<IVideoCollectionService, VideoCollectionService>();
+                    services.AddSingleton<IVideoCustomizationService, VideoCustomizationService>();
                     services.AddTransient<TitlebarViewModel>();
+                    services.AddTransient<SidepanelViewModel>();
                     services.AddTransient<VideoCollectionViewModel>();
+                    services.AddTransient<TitleCustomizationViewModel>();
+                    services.AddTransient<VideoCustomizationViewModel>();
                 })
                 .Build());
         }
@@ -64,6 +74,51 @@ namespace VidHub.WinUI
         public bool TryEnqueue(Action callback)
         {
             return window.DispatcherQueue.TryEnqueue(callback.Invoke);
+        }
+
+        public async Task ShowDialogAsync(object type, string title, string closeButton)
+        {
+            object content = new();
+
+            switch (type)
+            {
+                case ModalType.CustomizeDisplaying: content = new VideoCustomizationUserControl(); break;
+                case ModalType.CustomizeLoading: content = new TitleCustomizationUserControl(); break;
+            }
+
+            var dialog = new ContentDialog()
+            {
+                Title = title,
+                CloseButtonText = closeButton,
+                DefaultButton = ContentDialogButton.Close,
+                Content = content,
+                XamlRoot = window.Content.XamlRoot
+            };
+
+            await dialog.ShowAsync();
+        }
+
+        public async Task ShowDialogAsync(object type, string title, string closeButton, object instance)
+        {
+            object content = new();
+
+            switch (type)
+            {
+                case ModalType.CustomizeDisplaying: content = new VideoCustomizationUserControl(); break;
+                case ModalType.CustomizeLoading: content = new TitleCustomizationUserControl(); break;
+                case ModalType.RenameVideo: content = new RenameUserControl((Video)instance); break;
+            }
+
+            var dialog = new ContentDialog()
+            {
+                Title = title,
+                CloseButtonText = closeButton,
+                DefaultButton = ContentDialogButton.Close,
+                Content = content,
+                XamlRoot = window.Content.XamlRoot
+            };
+
+            await dialog.ShowAsync();
         }
     }
 

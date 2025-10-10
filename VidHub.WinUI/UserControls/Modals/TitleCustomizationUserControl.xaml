@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="VidHub.WinUI.UserControls.Modals.TitleCustomizationUserControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:VidHub.WinUI.UserControls.Modals"
+    xmlns:viewmodel="using:VidHub.ViewModels.Modals"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <UserControl.DataContext>
+        <viewmodel:TitleCustomizationViewModel />
+    </UserControl.DataContext>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" CornerRadius="{ThemeResource ControlCornerRadius}" Margin="0 0 0 5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <FontIcon Glyph="&#xf167;" FontFamily="Segoe Fluent Icons" Foreground="{ThemeResource AccentFillColorDefaultBrush}" Margin="10" Grid.Column="0" />
+            <TextBlock Text="Previously loaded titles will not be changed." IsTextSelectionEnabled="True" FontWeight="Bold" VerticalAlignment="Center" Grid.Column="1" />
+        </Grid>
+
+        <ScrollViewer Margin="0 5" Grid.Row="1">
+            <ItemsControl ItemsSource="{Binding TitleCollection}" >
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid BorderBrush="{ThemeResource TextFillColorDisabled}" BorderThickness="0 0 0 1" Margin="0 0 12 0">
+                            <TextBlock Text="{Binding Title}" FontStyle="Italic" TextWrapping="Wrap" TextTrimming="None" IsTextSelectionEnabled="True" Margin="0 5" Grid.Column="2" />
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <Grid Margin="0 5" Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <ToggleButton Content="Path" IsChecked="{Binding IncludePath, Mode=TwoWay}" ToolTipService.ToolTip="Include full path of the file." Margin="0 0 5 0" HorizontalAlignment="Stretch" Grid.Column="0" />
+            <ToggleButton Content="Date" IsChecked="{Binding IncludeDate, Mode=TwoWay}" ToolTipService.ToolTip="Include creation date of the file." Margin="5 0 5 0" HorizontalAlignment="Stretch" Grid.Column="1" />
+            <ToggleButton Content="Filename" IsChecked="{Binding IncludeFilename, Mode=TwoWay}" ToolTipService.ToolTip="Include file name." Margin="5 0 5 0" HorizontalAlignment="Stretch" Grid.Column="2" />
+            <ToggleButton Content="Metadata" IsChecked="{Binding IncludeMetadata, Mode=TwoWay}" ToolTipService.ToolTip="Include predetermined metadata about the video. Currently not implemented feature." IsEnabled="False" Margin="5 0 5 0" HorizontalAlignment="Stretch" Grid.Column="3" />
+            <ToggleButton Content="Extension" IsChecked="{Binding IncludeExtension, Mode=TwoWay}" ToolTipService.ToolTip="Include file extension." Margin="5 0 0 0" HorizontalAlignment="Stretch" Grid.Column="4" />
+        </Grid>
+
+        <Grid Visibility="{Binding ElementName=regex_toggle, Path=IsChecked}" Grid.Row="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <TextBox Header="Regex pattern" Text="{Binding Pattern, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="e.g.: `\\`" Margin="0 5 0 0" Grid.Row="0" />
+            <TextBox Header="Regex replacement" Text="{Binding Replacement, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="e.g.: ` > `" Margin="0 5 0 5" Grid.Row="1" />
+            <TextBlock Text="Invalid regex pattern" Foreground="Red" Visibility="{Binding InvalidRegex}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0 0 0 5" Grid.Row="2" />
+        </Grid>
+        
+        <CheckBox x:Name="regex_toggle" Content="Enable regex customization" IsChecked="{Binding IsRegexEnabled, Mode=TwoWay}" ToolTipService.ToolTip="When enabled the titles of the videos will be changed according to the pattern below." Grid.Row="4" />
+
+        <CheckBox Content="Don't show modal again" ToolTipService.ToolTip="When checked this modal will not appear again. It can be turned on again in the Settings." IsChecked="{Binding DontShowAgain, Mode=TwoWay}" Grid.Row="5" />
+
+    </Grid>
+</UserControl>

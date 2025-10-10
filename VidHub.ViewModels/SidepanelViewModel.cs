@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using VidHub.Core.Helpers;
 using VidHub.Platform;
 using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Logics.Interfaces;
@@ -96,16 +97,19 @@ namespace VidHub.ViewModels
         }
 
 
-        private void UpdateProperties()
+        private void UpdateProperties(UpdateType type)
         {
-            OnPropertyChanged(nameof(OpenPanel));
-            OnPropertyChanged(nameof(LiveTextFiltering));
-            OnPropertyChanged(nameof(TransferDescription));
-            OnPropertyChanged(nameof(HasTransfer));
-            OnPropertyChanged(nameof(HasActiveTransfer));
-            OnPropertyChanged(nameof(LoadedCount));
-            OnPropertyChanged(nameof(TotalCount));
-            OnPropertyChanged(nameof(Indeterminate));
+            if (type == UpdateType.UpdateSidepanel || type == UpdateType.UpdateAll || type == UpdateType.ResetSidepanel || type == UpdateType.ResetAll)
+            {
+                OnPropertyChanged(nameof(OpenPanel));
+                OnPropertyChanged(nameof(LiveTextFiltering));
+                OnPropertyChanged(nameof(TransferDescription));
+                OnPropertyChanged(nameof(HasTransfer));
+                OnPropertyChanged(nameof(HasActiveTransfer));
+                OnPropertyChanged(nameof(LoadedCount));
+                OnPropertyChanged(nameof(TotalCount));
+                OnPropertyChanged(nameof(Indeterminate));
+            }
         }
     }
 }

@@ -12,7 +12,7 @@ using WinRT.Interop;
 
 namespace VidHub.Services.Logics
 {
-    public class VideoLoadService(IMainService service, ISettingsService settings, ISystemManager manager) : IVideoLoadService
+    public class VideoLoadService(IMainService service, ISettingsService settings, ISystemManager manager, IVideoCustomizationService customization) : IVideoLoadService
     {
         private readonly object locker = new();
         private readonly ConcurrentQueue<Transfer> transfers = [];
@@ -36,21 +36,21 @@ namespace VidHub.Services.Logics
 
             if (files.Count > 0)
             {
-                await Task.Run(() =>
+                await Task.Run(async () =>
                 {
                     var index = transfers.Count;
                     var transfer = new Transfer();
                     transfer.AddTotalCount(files.Count);
                     transfers.Enqueue(transfer);
                     manager.SetTaskbar(transfers);
-                    service.Update();
+                    service.Update(UpdateType.UpdateSidepanel);
 
                     AddFilesToVideoCollection(index, files);
 
                     transfers.ElementAt(index).IsActive = false;
                     manager.SetTaskbar(transfers);
-                    service.Update();
-                    TransferCleanup();
+                    service.Update(UpdateType.UpdateSidepanel);
+                    await TransferCleanup();
                 });
             }
         }
@@ -68,7 +68,7 @@ namespace VidHub.Services.Logics
                     transfer.IsCollecting = true;
                     transfers.Enqueue(transfer);
                     manager.SetTaskbar(transfers);
-                    service.Update();
+                    service.Update(UpdateType.UpdateSidepanel);
 
                     transfers.ElementAt(index).IsCollecting = true;
                     var files = await CollectFilesAsync(folder, includeSubfolders, Video.ExtensionTypes);
@@ -78,8 +78,8 @@ namespace VidHub.Services.Logics
 
                     transfers.ElementAt(index).IsActive = false;
                     manager.SetTaskbar(transfers);
-                    service.Update();
-                    TransferCleanup();
+                    service.Update(UpdateType.UpdateSidepanel);
+                    await TransferCleanup();
                 });
             }
         }
@@ -94,7 +94,7 @@ namespace VidHub.Services.Logics
                     var transfer = new Transfer();
                     transfers.Enqueue(transfer);
                     manager.SetTaskbar(transfers);
-                    service.Update();
+                    service.Update(UpdateType.UpdateSidepanel);
 
                     transfers.ElementAt(index).IsCollecting = true;
                     var files = items.OfType<StorageFile>().Where(f => Video.ExtensionTypes.Contains(f.FileType)).ToList();
@@ -111,8 +111,8 @@ namespace VidHub.Services.Logics
 
                     transfers.ElementAt(index).IsActive = false;
                     manager.SetTaskbar(transfers);
-                    service.Update();
-                    TransferCleanup();
+                    service.Update(UpdateType.UpdateSidepanel);
+                    await TransferCleanup();
                 });
             }
         }
@@ -123,13 +123,13 @@ namespace VidHub.Services.Logics
 
             if (file != null)
             {
-                await Task.Run(() =>
+                await Task.Run(async () =>
                 {
                     var index = transfers.Count;
                     var transfer = new Transfer();
                     transfers.Enqueue(transfer);
                     manager.SetTaskbar(transfers);
-                    service.Update();
+                    service.Update(UpdateType.UpdateSidepanel);
 
                     transfers.ElementAt(index).IsCollecting = true;
 
@@ -144,14 +144,14 @@ namespace VidHub.Services.Logics
                     transfer.AddTotalCount(files.Count());
                     transfers.Enqueue(transfer);
                     manager.SetTaskbar(transfers);
-                    service.Update();
+                    service.Update(UpdateType.UpdateSidepanel);
 
                     AddFilesToVideoCollection(index, files);
 
                     transfers.ElementAt(index).IsActive = false;
                     manager.SetTaskbar(transfers);
-                    service.Update();
-                    TransferCleanup();
+                    service.Update(UpdateType.UpdateSidepanel);
+                    await TransferCleanup();
                 });
             }
         }
@@ -257,9 +257,11 @@ namespace VidHub.Services.Logics
                     {
                         var video = new Video(file.Path);
                         video.TryLoad(settings.CacheLoad);
+                        customization.CustomizeTitle(video);
                         service.AddVideo(video);
                         transfers.ElementAt(index).Increment();
                         manager.SetTaskbar(transfers);
+                        service.LoadedID.Add(video.ID);
                     });
                 }
                 else
@@ -268,24 +270,34 @@ namespace VidHub.Services.Logics
                     {
                         var video = new Video(file.Path);
                         video.TryLoad(settings.CacheLoad);
+                        customization.CustomizeTitle(video);
                         service.AddVideo(video);
                         transfers.ElementAt(index).Increment();
                         manager.SetTaskbar(transfers);
+                        service.LoadedID.Add(video.ID);
                     }
                 }
 
                 transfers.ElementAt(index).IsLoading = false;
                 manager.SetTaskbar(transfers);
-                service.Update();
+                service.Update(UpdateType.UpdateSidepanel);
             }
         }
 
-        private void TransferCleanup()
+        private async Task TransferCleanup()
         {
             if (transfers.All(t => !t.IsActive))
             {
+                if (!settings.DontShowTitleCustomizationAgain)
+                {
+                    customization.IsTemplateMode = false;
+                    Context.MainWindow.TryEnqueue(() => Context.MainWindow.ShowDialogAsync(ModalType.CustomizeLoading, "Customize video title", "Confirm"));
+                }
+
                 manager.DisplayToast("Video loading finished!", $"{LoadedCount} videos were loaded successfully.");
                 while (transfers.TryDequeue(out _)) ;
+                service.Update(UpdateType.UpdateSidepanel);
+                service.LoadedID.Clear();
             }
         }
     }
