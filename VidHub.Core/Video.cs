@@ -6,6 +6,10 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using VidHub.Core.Helpers;
 using VidHub.Platform;
+using Windows.ApplicationModel.Calls.Background;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.Storage;
+using Windows.Storage.Streams;
 
 namespace VidHub.Core
 {
@@ -225,6 +229,46 @@ namespace VidHub.Core
         private async Task RenameAsync()
         {
             await Context.MainWindow.ShowDialogAsync(ModalType.RenameVideo, $"Rename '{Title}'", "Confirm", this);
+        }
+
+        [RelayCommand]
+        private async Task CopyFileAsync()
+        {
+            var file = await StorageFile.GetFileFromPathAsync(FilePath);
+
+            var data = new DataPackage();
+            data.RequestedOperation = DataPackageOperation.Copy;
+            data.Properties.Title = Title;
+            data.Properties.Description = $"File '{FilePath}' copied to clipboard.";
+            data.SetStorageItems([file]);
+
+            Clipboard.SetContent(data);
+        }
+
+        [RelayCommand]
+        private void CopyFilePath()
+        {
+            var data = new DataPackage();
+            data.RequestedOperation = DataPackageOperation.Copy;
+            data.Properties.Title = Title;
+            data.Properties.Description = $"Filepath '{FilePath}' copied to clipboard.";
+            data.SetText(FilePath);
+
+            Clipboard.SetContent(data);
+        }
+
+        [RelayCommand]
+        private async Task CopyThumbnailAsync()
+        {
+            var file = await StorageFile.GetFileFromPathAsync(ThumbnailPath);
+
+            var data = new DataPackage();
+            data.RequestedOperation = DataPackageOperation.Copy;
+            data.Properties.Title = Title;
+            data.Properties.Description = $"Thumbnail of '{FilePath}' file copied to clipboard.";
+            data.SetBitmap(RandomAccessStreamReference.CreateFromFile(file));
+
+            Clipboard.SetContent(data);
         }
     }
 }

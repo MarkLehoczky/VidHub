@@ -38,6 +38,21 @@
                             <Grid.ContextFlyout>
                                 <MenuFlyout>
                                     <MenuFlyoutItem Text="Rename" Icon="Rename" Command="{Binding RenameCommand}" />
+                                    <MenuFlyoutItem Text="Copy Video File" Command="{Binding CopyFileCommand}">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xe8c8;" FontFamily="Segoe Fluent Icons" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutItem Text="Copy File Path" Command="{Binding CopyFilePathCommand}">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xec50;" FontFamily="Segoe Fluent Icons" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutItem Text="Copy Thumbnail" Command="{Binding CopyThumbnailCommand}">
+                                        <MenuFlyoutItem.Icon> 
+                                            <FontIcon Glyph="&#xe91b;" FontFamily="Segoe Fluent Icons" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
                                 </MenuFlyout>
                             </Grid.ContextFlyout>
 
