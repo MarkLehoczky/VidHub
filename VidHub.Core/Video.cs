@@ -10,12 +10,13 @@ using Windows.ApplicationModel.Calls.Background;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using Windows.System;
 
 namespace VidHub.Core
 {
     public partial class Video : ObservableObject, IComparable<Video>, IEquatable<Video>
     {
-        
+
         public static List<string> ExtensionTypes => [".mp4", ".mov", ".wmv", ".mkv"];
         private static int IDProvider = 0;
 
@@ -269,6 +270,20 @@ namespace VidHub.Core
             data.SetBitmap(RandomAccessStreamReference.CreateFromFile(file));
 
             Clipboard.SetContent(data);
+        }
+
+        [RelayCommand]
+        private async Task OpenAsync()
+        {
+            var file = await StorageFile.GetFileFromPathAsync(FilePath);
+            await Launcher.LaunchFileAsync(file);
+        }
+
+        [RelayCommand]
+        private async Task OpenFileExplorerAsync()
+        {
+            var folder = await StorageFolder.GetFolderFromPathAsync(Path.GetDirectoryName(FilePath) ?? string.Empty);
+            await Launcher.LaunchFolderAsync(folder);
         }
     }
 }

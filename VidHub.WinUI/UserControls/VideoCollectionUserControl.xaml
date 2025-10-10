@@ -37,6 +37,16 @@
                             </Grid.RowDefinitions>
                             <Grid.ContextFlyout>
                                 <MenuFlyout>
+                                    <MenuFlyoutItem Text="Open" Command="{Binding OpenCommand}">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xe786;" FontFamily="Segoe Fluent Icons" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutItem Text="Open in File Explorer" Command="{Binding OpenFileExplorerCommand}">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xe786;" FontFamily="Segoe Fluent Icons" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
                                     <MenuFlyoutItem Text="Rename" Icon="Rename" Command="{Binding RenameCommand}" />
                                     <MenuFlyoutItem Text="Copy Video File" Command="{Binding CopyFileCommand}">
                                         <MenuFlyoutItem.Icon>
@@ -59,7 +69,7 @@
                             <Grid Width="{Binding ElementName=videocollection, Path=DataContext.PreviewWidth}" Height="{Binding ElementName=videocollection, Path=DataContext.PreviewHeight}" Grid.Row="0">
                                 <Grid HorizontalAlignment="Center" VerticalAlignment="Bottom">
                                     <Border BorderThickness="0" CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                        <Image Source="{Binding ThumbnailPath}" Stretch="Uniform" />
+                                        <Image Source="{Binding ThumbnailPath}" Stretch="Uniform" DoubleTapped="OpenVideo" />
                                     </Border>
                                     <Border Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Visibility="{Binding ElementName=videocollection, Path=DataContext.ShowDurations}" Opacity="0.8" BorderThickness="0" CornerRadius="10" Margin="4" HorizontalAlignment="Right" VerticalAlignment="Bottom" >
                                         <TextBlock Text="{Binding Duration, Converter={StaticResource FormatDuration}}" IsTextSelectionEnabled="True" FontFamily="Consolas" Margin="6 2" />
