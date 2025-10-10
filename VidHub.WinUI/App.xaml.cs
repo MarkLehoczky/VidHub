@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Threading.Tasks;
+using VidHub.Core;
 using VidHub.Core.Helpers;
 using VidHub.Platform;
 using VidHub.Platform.Interfaces;
@@ -75,7 +76,7 @@ namespace VidHub.WinUI
             return window.DispatcherQueue.TryEnqueue(callback.Invoke);
         }
 
-        public async Task ShowDialogAsync(ModalType type, string title, string closeButton)
+        public async Task ShowDialogAsync(object type, string title, string closeButton)
         {
             object content = new();
 
@@ -83,6 +84,29 @@ namespace VidHub.WinUI
             {
                 case ModalType.CustomizeDisplaying: content = new VideoCustomizationUserControl(); break;
                 case ModalType.CustomizeLoading: content = new TitleCustomizationUserControl(); break;
+            }
+
+            var dialog = new ContentDialog()
+            {
+                Title = title,
+                CloseButtonText = closeButton,
+                DefaultButton = ContentDialogButton.Close,
+                Content = content,
+                XamlRoot = window.Content.XamlRoot
+            };
+
+            await dialog.ShowAsync();
+        }
+
+        public async Task ShowDialogAsync(object type, string title, string closeButton, object instance)
+        {
+            object content = new();
+
+            switch (type)
+            {
+                case ModalType.CustomizeDisplaying: content = new VideoCustomizationUserControl(); break;
+                case ModalType.CustomizeLoading: content = new TitleCustomizationUserControl(); break;
+                case ModalType.RenameVideo: content = new RenameUserControl((Video)instance); break;
             }
 
             var dialog = new ContentDialog()

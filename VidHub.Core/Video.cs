@@ -1,13 +1,17 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using VidHub.Core.Helpers;
+using VidHub.Platform;
 
 namespace VidHub.Core
 {
-    public class Video : ObservableObject, IComparable<Video>, IEquatable<Video>
+    public partial class Video : ObservableObject, IComparable<Video>, IEquatable<Video>
     {
+        
         public static List<string> ExtensionTypes => [".mp4", ".mov", ".wmv", ".mkv"];
         private static int IDProvider = 0;
 
@@ -215,6 +219,12 @@ namespace VidHub.Core
         public override string ToString()
         {
             return $"Title: {Title}    Date: {Date}    Duration: {Duration}";
+        }
+
+        [RelayCommand]
+        private async Task RenameAsync()
+        {
+            await Context.MainWindow.ShowDialogAsync(ModalType.RenameVideo, $"Rename '{Title}'", "Confirm", this);
         }
     }
 }

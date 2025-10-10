@@ -4,5 +4,6 @@
     {
         CustomizeDisplaying,
         CustomizeLoading,
+        RenameVideo,
     }
 }

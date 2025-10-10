@@ -1,6 +1,4 @@
-﻿using VidHub.Core.Helpers;
-
-namespace VidHub.Platform.Interfaces
+﻿namespace VidHub.Platform.Interfaces
 {
     public interface IWindowContext
     {
@@ -8,6 +6,7 @@ namespace VidHub.Platform.Interfaces
         nint HWND { get; }
         bool IsActive { get; set; }
         bool TryEnqueue(Action callback);
-        Task ShowDialogAsync(ModalType type, string title, string closeButton);
+        Task ShowDialogAsync(object type, string title, string closeButton);
+        Task ShowDialogAsync(object type, string title, string closeButton, object instance);
     }
 }

@@ -35,6 +35,11 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
+                            <Grid.ContextFlyout>
+                                <MenuFlyout>
+                                    <MenuFlyoutItem Text="Rename" Icon="Rename" Command="{Binding RenameCommand}" />
+                                </MenuFlyout>
+                            </Grid.ContextFlyout>
 
                             <Grid Width="{Binding ElementName=videocollection, Path=DataContext.PreviewWidth}" Height="{Binding ElementName=videocollection, Path=DataContext.PreviewHeight}" Grid.Row="0">
                                 <Grid HorizontalAlignment="Center" VerticalAlignment="Bottom">
