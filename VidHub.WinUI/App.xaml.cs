@@ -84,6 +84,8 @@ namespace VidHub.WinUI
             {
                 case ModalType.CustomizeDisplaying: content = new VideoCustomizationUserControl(); break;
                 case ModalType.CustomizeLoading: content = new TitleCustomizationUserControl(); break;
+                case ModalType.CustomizeThumbnail: content = new ThumbnailCustomizationUserControl(); break;
+                case ModalType.RenameVideo: content = new RenameUserControl(null); break;
             }
 
             var dialog = new ContentDialog()
@@ -106,6 +108,7 @@ namespace VidHub.WinUI
             {
                 case ModalType.CustomizeDisplaying: content = new VideoCustomizationUserControl(); break;
                 case ModalType.CustomizeLoading: content = new TitleCustomizationUserControl(); break;
+                case ModalType.CustomizeThumbnail: content = new ThumbnailCustomizationUserControl(); break;
                 case ModalType.RenameVideo: content = new RenameUserControl((Video)instance); break;
             }
 

@@ -72,6 +72,7 @@
                     <ToggleMenuFlyoutItem Text="Show Durations" ToolTipService.ToolTip="Display video playback duration in the collection." IsChecked="{Binding ShowDurations, Mode=TwoWay}" />
                     <MenuFlyoutItem Text="Customize Video Displaying" ToolTipService.ToolTip="" Command="{Binding CustomizeVideoDisplayingCommand}" />
                     <MenuFlyoutItem Text="Customize Video Loading" ToolTipService.ToolTip="" Command="{Binding CustomizeVideoLoadingCommand}" />
+                    <MenuFlyoutItem Text="Customize Video Thumbnail" ToolTipService.ToolTip="" Command="{Binding CustomizeThumbnailCommand}" />
                 </MenuFlyoutSubItem>
 
                 <MenuFlyoutSubItem Text="Filtering &amp; Search">

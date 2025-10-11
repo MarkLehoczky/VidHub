@@ -5,5 +5,6 @@
         CustomizeDisplaying,
         CustomizeLoading,
         RenameVideo,
+        CustomizeThumbnail
     }
 }
