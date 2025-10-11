@@ -1,72 +1,31 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using VidHub.Core.Helpers;
-using VidHub.Platform;
-using Windows.ApplicationModel.Calls.Background;
-using Windows.ApplicationModel.DataTransfer;
-using Windows.Storage;
-using Windows.Storage.Streams;
-using Windows.System;
 
 namespace VidHub.Core
 {
-    public partial class Video : ObservableObject, IComparable<Video>, IEquatable<Video>
+    public class Video : IComparable<Video>, IEquatable<Video>
     {
-
         public static List<string> ExtensionTypes => [".mp4", ".mov", ".wmv", ".mkv"];
         private static int IDProvider = 0;
 
-        private string title;
-        private DateTime date;
-        private TimeSpan duration;
-        private string thumbnailPath;
-        private string filePath;
-        private string hash;
+        public string Title { get; set; }
 
-        public string Title
-        {
-            get => title;
-            set => SetProperty(ref title, value);
-        }
+        public DateTime Date { get; set; }
 
-        public DateTime Date
-        {
-            get => date;
-            set => SetProperty(ref date, value);
-        }
+        public TimeSpan Duration { get; set; }
 
-        public TimeSpan Duration
-        {
-            get => duration;
-            set => SetProperty(ref duration, value);
-        }
+        public string ThumbnailPath { get; set; }
 
-        public string ThumbnailPath
-        {
-            get => thumbnailPath;
-            set => SetProperty(ref thumbnailPath, value);
-        }
-
-        public string FilePath
-        {
-            get => filePath;
-            set => SetProperty(ref filePath, value);
-        }
+        public string FilePath { get; set; }
 
 
         [JsonIgnore]
         public int ID { get; set; }
 
         [JsonIgnore]
-        protected string Hash
-        {
-            get => hash;
-            set => SetProperty(ref hash, value);
-        }
+        protected string Hash { get; set; }
 
 
         public Video()
@@ -224,66 +183,6 @@ namespace VidHub.Core
         public override string ToString()
         {
             return $"Title: {Title}    Date: {Date}    Duration: {Duration}";
-        }
-
-        [RelayCommand]
-        private async Task RenameAsync()
-        {
-            await Context.MainWindow.ShowDialogAsync(ModalType.RenameVideo, $"Rename '{Title}'", "Confirm", this);
-        }
-
-        [RelayCommand]
-        private async Task CopyFileAsync()
-        {
-            var file = await StorageFile.GetFileFromPathAsync(FilePath);
-
-            var data = new DataPackage();
-            data.RequestedOperation = DataPackageOperation.Copy;
-            data.Properties.Title = Title;
-            data.Properties.Description = $"File '{FilePath}' copied to clipboard.";
-            data.SetStorageItems([file]);
-
-            Clipboard.SetContent(data);
-        }
-
-        [RelayCommand]
-        private void CopyFilePath()
-        {
-            var data = new DataPackage();
-            data.RequestedOperation = DataPackageOperation.Copy;
-            data.Properties.Title = Title;
-            data.Properties.Description = $"Filepath '{FilePath}' copied to clipboard.";
-            data.SetText(FilePath);
-
-            Clipboard.SetContent(data);
-        }
-
-        [RelayCommand]
-        private async Task CopyThumbnailAsync()
-        {
-            var file = await StorageFile.GetFileFromPathAsync(ThumbnailPath);
-
-            var data = new DataPackage();
-            data.RequestedOperation = DataPackageOperation.Copy;
-            data.Properties.Title = Title;
-            data.Properties.Description = $"Thumbnail of '{FilePath}' file copied to clipboard.";
-            data.SetBitmap(RandomAccessStreamReference.CreateFromFile(file));
-
-            Clipboard.SetContent(data);
-        }
-
-        [RelayCommand]
-        private async Task OpenAsync()
-        {
-            var file = await StorageFile.GetFileFromPathAsync(FilePath);
-            await Launcher.LaunchFileAsync(file);
-        }
-
-        [RelayCommand]
-        private async Task OpenFileExplorerAsync()
-        {
-            var folder = await StorageFolder.GetFolderFromPathAsync(Path.GetDirectoryName(FilePath) ?? string.Empty);
-            await Launcher.LaunchFolderAsync(folder);
         }
     }
 }
