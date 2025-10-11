@@ -67,6 +67,12 @@
                                             <FontIcon Glyph="&#xe91b;" FontFamily="Segoe Fluent Icons" />
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
+                                    <MenuFlyoutSeparator />
+                                    <MenuFlyoutItem Text="Remove" Command="{Binding ElementName=videocollection, Path=DataContext.RemoveVideoCommand}" CommandParameter="{Binding}">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xe74d;" FontFamily="Segoe Fluent Icons" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
                                 </MenuFlyout>
                             </Grid.ContextFlyout>
 

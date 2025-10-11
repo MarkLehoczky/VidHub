@@ -110,5 +110,11 @@ namespace VidHub.ViewModels
 
             Clipboard.SetContent(data);
         }
+
+        [RelayCommand]
+        private void RemoveVideo(Video video)
+        {
+            Context.MainHost.GetService<IMainService>().RemoveVideo(video);
+        }
     }
 }
