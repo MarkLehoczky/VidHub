@@ -25,6 +25,15 @@ namespace VidHub.Services.Base
             Update(UpdateType.UpdateVideoCollection);
         }
 
+        public void RemoveVideo(Video video)
+        {
+            lock (locker)
+            {
+                videos.Remove(video);
+            }
+            Update(UpdateType.UpdateVideoCollection);
+        }
+
         public Video GetVideo(int ID)
         {
             return videos.FirstOrDefault(v => v.ID == ID) ?? throw new ArgumentException("Video not found");
