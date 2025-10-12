@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
@@ -15,6 +15,7 @@
   <ItemGroup>
     <None Remove="Pages\MainPage.xaml" />
     <None Remove="UserControls\Modals\RenameUserControl.xaml" />
+    <None Remove="UserControls\Modals\ThumbnailCustomizationUserControl.xaml" />
     <None Remove="UserControls\Modals\TitleCustomizationUserControl.xaml" />
     <None Remove="UserControls\Modals\VideoCustomizationUserControl.xaml" />
     <None Remove="UserControls\SidepanelUserControl.xaml" />
@@ -54,6 +55,11 @@
     <ProjectReference Include="..\VidHub.Core\VidHub.Core.csproj" />
     <ProjectReference Include="..\VidHub.Services\VidHub.Services.csproj" />
     <ProjectReference Include="..\VidHub.ViewModels\VidHub.ViewModels.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="UserControls\Modals\ThumbnailCustomizationUserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="UserControls\Modals\RenameUserControl.xaml">

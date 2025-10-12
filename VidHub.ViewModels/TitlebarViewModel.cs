@@ -132,6 +132,12 @@ namespace VidHub.ViewModels
             await Context.MainWindow.ShowDialogAsync(ModalType.CustomizeLoading, "Change video title customization", "Confirm");
         }
 
+        [RelayCommand]
+        private async Task CustomizeThumbnailAsync()
+        {
+            await Context.MainWindow.ShowDialogAsync(ModalType.CustomizeThumbnail, "Customize video thumbnail", "Confirm");
+        }
+
 
         public TitlebarViewModel() : this(
             Context.MainHost.GetService<IVideoLoadService>(),

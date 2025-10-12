@@ -256,7 +256,14 @@ namespace VidHub.Services.Logics
                     Parallel.ForEach(files, file =>
                     {
                         var video = new Video(file.Path);
-                        video.TryLoad(settings.CacheLoad);
+                        if (settings.RelativePosition)
+                        {
+                            video.TryLoad(settings.CacheLoad, settings.FramePercentage);
+                        }
+                        else
+                        {
+                            video.TryLoad(settings.CacheLoad, new TimeSpan(0, settings.Hours, settings.Minutes, settings.Seconds, settings.Milliseconds));
+                        }
                         customization.CustomizeTitle(video);
                         service.AddVideo(video);
                         transfers.ElementAt(index).Increment();
@@ -269,7 +276,14 @@ namespace VidHub.Services.Logics
                     foreach (var file in files)
                     {
                         var video = new Video(file.Path);
-                        video.TryLoad(settings.CacheLoad);
+                        if (settings.RelativePosition)
+                        {
+                            video.TryLoad(settings.CacheLoad, settings.FramePercentage);
+                        }
+                        else
+                        {
+                            video.TryLoad(settings.CacheLoad, new TimeSpan(0, settings.Hours, settings.Minutes, settings.Seconds, settings.Milliseconds));
+                        }
                         customization.CustomizeTitle(video);
                         service.AddVideo(video);
                         transfers.ElementAt(index).Increment();

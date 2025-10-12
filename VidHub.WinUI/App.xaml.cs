@@ -40,6 +40,7 @@ namespace VidHub.WinUI
                     services.AddSingleton<IVideoOrganizeService, VideoOrganizeService>();
                     services.AddSingleton<IVideoCollectionService, VideoCollectionService>();
                     services.AddSingleton<IVideoCustomizationService, VideoCustomizationService>();
+                    services.AddSingleton<IThumbnailCustomizationService, ThumbnailCustomizationService>();
                     services.AddTransient<TitlebarViewModel>();
                     services.AddTransient<SidepanelViewModel>();
                     services.AddTransient<VideoCollectionViewModel>();
@@ -84,6 +85,8 @@ namespace VidHub.WinUI
             {
                 case ModalType.CustomizeDisplaying: content = new VideoCustomizationUserControl(); break;
                 case ModalType.CustomizeLoading: content = new TitleCustomizationUserControl(); break;
+                case ModalType.CustomizeThumbnail: content = new ThumbnailCustomizationUserControl(); break;
+                case ModalType.RenameVideo: content = new RenameUserControl(null); break;
             }
 
             var dialog = new ContentDialog()
@@ -106,6 +109,7 @@ namespace VidHub.WinUI
             {
                 case ModalType.CustomizeDisplaying: content = new VideoCustomizationUserControl(); break;
                 case ModalType.CustomizeLoading: content = new TitleCustomizationUserControl(); break;
+                case ModalType.CustomizeThumbnail: content = new ThumbnailCustomizationUserControl(); break;
                 case ModalType.RenameVideo: content = new RenameUserControl((Video)instance); break;
             }
 

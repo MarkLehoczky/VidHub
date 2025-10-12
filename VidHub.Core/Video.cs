@@ -45,14 +45,28 @@ namespace VidHub.Core
         }
 
 
-        public void Load(bool cacheLoad)
+        public void Load(bool cacheLoad, TimeSpan frame)
         {
-            if (cacheLoad && LoadCache())
+            if (cacheLoad && LoadCache(frame))
             {
                 return;
             }
 
-            foreach (var action in LoadActions())
+            foreach (var action in LoadActions(frame))
+            {
+                action();
+            }
+
+            SaveCache();
+        }
+        public void Load(bool cacheLoad, double percentage)
+        {
+            if (cacheLoad && LoadCache(percentage))
+            {
+                return;
+            }
+
+            foreach (var action in LoadActions(percentage))
             {
                 action();
             }
@@ -60,9 +74,9 @@ namespace VidHub.Core
             SaveCache();
         }
 
-        public bool TryLoad(bool cacheLoad)
+        public bool TryLoad(bool cacheLoad, TimeSpan frame)
         {
-            if (cacheLoad && LoadCache())
+            if (cacheLoad && LoadCache(frame))
             {
                 return true;
             }
@@ -70,7 +84,32 @@ namespace VidHub.Core
             bool success = true;
             var processor = new MetadataProcessor(FilePath);
 
-            foreach (var action in LoadActions())
+            foreach (var action in LoadActions(frame))
+            {
+                try
+                {
+                    action();
+                }
+                catch
+                {
+                    success = false;
+                }
+            }
+
+            SaveCache();
+            return success;
+        }
+        public bool TryLoad(bool cacheLoad, double percentage)
+        {
+            if (cacheLoad && LoadCache(percentage))
+            {
+                return true;
+            }
+
+            bool success = true;
+            var processor = new MetadataProcessor(FilePath);
+
+            foreach (var action in LoadActions(percentage))
             {
                 try
                 {
@@ -87,7 +126,7 @@ namespace VidHub.Core
         }
 
 
-        private bool LoadCache()
+        private bool LoadCache(TimeSpan frame)
         {
             string cacheDirectory = Path.Combine(Path.GetTempPath(), "VidHub", "Cache");
             string cachePath = Path.Combine(cacheDirectory, Hash + ".json");
@@ -104,6 +143,41 @@ namespace VidHub.Core
                     Duration = video.Duration;
                     ThumbnailPath = video.ThumbnailPath;
                     FilePath = video.FilePath;
+
+                    if (!File.Exists(ThumbnailPath))
+                    {
+                        new MetadataProcessor(FilePath).GenerateThumbnail(Hash, frame > Duration ? Duration : frame);
+                    }
+
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        private bool LoadCache(double percentage)
+        {
+            string cacheDirectory = Path.Combine(Path.GetTempPath(), "VidHub", "Cache");
+            string cachePath = Path.Combine(cacheDirectory, Hash + ".json");
+
+            if (File.Exists(cachePath))
+            {
+                var json = File.ReadAllText(cachePath);
+                var video = JsonSerializer.Deserialize<Video>(json);
+
+                if (video != null)
+                {
+                    Title = video.Title;
+                    Date = video.Date;
+                    Duration = video.Duration;
+                    ThumbnailPath = video.ThumbnailPath;
+                    FilePath = video.FilePath;
+
+                    if (!File.Exists(ThumbnailPath))
+                    {
+                        new MetadataProcessor(FilePath).GenerateThumbnail(Hash, Duration * percentage);
+                    }
+
                     return true;
                 }
             }
@@ -129,7 +203,7 @@ namespace VidHub.Core
             return exists;
         }
 
-        private List<Action> LoadActions()
+        private List<Action> LoadActions(TimeSpan frame)
         {
             var processor = new MetadataProcessor(FilePath);
 
@@ -139,8 +213,31 @@ namespace VidHub.Core
                 () => Date = File.GetLastWriteTime(FilePath),
                 () => Date = processor.ExtractDate(),
                 () => Duration = processor.ExtractDuration(),
-                () => ThumbnailPath = processor.GenerateThumbnail(Hash, Duration / 2),
+                () => ThumbnailPath = processor.GenerateThumbnail(Hash, frame > Duration ? Duration : frame),
             ];
+        }
+        private List<Action> LoadActions(double percentage)
+        {
+            var processor = new MetadataProcessor(FilePath);
+
+            return
+            [
+                () => Title = Path.GetFileNameWithoutExtension(FilePath),
+                () => Date = File.GetLastWriteTime(FilePath),
+                () => Date = processor.ExtractDate(),
+                () => Duration = processor.ExtractDuration(),
+                () => ThumbnailPath = processor.GenerateThumbnail(Hash, Duration * percentage),
+            ];
+        }
+
+        public void ExtractThumbnail(TimeSpan frame)
+        {
+            var processor = new MetadataProcessor(FilePath);
+            try
+            {
+                ThumbnailPath = processor.GenerateThumbnail(Hash, frame > Duration ? Duration : frame);
+            }
+            catch { }
         }
 
 
