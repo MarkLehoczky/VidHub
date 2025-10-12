@@ -3,10 +3,13 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using VidHub.Core;
 using VidHub.Platform;
 using VidHub.Services.Logics.Interfaces;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
+using Windows.System;
 
 namespace VidHub.WinUI.UserControls
 {
@@ -77,6 +80,18 @@ namespace VidHub.WinUI.UserControls
             else
             {
                 ToolTipService.SetToolTip(sender, null);
+            }
+        }
+
+        private void OpenVideo(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            if (sender is FrameworkElement element && element.DataContext is Video video)
+            {
+                Task.Run(async () =>
+                {
+                    var file = await StorageFile.GetFileFromPathAsync(video.FilePath);
+                    await Launcher.LaunchFileAsync(file);
+                });
             }
         }
     }
