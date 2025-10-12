@@ -94,6 +94,12 @@ namespace VidHub.Services.Settings
             replacement = service.Replacement;
             isRegexEnabled = service.IsRegexEnabled;
             dontShowTitleCustomizationAgain = service.DontShowTitleCustomizationAgain;
+            RelativePosition = service.RelativePosition;
+            Hours = service.Hours;
+            Minutes = service.Minutes;
+            Seconds = service.Seconds;
+            Milliseconds = service.Milliseconds;
+            FramePercentage = service.FramePercentage;
         }
 
 
@@ -320,5 +326,11 @@ namespace VidHub.Services.Settings
             get => dontShowTitleCustomizationAgain;
             set => dontShowTitleCustomizationAgain = value;
         }
+        public bool RelativePosition { get; set; }
+        public int Hours { get; set; }
+        public int Minutes { get; set; }
+        public int Seconds { get; set; }
+        public int Milliseconds { get; set; }
+        public int FramePercentage { get; set; }
     }
 }

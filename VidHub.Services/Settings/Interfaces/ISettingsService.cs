@@ -29,6 +29,12 @@
         string Replacement { get; set; }
         bool IsRegexEnabled { get; set; }
         bool DontShowTitleCustomizationAgain { get; set; }
+        bool RelativePosition { get; set; }
+        int Hours { get; set; }
+        int Minutes { get; set; }
+        int Seconds { get; set; }
+        int Milliseconds { get; set; }
+        int FramePercentage { get; set; }
         void Load();
         void Save();
         void Set(ISettingsService service);

@@ -40,6 +40,7 @@ namespace VidHub.WinUI
                     services.AddSingleton<IVideoOrganizeService, VideoOrganizeService>();
                     services.AddSingleton<IVideoCollectionService, VideoCollectionService>();
                     services.AddSingleton<IVideoCustomizationService, VideoCustomizationService>();
+                    services.AddSingleton<IThumbnailCustomizationService, ThumbnailCustomizationService>();
                     services.AddTransient<TitlebarViewModel>();
                     services.AddTransient<SidepanelViewModel>();
                     services.AddTransient<VideoCollectionViewModel>();

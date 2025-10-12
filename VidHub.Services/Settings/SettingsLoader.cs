@@ -31,6 +31,12 @@ namespace VidHub.Services.Settings
         public string Pattern { get; set; } = string.Empty;
         public string Replacement { get; set; } = string.Empty;
         public bool IsRegexEnabled { get; set; }
+        public bool RelativePosition { get; set; }
+        public int Hours { get; set; }
+        public int Minutes { get; set; }
+        public int Seconds { get; set; }
+        public int Milliseconds { get; set; }
+        public int FramePercentage { get; set; }
 
         public void Load()
         {
