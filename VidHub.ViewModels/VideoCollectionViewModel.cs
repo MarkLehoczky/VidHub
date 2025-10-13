@@ -17,27 +17,27 @@ namespace VidHub.ViewModels
     public partial class VideoCollectionViewModel(IVideoCollectionService service, ISettingsService settings) : ObservableRecipient
     {
         public ObservableCollection<Video> Videos => service.DisplayedVideos;
-        public bool ShowTitles => settings.ShowTitles;
-        public bool ShowDates => settings.ShowDates;
-        public bool ShowDurations => settings.ShowDurations;
-        public double PreviewWidth => settings.FieldWidth;
-        public double PreviewHeight => settings.FieldHeight;
+        public bool ShowTitles => settings.DisplayCustomization.DisplayTitles;
+        public bool ShowDates => settings.DisplayCustomization.DisplayDates;
+        public bool ShowDurations => settings.DisplayCustomization.DisplayDurations;
+        public double PreviewWidth => settings.DisplayCustomization.PreviewImageWidth;
+        public double PreviewHeight => settings.DisplayCustomization.PreviewImageHeight;
 
 
-        public VideoCollectionViewModel() : this(Context.MainHost.GetService<IVideoCollectionService>(),
-            Context.MainHost.GetService<ISettingsService>())
+        public VideoCollectionViewModel() : this(Context.Host.GetService<IVideoCollectionService>(),
+            Context.Host.GetService<ISettingsService>())
         {
-            Context.MainHost.GetService<IMainService>().SubscribeToUpdateEvent(UpdateProperties);
+            Context.Host.GetService<IVideoService>().SubscribeToUpdateEvent(UpdateProperties);
         }
 
         ~VideoCollectionViewModel()
         {
-            Context.MainHost.GetService<IMainService>().UnsubscribeFromUpdateEvent(UpdateProperties);
+            Context.Host.GetService<IVideoService>().UnsubscribeFromUpdateEvent(UpdateProperties);
         }
 
         private void UpdateProperties(UpdateType type)
         {
-            if (type == UpdateType.UpdateVideoCollection || type == UpdateType.UpdateAll || type == UpdateType.ResetVideoCollection || type == UpdateType.ResetAll)
+            if (type == UpdateType.UpdateVideoCollection || type == UpdateType.ForceUpdateVideoCollection)
             {
                 OnPropertyChanged(nameof(Videos));
                 OnPropertyChanged(nameof(ShowTitles));
@@ -67,8 +67,8 @@ namespace VidHub.ViewModels
         [RelayCommand]
         private async Task RenameAsync(Video video)
         {
-            await Context.MainWindow.ShowDialogAsync(ModalType.RenameVideo, $"Rename '{video.Title}'", "Confirm", video);
-            Context.MainHost.GetService<IMainService>().Update(UpdateType.ResetVideoCollection);
+            await Context.Window.ShowDialogAsync(ModalType.ChangeVideoTitle, $"Rename '{video.Title}'", "Confirm", video);
+            Context.Host.GetService<IVideoService>().Update(UpdateType.ForceUpdateVideoCollection);
         }
 
         [RelayCommand]
@@ -100,7 +100,7 @@ namespace VidHub.ViewModels
         [RelayCommand]
         private async Task CopyThumbnailAsync(Video video)
         {
-            var file = await StorageFile.GetFileFromPathAsync(video.ThumbnailPath);
+            var file = await StorageFile.GetFileFromPathAsync(video.PreviewImagePath);
 
             var data = new DataPackage();
             data.RequestedOperation = DataPackageOperation.Copy;
@@ -114,7 +114,7 @@ namespace VidHub.ViewModels
         [RelayCommand]
         private void RemoveVideo(Video video)
         {
-            Context.MainHost.GetService<IMainService>().RemoveVideo(video);
+            Context.Host.GetService<IVideoService>().Remove(video);
         }
     }
 }

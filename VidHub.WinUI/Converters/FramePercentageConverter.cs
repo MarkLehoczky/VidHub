@@ -3,7 +3,7 @@ using System;
 
 namespace VidHub.WinUI.Converters
 {
-    public partial class ChangeNumberToPercentage : IValueConverter
+    public partial class FramePercentageConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {

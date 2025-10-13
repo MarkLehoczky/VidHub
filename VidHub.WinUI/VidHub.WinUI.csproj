@@ -15,9 +15,6 @@
   <ItemGroup>
     <None Remove="Pages\MainPage.xaml" />
     <None Remove="UserControls\Modals\RenameUserControl.xaml" />
-    <None Remove="UserControls\Modals\ThumbnailCustomizationUserControl.xaml" />
-    <None Remove="UserControls\Modals\TitleCustomizationUserControl.xaml" />
-    <None Remove="UserControls\Modals\VideoCustomizationUserControl.xaml" />
     <None Remove="UserControls\SidepanelUserControl.xaml" />
     <None Remove="UserControls\TitlebarUserControl.xaml" />
     <None Remove="UserControls\VideoCollectionUserControl.xaml" />
@@ -47,7 +44,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.8" />
-    <PackageReference Include="Microsoft.PowerShell.5.ReferenceAssemblies" Version="1.1.0" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4948" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.250606001" />
   </ItemGroup>
@@ -57,7 +53,7 @@
     <ProjectReference Include="..\VidHub.ViewModels\VidHub.ViewModels.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Page Update="UserControls\Modals\ThumbnailCustomizationUserControl.xaml">
+    <Page Update="UserControls\Modals\VideoPreviewImageCustomizationUserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
@@ -67,22 +63,22 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="UserControls\Modals\VideoCustomizationUserControl.xaml">
+    <Page Update="UserControls\Modals\VideoDisplayCustomizationUserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="UserControls\Modals\TitleCustomizationUserControl.xaml">
+    <Page Update="UserControls\Modals\VideoTitleFormatCustomizationUserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="UserControls\SidepanelUserControl.xaml">
+    <Page Update="UserControls\SidePanelUserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="UserControls\TitlebarUserControl.xaml">
+    <Page Update="UserControls\TitleBarUserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

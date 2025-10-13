@@ -4,15 +4,14 @@ namespace VidHub.Services.Logics.Interfaces
 {
     public interface IVideoLoadService
     {
-        string TransferDescription { get; }
-        bool HasTransfer { get; }
         bool HasActiveTransfer { get; }
-        int LoadedCount { get; }
-        int TotalCount { get; }
+        int LoadedFileCount { get; }
+        int TotalFileCount { get; }
+        string TransferDescription { get; }
+        Task ExportCollectionAsync();
+        Task ImportCollectionAsync();
+        Task LoadItems(IEnumerable<IStorageItem> items, bool includeSubfolders);
         Task LoadFilesAsync();
         Task LoadFoldersAsync(bool includeSubfolders);
-        Task LoadExternal(IEnumerable<IStorageItem> items);
-        Task ImportCollectionAsync();
-        Task ExportCollectionAsync();
     }
 }

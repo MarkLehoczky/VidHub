@@ -1,285 +1,299 @@
-﻿using System.Security.Cryptography;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System.Collections;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Windows.Storage;
 
 namespace VidHub.Core
 {
-    public class Video : IComparable<Video>, IEquatable<Video>
+    public class Video : ObservableObject, IComparable, IComparable<Video>, IComparer, IComparer<Video>, IEqualityComparer<Video>, IEquatable<Video>
     {
         public static List<string> ExtensionTypes => [".mp4", ".mov", ".wmv", ".mkv"];
+        
         private static int IDProvider = 0;
 
-        public string Title { get; set; }
 
-        public DateTime Date { get; set; }
+        private int id;
+        protected string hash;
+        private string title;
+        private DateTime date;
+        private TimeSpan duration;
+        private string previewImagePath;
+        private string filePath;
 
-        public TimeSpan Duration { get; set; }
-
-        public string ThumbnailPath { get; set; }
-
-        public string FilePath { get; set; }
-
-
-        [JsonIgnore]
-        public int ID { get; set; }
-
-        [JsonIgnore]
-        protected string Hash { get; set; }
+        // TODO: Implement advanced metadata extraction
+        [JsonIgnore] public int ID { get => id; set => SetProperty(ref id, value); }
+        protected string Hash { get => hash; set => SetProperty(ref hash, value); }
+        public string Title { get => title; set => SetProperty(ref title, value); }
+        public DateTime Date { get => date; set => SetProperty(ref date, value); }
+        public TimeSpan Duration { get => duration; set => SetProperty(ref duration, value); }
+        public string PreviewImagePath { get => previewImagePath; set => SetProperty(ref previewImagePath, value); }
+        public string FilePath { get => filePath; set => SetProperty(ref filePath, value); }
 
 
         public Video()
         {
-            Title = string.Empty;
-            Date = DateTime.MinValue;
-            Duration = TimeSpan.Zero;
-            ThumbnailPath = string.Empty;
-            FilePath = string.Empty;
-            ID = IDProvider++;
-            Hash = string.Empty;
+            Interlocked.Increment(ref IDProvider);
+            id = IDProvider;
+            hash = string.Empty;
+            title = string.Empty;
+            date = DateTime.MinValue;
+            duration = TimeSpan.Zero;
+            previewImagePath = string.Empty;
+            filePath = string.Empty;
         }
-        public Video(string filePath) : this()
+        public Video(string file) : this()
         {
-            FilePath = Path.GetFullPath(filePath);
-            Hash = BitConverter.ToString(MD5.HashData(Encoding.UTF8.GetBytes(FilePath))).Replace("-", "").ToLowerInvariant();
+            filePath = Path.GetFullPath(file);
+            hash = GetFileHash();
+        }
+        public Video(Uri file) : this()
+        {
+            filePath = file.AbsolutePath;
+            hash = GetFileHash();
+        }
+        public Video(StorageFile file) : this()
+        {
+            filePath = file.Path;
+            hash = GetFileHash();
         }
 
 
         public void Load(bool cacheLoad, TimeSpan frame)
         {
-            if (cacheLoad && LoadCache(frame))
-            {
+            if (cacheLoad && LoadCache())
                 return;
-            }
 
             foreach (var action in LoadActions(frame))
-            {
-                action();
-            }
+                try { action(); }
+                catch { }
 
             SaveCache();
         }
         public void Load(bool cacheLoad, double percentage)
         {
-            if (cacheLoad && LoadCache(percentage))
-            {
+            if (cacheLoad && LoadCache())
                 return;
-            }
 
             foreach (var action in LoadActions(percentage))
-            {
-                action();
-            }
+                try { action(); }
+                catch { }
 
             SaveCache();
         }
 
-        public bool TryLoad(bool cacheLoad, TimeSpan frame)
+        public void ExtractPreviewImage(TimeSpan frame)
         {
-            if (cacheLoad && LoadCache(frame))
-            {
-                return true;
-            }
-
-            bool success = true;
-            var processor = new MetadataProcessor(FilePath);
-
-            foreach (var action in LoadActions(frame))
-            {
-                try
-                {
-                    action();
-                }
-                catch
-                {
-                    success = false;
-                }
-            }
-
-            SaveCache();
-            return success;
-        }
-        public bool TryLoad(bool cacheLoad, double percentage)
-        {
-            if (cacheLoad && LoadCache(percentage))
-            {
-                return true;
-            }
-
-            bool success = true;
-            var processor = new MetadataProcessor(FilePath);
-
-            foreach (var action in LoadActions(percentage))
-            {
-                try
-                {
-                    action();
-                }
-                catch
-                {
-                    success = false;
-                }
-            }
-
-            SaveCache();
-            return success;
+            try { PreviewImagePath = new MetadataProcessor(FilePath).ExtractPreviewImage(Hash, frame > Duration ? Duration : frame); }
+            catch { }
         }
 
 
-        private bool LoadCache(TimeSpan frame)
+        private List<Action> LoadActions(TimeSpan frame) =>
+            [
+            () => Title = Path.GetFileNameWithoutExtension(FilePath),
+            () => Date = File.GetLastWriteTime(FilePath),
+            () => Date = new MetadataProcessor(FilePath).ExtractDate(),
+            () => Duration = new MetadataProcessor(FilePath).ExtractDuration(),
+            () => ExtractPreviewImage(frame),
+            ];
+        private List<Action> LoadActions(double percentage) =>
+            [
+            () => Title = Path.GetFileNameWithoutExtension(FilePath),
+            () => Date = File.GetLastWriteTime(FilePath),
+            () => Date = new MetadataProcessor(FilePath).ExtractDate(),
+            () => Duration = new MetadataProcessor(FilePath).ExtractDuration(),
+            () => ExtractPreviewImage(Duration * percentage),
+            ];
+
+        private bool LoadCache()
         {
             string cacheDirectory = Path.Combine(Path.GetTempPath(), "VidHub", "Cache");
             string cachePath = Path.Combine(cacheDirectory, Hash + ".json");
 
-            if (File.Exists(cachePath))
-            {
-                var json = File.ReadAllText(cachePath);
-                var video = JsonSerializer.Deserialize<Video>(json);
+            if (!File.Exists(cachePath))
+                return false;
 
-                if (video != null)
-                {
-                    Title = video.Title;
-                    Date = video.Date;
-                    Duration = video.Duration;
-                    ThumbnailPath = video.ThumbnailPath;
-                    FilePath = video.FilePath;
+            var json = File.ReadAllText(cachePath);
+            var video = JsonSerializer.Deserialize<Video>(json);
 
-                    if (!File.Exists(ThumbnailPath))
-                    {
-                        new MetadataProcessor(FilePath).GenerateThumbnail(Hash, frame > Duration ? Duration : frame);
-                    }
+            if (video is null)
+                return false;
 
-                    return true;
-                }
-            }
+            if (!File.Exists(video.PreviewImagePath))
+                return false;
 
-            return false;
-        }
-        private bool LoadCache(double percentage)
-        {
-            string cacheDirectory = Path.Combine(Path.GetTempPath(), "VidHub", "Cache");
-            string cachePath = Path.Combine(cacheDirectory, Hash + ".json");
+            Title = video.Title;
+            Date = video.Date;
+            Duration = video.Duration;
+            PreviewImagePath = video.PreviewImagePath;
+            FilePath = video.FilePath;
 
-            if (File.Exists(cachePath))
-            {
-                var json = File.ReadAllText(cachePath);
-                var video = JsonSerializer.Deserialize<Video>(json);
-
-                if (video != null)
-                {
-                    Title = video.Title;
-                    Date = video.Date;
-                    Duration = video.Duration;
-                    ThumbnailPath = video.ThumbnailPath;
-                    FilePath = video.FilePath;
-
-                    if (!File.Exists(ThumbnailPath))
-                    {
-                        new MetadataProcessor(FilePath).GenerateThumbnail(Hash, Duration * percentage);
-                    }
-
-                    return true;
-                }
-            }
-
-            return false;
+            return true;
         }
 
-        private bool SaveCache(bool overwrite = true)
+        // TODO: Implement single cache file
+        private void SaveCache()
         {
             string cacheDirectory = Path.Combine(Path.GetTempPath(), "VidHub", "Cache");
             string cachePath = Path.Combine(cacheDirectory, Hash + ".json");
 
             Directory.CreateDirectory(cacheDirectory);
-
-            var exists = Path.Exists(cachePath);
-
-            if (overwrite || !exists)
-            {
-                var json = JsonSerializer.Serialize<Video>(this);
-                File.WriteAllText(cachePath, json);
-            }
-
-            return exists;
+            File.WriteAllText(cachePath, JsonSerializer.Serialize(this));
         }
 
-        private List<Action> LoadActions(TimeSpan frame)
+        // TODO: Handle key collision
+        private string GetFileHash() => BitConverter.ToString(MD5.HashData(Encoding.UTF8.GetBytes(FilePath))).TrimStart('-').ToLowerInvariant();
+
+
+        public int CompareTo(object? obj)
         {
-            var processor = new MetadataProcessor(FilePath);
+            if (obj is null)
+                return 1;
 
-            return
-            [
-                () => Title = Path.GetFileNameWithoutExtension(FilePath),
-                () => Date = File.GetLastWriteTime(FilePath),
-                () => Date = processor.ExtractDate(),
-                () => Duration = processor.ExtractDuration(),
-                () => ThumbnailPath = processor.GenerateThumbnail(Hash, frame > Duration ? Duration : frame),
-            ];
+            if (obj is Video other)
+                return ((IComparable<Video>)this).CompareTo(other);
+
+            return 1;
         }
-        private List<Action> LoadActions(double percentage)
-        {
-            var processor = new MetadataProcessor(FilePath);
-
-            return
-            [
-                () => Title = Path.GetFileNameWithoutExtension(FilePath),
-                () => Date = File.GetLastWriteTime(FilePath),
-                () => Date = processor.ExtractDate(),
-                () => Duration = processor.ExtractDuration(),
-                () => ThumbnailPath = processor.GenerateThumbnail(Hash, Duration * percentage),
-            ];
-        }
-
-        public void ExtractThumbnail(TimeSpan frame)
-        {
-            var processor = new MetadataProcessor(FilePath);
-            try
-            {
-                ThumbnailPath = processor.GenerateThumbnail(Hash, frame > Duration ? Duration : frame);
-            }
-            catch { }
-        }
-
 
         public int CompareTo(Video? other)
         {
-            if (other == null) return -1;
-            if (ReferenceEquals(this, other)) return 0;
-            int comparison = ID.CompareTo(other.ID);
-            if (comparison != 0) return comparison;
-            comparison = FilePath.CompareTo(other.FilePath);
-            if (comparison != 0) return comparison;
-            comparison = Title.CompareTo(other.Title);
-            if (comparison != 0) return comparison;
-            comparison = Date.CompareTo(other.Date);
-            if (comparison != 0) return comparison;
-            return Duration.CompareTo(other.Duration);
+            if (other is null)
+                return 1;
+
+            return Comparer<int>.Default.Compare(ID, other.ID);
+        }
+
+        public int Compare(object? x, object? y)
+        {
+            if (ReferenceEquals(x, y))
+                return 0;
+
+            if (x is null)
+                return -1;
+
+            if (y is null)
+                return 1;
+
+            if (x is Video left && y is Video right)
+                return ((IComparer<Video>)this).Compare(left, right);
+
+            return 1;
+        }
+
+        public int Compare(Video? x, Video? y)
+        {
+            if (ReferenceEquals(x, y))
+                return 0;
+
+            if (x is null)
+                return -1;
+
+            if (y is null)
+                return 1;
+
+            return ((IComparable<Video>)x).CompareTo(y);
+        }
+
+        public int GetHashCode(object obj)
+        {
+            if (obj is Video video)
+                return ((IEqualityComparer<Video>)this).GetHashCode(video);
+
+            return 0;
+        }
+
+        public bool Equals(Video? x, Video? y)
+        {
+            if (ReferenceEquals(x, y))
+                return true;
+
+            if (x is null || y is null)
+                return false;
+
+            return string.Equals(x.Hash, y.Hash, StringComparison.Ordinal);
+        }
+
+        public int GetHashCode(Video obj)
+        {
+            if (obj is null)
+                return 0;
+
+            return obj.Hash != null ? StringComparer.Ordinal.GetHashCode(obj.Hash) : 0;
         }
 
         public bool Equals(Video? other)
         {
-            if (other == null) return false;
-            if (ReferenceEquals(this, other)) return true;
-            if (other.FilePath != FilePath) return false;
-            if (other.Title != Title) return false;
-            if (other.Date != Date) return false;
-            if (other.Duration != Duration) return false;
-            return true;
+            if (other is null)
+                return false;
+
+            if (ReferenceEquals(this, other))
+                return true;
+
+            return string.Equals(Hash, other.Hash, StringComparison.Ordinal);
         }
 
         public override bool Equals(object? obj)
         {
-            return base.Equals(obj as Video);
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj is null)
+            {
+                return false;
+            }
+
+            if (obj is Video other)
+                return ((IEquatable<Video>)this).Equals(other);
+
+            return false;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(FilePath, Title, Date, Duration);
+            return Hash != null ? StringComparer.Ordinal.GetHashCode(Hash) : base.GetHashCode();
         }
 
-        public override string ToString()
+        public static bool operator ==(Video left, Video right)
         {
-            return $"Title: {Title}    Date: {Date}    Duration: {Duration}";
+            if (left is null)
+            {
+                return right is null;
+            }
+
+            return left.Equals(right);
         }
+
+        public static bool operator !=(Video left, Video right)
+        {
+            return !(left == right);
+        }
+
+        public static bool operator <(Video left, Video right)
+        {
+            return left is null ? right is not null : ((IComparable<Video>)left).CompareTo(right) < 0;
+        }
+
+        public static bool operator <=(Video left, Video right)
+        {
+            return left is null || ((IComparable<Video>)left).CompareTo(right) <= 0;
+        }
+
+        public static bool operator >(Video left, Video right)
+        {
+            return left is not null && ((IComparable<Video>)left).CompareTo(right) > 0;
+        }
+
+        public static bool operator >=(Video left, Video right)
+        {
+            return left is null ? right is null : ((IComparable<Video>)left).CompareTo(right) >= 0;
+        }
+        
+        public override string ToString() => $"Video ([{ID}]: {Title}    <{FilePath}>    ({Date:yyyy-MM-dd} - {Duration:h\\:mm\\:ss})";
     }
 }

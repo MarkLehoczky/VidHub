@@ -3,72 +3,73 @@ using CommunityToolkit.Mvvm.Input;
 using VidHub.Core.Helpers;
 using VidHub.Platform;
 using VidHub.Services.Logics.Interfaces;
+using VidHub.Services.Modals.Interfaces;
 using VidHub.Services.Settings.Interfaces;
 
 namespace VidHub.ViewModels
 {
-    public partial class TitlebarViewModel(IVideoLoadService service, ISettingsService settings) : ObservableRecipient
+    public partial class TitleBarViewModel(IVideoLoadService service, ISettingsService settings) : ObservableRecipient
     {
-        private bool CanOpenSidePanel() => !settings.OpenPanel;
-        private bool CanCloseSidePanel() => settings.OpenPanel;
+        private bool CanOpenSidePanel() => !settings.Organizer.Global.OpenedSidePanel;
+        private bool CanCloseSidePanel() => settings.Organizer.Global.OpenedSidePanel;
 
 
-        public bool SystemNotifications
+        public bool EnableSystemNotification
         {
-            get => settings.SystemNotifications;
-            set => settings.SystemNotifications = value;
+            get => settings.Organizer.Global.EnableSystemNotification;
+            set => settings.Organizer.Global.EnableSystemNotification = value;
         }
 
-        public bool CacheLoad
+        public bool EnableCacheLoading
         {
-            get => settings.CacheLoad;
-            set => settings.CacheLoad = value;
+            get => settings.Organizer.Global.EnableCacheLoading;
+            set => settings.Organizer.Global.EnableCacheLoading = value;
         }
 
-        public bool ConcurrentVideoLoading
+        public bool EnableConcurrentLoading
         {
-            get => settings.ConcurrentVideoLoading;
-            set => settings.ConcurrentVideoLoading = value;
+            get => settings.Organizer.Global.EnableConcurrentLoading;
+            set => settings.Organizer.Global.EnableConcurrentLoading = value;
         }
 
-        public bool KeepFilterStatus
+        public bool SaveOrganizerSettings
         {
-            get => settings.KeepFilterStatus;
-            set => settings.KeepFilterStatus = value;
+            get => settings.Organizer.Global.SaveOrganizerSettings;
+            set => settings.Organizer.Global.SaveOrganizerSettings = value;
         }
 
-        public bool LiveTextFiltering
+        public bool EnableLiveSearch
         {
-            get => settings.LiveTextFiltering;
-            set => settings.LiveTextFiltering = value;
+            get => settings.Organizer.Global.EnableLiveSearch;
+            set => settings.Organizer.Global.EnableLiveSearch = value;
         }
 
-        public bool CaseSensitiveTextFiltering
+        public bool EnableCaseSensitiveSearch
         {
-            get => settings.CaseSensitiveTextFiltering;
-            set => settings.CaseSensitiveTextFiltering = value;
+            get => settings.Organizer.Global.EnableCaseSensitiveSearch;
+            set => settings.Organizer.Global.EnableCaseSensitiveSearch = value;
         }
 
-        public bool TextSuggestions
+        public bool EnableSearchSuggestions
         {
-            get => settings.TextSuggestions;
-            set => settings.TextSuggestions = value;
+            get => settings.Organizer.Global.EnableSearchSuggestions;
+            set => settings.Organizer.Global.EnableSearchSuggestions = value;
         }
 
-        public bool ShowTitles
+        public bool DisplayTitles
         {
-            get => settings.ShowTitles;
-            set => settings.ShowTitles = value;
+            get => settings.DisplayCustomization.DisplayTitles;
+            set => settings.DisplayCustomization.DisplayTitles = value;
         }
-        public bool ShowDates
+        public bool DisplayDates
         {
-            get => settings.ShowDates;
-            set => settings.ShowDates = value;
+            get => settings.DisplayCustomization.DisplayDates;
+            set => settings.DisplayCustomization.DisplayDates = value;
         }
-        public bool ShowDurations
+        public bool DisplayDurations
         {
-            get => settings.ShowDurations;
-            set => settings.ShowDurations = value;
+            get => settings.DisplayCustomization.DisplayDurations;
+            set => settings.DisplayCustomization.DisplayDurations = value;
         }
 
 
@@ -106,7 +107,7 @@ namespace VidHub.ViewModels
         [RelayCommand(CanExecute = nameof(CanOpenSidePanel))]
         private void OpenSidePanel()
         {
-            settings.OpenPanel = true;
+            settings.Organizer.Global.OpenedSidePanel = true;
             OpenSidePanelCommand.NotifyCanExecuteChanged();
             CloseSidePanelCommand.NotifyCanExecuteChanged();
         }
@@ -114,7 +115,7 @@ namespace VidHub.ViewModels
         [RelayCommand(CanExecute = nameof(CanCloseSidePanel))]
         private void CloseSidePanel()
         {
-            settings.OpenPanel = false;
+            settings.Organizer.Global.OpenedSidePanel = false;
             OpenSidePanelCommand.NotifyCanExecuteChanged();
             CloseSidePanelCommand.NotifyCanExecuteChanged();
         }
@@ -122,26 +123,25 @@ namespace VidHub.ViewModels
         [RelayCommand]
         private async Task CustomizeVideoDisplayingAsync()
         {
-            await Context.MainWindow.ShowDialogAsync(ModalType.CustomizeDisplaying, "Customize video displaying", "Confirm");
+            await Context.Window.ShowDialogAsync(ModalType.CustomizeVideoDisplayFormat, "Customize video displaying", "Confirm");
         }
 
         [RelayCommand]
         private async Task CustomizeVideoLoadingAsync()
         {
-            Context.MainHost.GetService<IVideoCustomizationService>().IsTemplateMode = true;
-            await Context.MainWindow.ShowDialogAsync(ModalType.CustomizeLoading, "Change video title customization", "Confirm");
+            await Context.Window.ShowDialogAsync(ModalType.CustomizeTitleFormat, "Customize video title", "Confirm", new Tuple<bool, IEnumerable<int>>(true, []));
         }
 
         [RelayCommand]
         private async Task CustomizeThumbnailAsync()
         {
-            await Context.MainWindow.ShowDialogAsync(ModalType.CustomizeThumbnail, "Customize video thumbnail", "Confirm");
+            await Context.Window.ShowDialogAsync(ModalType.CustomizePreviewImageFrame, "Customize video preview image", "Confirm");
         }
 
 
-        public TitlebarViewModel() : this(
-            Context.MainHost.GetService<IVideoLoadService>(),
-            Context.MainHost.GetService<ISettingsService>())
+        public TitleBarViewModel() : this(
+            Context.Host.GetService<IVideoLoadService>(),
+            Context.Host.GetService<ISettingsService>())
         { }
     }
 }

@@ -1,11 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using VidHub.Platform;
-using VidHub.Services.Logics.Interfaces;
+using VidHub.Services.Modals.Interfaces;
 
 namespace VidHub.ViewModels.Modals
 {
-    public partial class ThumbnailCustomizationViewModel(IThumbnailCustomizationService service) : ObservableRecipient
+    public partial class VideoPreviewImageCustomizationViewModel(IVideoPreviewImageCustomizationService service) : ObservableRecipient
     {
         public int Hours
         {
@@ -27,10 +27,10 @@ namespace VidHub.ViewModels.Modals
             get => service.Milliseconds;
             set => service.Milliseconds = value;
         }
-        public int FramePercentage
+        public int Percentage
         {
-            get => service.FramePercentage;
-            set => service.FramePercentage = value;
+            get => service.Percentage;
+            set => service.Percentage = value;
         }
 
         public bool FixedPosition => !service.RelativePosition;
@@ -51,30 +51,30 @@ namespace VidHub.ViewModels.Modals
 
 
         [RelayCommand(CanExecute = nameof(InactiveThumbnailAction))]
-        private async Task RemoveThumbnailsAsync()
+        private async Task RemoveAllPreviewImagesAsync()
         {
             ChangeButtonExecution(true);
-            await service.RemoveAllThumbnailsAsync();
+            await service.RemoveAllPreviewImagesAsync();
             ChangeButtonExecution(false);
         }
 
         [RelayCommand(CanExecute = nameof(InactiveThumbnailAction))]
-        private async Task ExtractThumbnailsAsync()
+        private async Task ExtractLoadedVideoPreviewImagesAsync()
         {
             ChangeButtonExecution(true);
-            await service.ExtractLoadedVideoThumbnailsAsync();
+            await service.ExtractLoadedVideoPreviewImagesAsync();
             ChangeButtonExecution(false);
         }
 
         private void ChangeButtonExecution(bool status)
         {
             ActiveThumbnailAction = status;
-            RemoveThumbnailsCommand.NotifyCanExecuteChanged();
-            ExtractThumbnailsCommand.NotifyCanExecuteChanged();
+            RemoveAllPreviewImagesCommand.NotifyCanExecuteChanged();
+            ExtractLoadedVideoPreviewImagesCommand.NotifyCanExecuteChanged();
             OnPropertyChanged(nameof(ActiveThumbnailAction));
             //Context.MainHost.GetService<IMainService>().Update(UpdateType.ResetVideoCollection);
         }
 
-        public ThumbnailCustomizationViewModel() : this(Context.MainHost.GetService<IThumbnailCustomizationService>()) { }
+        public VideoPreviewImageCustomizationViewModel() : this(Context.Host.GetService<IVideoPreviewImageCustomizationService>()) { }
     }
 }

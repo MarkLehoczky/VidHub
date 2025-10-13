@@ -1,14 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System.Collections.ObjectModel;
+using VidHub.Core.Models;
 using VidHub.Platform;
-using VidHub.Services.Logics.Interfaces;
-using static VidHub.Services.Logics.VideoCustomizationService;
+using VidHub.Services.Modals.Interfaces;
 
 namespace VidHub.ViewModels.Modals
 {
-    public partial class TitleCustomizationViewModel(IVideoCustomizationService service) : ObservableRecipient
+    public partial class VideoTitleFormatCustomizationViewModel(IVideoTitleFormatCustomizationService service) : ObservableRecipient
     {
-        public ObservableCollection<FormattedVideo> TitleCollection => service.Videos;
+        public IList<VideoTitleTemplate> TitleCollection => service.Videos;
 
         public bool IncludePath
         {
@@ -36,40 +35,40 @@ namespace VidHub.ViewModels.Modals
             set => service.IncludeExtension = value;
         }
 
-        public string Pattern
+        public string RegexPattern
         {
-            get => service.Pattern;
+            get => service.RegexPattern;
             set
             {
-                service.Pattern = value;
+                service.RegexPattern = value;
                 OnPropertyChanged(nameof(InvalidRegex));
             }
         }
-        public string Replacement
+        public string RegexReplacement
         {
-            get => service.Replacement;
+            get => service.RegexReplacement;
             set
             {
-                service.Replacement = value;
+                service.RegexReplacement = value;
             }
         }
         public bool InvalidRegex => service.InvalidRegex;
 
-        public bool IsRegexEnabled
+        public bool EnabledRegex
         {
-            get => service.IsRegexEnabled;
-            set => service.IsRegexEnabled = value;
+            get => service.EnabledRegex;
+            set => service.EnabledRegex = value;
         }
-        public bool DontShowAgain
+        public bool DontShowTitleCustomizationAgain
         {
-            get => service.DontShowAgain;
-            set => service.DontShowAgain = value;
+            get => service.DontShowTitleCustomizationAgain;
+            set => service.DontShowTitleCustomizationAgain = value;
         }
 
 
-        public TitleCustomizationViewModel() : this(Context.MainHost.GetService<IVideoCustomizationService>())
+        public VideoTitleFormatCustomizationViewModel() : this(Context.Host.GetService<IVideoTitleFormatCustomizationService>())
         {
-            Context.MainHost.GetService<IVideoCustomizationService>().LoadFormats();
+            Context.Host.GetService<IVideoTitleFormatCustomizationService>().LoadFormats();
         }
     }
 }

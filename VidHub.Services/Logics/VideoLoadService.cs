@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using VidHub.Core;
 using VidHub.Core.Helpers;
+using VidHub.Core.Models;
 using VidHub.Platform;
 using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Logics.Interfaces;
@@ -12,79 +13,86 @@ using WinRT.Interop;
 
 namespace VidHub.Services.Logics
 {
-    public class VideoLoadService(IMainService service, ISettingsService settings, ISystemManager manager, IVideoCustomizationService customization) : IVideoLoadService
+    // TODO: Implement transfer amnager and proper queue system
+    // TODO: Optimize video loading with yielding
+    // TODO: Optimize video loading by using string instead of StorageItem
+    public class VideoLoadService(IVideoService service, ISettingsService settings, ISystemManager manager) : IVideoLoadService
     {
-        private readonly object locker = new();
         private readonly ConcurrentQueue<Transfer> transfers = [];
+        private readonly List<int> IDCollection = [];
 
-        public bool HasTransfer => !transfers.IsEmpty;
-        public bool HasActiveTransfer => transfers.Any(t => t.IsActive);
+        public bool HasActiveTransfer => !transfers.IsEmpty;
 
-        public string TransferDescription =>
-            transfers.Where(t => t.IsActive).All(t => t.IsCollecting) ? "Collecting videos" :
-            transfers.Where(t => t.IsActive).All(t => !t.IsCollecting) ? "Loading videos" :
-            "Collecting and loading videos";
+        public string TransferDescription => transfers.Where(t => t.IsActive).All(t => t.IsCollecting)
+            ? "Collecting videos"
+            : transfers.Where(t => t.IsActive).Any(t => t.IsCollecting)
+                ? "Collecting and loading videos"
+                : "Loading videos";
 
-        public int LoadedCount => transfers.Sum(t => t.LoadedCount);
+        public int LoadedFileCount => transfers.Sum(t => t.LoadedCount);
 
-        public int TotalCount => transfers.Sum(t => t.TotalCount);
+        public int TotalFileCount => transfers.Sum(t => t.TotalCount);
 
 
         public async Task LoadFilesAsync()
         {
-            IReadOnlyList<StorageFile> files = await PickFilesOpen("Load", Video.ExtensionTypes);
+            IReadOnlyList<StorageFile> files = await MultiFileOpener("Load");
 
             if (files.Count > 0)
             {
-                await Task.Run(async () =>
+                await Task.Run(() =>
                 {
                     var index = transfers.Count;
-                    var transfer = new Transfer();
-                    transfer.AddTotalCount(files.Count);
+                    var transfer = new Transfer
+                    {
+                        TotalCount = files.Count
+                    };
                     transfers.Enqueue(transfer);
                     manager.SetTaskbar(transfers);
-                    service.Update(UpdateType.UpdateSidepanel);
+                    service.Update(UpdateType.UpdateSidePanel);
 
                     AddFilesToVideoCollection(index, files);
 
                     transfers.ElementAt(index).IsActive = false;
                     manager.SetTaskbar(transfers);
-                    service.Update(UpdateType.UpdateSidepanel);
-                    await TransferCleanup();
+                    service.Update(UpdateType.UpdateSidePanel);
+                    TransferCleanup();
                 });
             }
         }
 
         public async Task LoadFoldersAsync(bool includeSubfolders)
         {
-            StorageFolder? folder = await PickFolderOpen("Load");
+            StorageFolder? folder = await FolderOpener("Load");
 
             if (folder != null)
             {
                 await Task.Run(async () =>
                 {
                     var index = transfers.Count;
-                    var transfer = new Transfer();
-                    transfer.IsCollecting = true;
+                    var transfer = new Transfer
+                    {
+                        IsCollecting = true
+                    };
                     transfers.Enqueue(transfer);
                     manager.SetTaskbar(transfers);
-                    service.Update(UpdateType.UpdateSidepanel);
+                    service.Update(UpdateType.UpdateSidePanel);
 
                     transfers.ElementAt(index).IsCollecting = true;
                     var files = await CollectFilesAsync(folder, includeSubfolders, Video.ExtensionTypes);
                     transfers.ElementAt(index).IsCollecting = false;
-                    transfers.ElementAt(index).AddTotalCount(files.Count());
+                    transfers.ElementAt(index).TotalCount = files.Count();
                     AddFilesToVideoCollection(index, files);
 
                     transfers.ElementAt(index).IsActive = false;
                     manager.SetTaskbar(transfers);
-                    service.Update(UpdateType.UpdateSidepanel);
-                    await TransferCleanup();
+                    service.Update(UpdateType.UpdateSidePanel);
+                    TransferCleanup();
                 });
             }
         }
 
-        public async Task LoadExternal(IEnumerable<IStorageItem> items)
+        public async Task LoadItems(IEnumerable<IStorageItem> items, bool includeSubfolders)
         {
             if (items.Any())
             {
@@ -94,42 +102,42 @@ namespace VidHub.Services.Logics
                     var transfer = new Transfer();
                     transfers.Enqueue(transfer);
                     manager.SetTaskbar(transfers);
-                    service.Update(UpdateType.UpdateSidepanel);
+                    service.Update(UpdateType.UpdateSidePanel);
 
                     transfers.ElementAt(index).IsCollecting = true;
                     var files = items.OfType<StorageFile>().Where(f => Video.ExtensionTypes.Contains(f.FileType)).ToList();
                     foreach (var folder in items.OfType<StorageFolder>())
                     {
-                        files.AddRange(await CollectFilesAsync(folder, true, Video.ExtensionTypes));
+                        files.AddRange(await CollectFilesAsync(folder, includeSubfolders, Video.ExtensionTypes));
                     }
                     if (files.Count > 0)
                     {
                         transfers.ElementAt(index).IsCollecting = false;
-                        transfers.ElementAt(index).AddTotalCount(files.Count);
+                        transfers.ElementAt(index).TotalCount = files.Count;
                         AddFilesToVideoCollection(index, files);
                     }
 
                     transfers.ElementAt(index).IsActive = false;
                     manager.SetTaskbar(transfers);
-                    service.Update(UpdateType.UpdateSidepanel);
-                    await TransferCleanup();
+                    service.Update(UpdateType.UpdateSidePanel);
+                    TransferCleanup();
                 });
             }
         }
 
         public async Task ImportCollectionAsync()
         {
-            StorageFile? file = await PickFileOpen("Import", [".vhc"]);
+            StorageFile? file = await SingleFileOpener("Import");
 
             if (file != null)
             {
-                await Task.Run(async () =>
+                await Task.Run(() =>
                 {
                     var index = transfers.Count;
                     var transfer = new Transfer();
                     transfers.Enqueue(transfer);
                     manager.SetTaskbar(transfers);
-                    service.Update(UpdateType.UpdateSidepanel);
+                    service.Update(UpdateType.UpdateSidePanel);
 
                     transfers.ElementAt(index).IsCollecting = true;
 
@@ -141,32 +149,30 @@ namespace VidHub.Services.Logics
                         return awaiter.GetResults();
                     });
 
-                    transfer.AddTotalCount(files.Count());
+                    transfer.TotalCount = files.Count();
                     transfers.Enqueue(transfer);
                     manager.SetTaskbar(transfers);
-                    service.Update(UpdateType.UpdateSidepanel);
+                    service.Update(UpdateType.UpdateSidePanel);
 
                     AddFilesToVideoCollection(index, files);
 
                     transfers.ElementAt(index).IsActive = false;
                     manager.SetTaskbar(transfers);
-                    service.Update(UpdateType.UpdateSidepanel);
-                    await TransferCleanup();
+                    service.Update(UpdateType.UpdateSidePanel);
+                    TransferCleanup();
                 });
             }
         }
         public async Task ExportCollectionAsync()
         {
-            StorageFile? file = await PickFileSave("Export", ".vhc", "VidHub Collection");
+            StorageFile? file = await FileSaver("Export");
 
             if (file != null)
-            {
-                await FileIO.WriteTextAsync(file, string.Join('\n', service.GetAllVideos().Select(v => v.FilePath)));
-            }
+                await FileIO.WriteTextAsync(file, string.Join('\n', service.Select(v => v.FilePath)));
         }
 
 
-        private static async Task<IReadOnlyList<StorageFile>> PickFilesOpen(string commitButtonText, List<string> fileTypeFilters)
+        private static async Task<StorageFile?> SingleFileOpener(string commitButtonText)
         {
             var picker = new FileOpenPicker
             {
@@ -174,16 +180,28 @@ namespace VidHub.Services.Logics
                 SuggestedStartLocation = PickerLocationId.HomeGroup,
                 ViewMode = PickerViewMode.Thumbnail
             };
-            foreach (var filter in fileTypeFilters)
-            {
-                picker.FileTypeFilter.Add(filter);
-            }
+            picker.FileTypeFilter.Add(".vhc");
 
-            InitializeWithWindow.Initialize(picker, Context.MainWindow.HWND);
+            InitializeWithWindow.Initialize(picker, Context.Window.HWND);
+            return await picker.PickSingleFileAsync();
+        }
+
+        private static async Task<IReadOnlyList<StorageFile>> MultiFileOpener(string commitButtonText)
+        {
+            var picker = new FileOpenPicker
+            {
+                CommitButtonText = commitButtonText,
+                SuggestedStartLocation = PickerLocationId.HomeGroup,
+                ViewMode = PickerViewMode.Thumbnail
+            };
+            foreach (var filter in Video.ExtensionTypes)
+                picker.FileTypeFilter.Add(filter);
+
+            InitializeWithWindow.Initialize(picker, Context.Window.HWND);
             return await picker.PickMultipleFilesAsync();
         }
 
-        private static async Task<StorageFolder?> PickFolderOpen(string commitButtonText)
+        private static async Task<StorageFolder?> FolderOpener(string commitButtonText)
         {
             var picker = new FolderPicker
             {
@@ -192,39 +210,23 @@ namespace VidHub.Services.Logics
                 ViewMode = PickerViewMode.Thumbnail
             };
 
-            InitializeWithWindow.Initialize(picker, Context.MainWindow.HWND);
+            InitializeWithWindow.Initialize(picker, Context.Window.HWND);
             return await picker.PickSingleFolderAsync();
         }
 
-        private static async Task<StorageFile?> PickFileOpen(string commitButtonText, List<string> fileTypeFilters)
-        {
-            var picker = new FileOpenPicker
-            {
-                CommitButtonText = commitButtonText,
-                SuggestedStartLocation = PickerLocationId.HomeGroup,
-                ViewMode = PickerViewMode.Thumbnail
-            };
-            foreach (var filter in fileTypeFilters)
-            {
-                picker.FileTypeFilter.Add(filter);
-            }
-
-            InitializeWithWindow.Initialize(picker, Context.MainWindow.HWND);
-            return await picker.PickSingleFileAsync();
-        }
-
-        private static async Task<StorageFile?> PickFileSave(string commitButtonText, string defaultFileExtension, string suggestedFileName)
+        // TODO: Implement auto file name increment
+        private static async Task<StorageFile?> FileSaver(string commitButtonText)
         {
             var picker = new FileSavePicker
             {
                 CommitButtonText = commitButtonText,
-                DefaultFileExtension = defaultFileExtension,
-                SuggestedFileName = suggestedFileName,
+                DefaultFileExtension = ".vhc",
+                SuggestedFileName = "VidHub Collection",
                 SuggestedStartLocation = PickerLocationId.HomeGroup
             };
-            picker.FileTypeChoices.Add(suggestedFileName, [defaultFileExtension]);
+            picker.FileTypeChoices.Add("VidHub Collection", [".vhc"]);
 
-            InitializeWithWindow.Initialize(picker, Context.MainWindow.HWND);
+            InitializeWithWindow.Initialize(picker, Context.Window.HWND);
             return await picker.PickSaveFileAsync();
         }
 
@@ -235,83 +237,70 @@ namespace VidHub.Services.Logics
             files.AddRange(await folder.GetFilesAsync());
 
             if (includeSubfolders)
-            {
                 foreach (var subfolder in await folder.GetFoldersAsync())
-                {
                     files.AddRange(await CollectFilesAsync(subfolder, includeSubfolders, fileTypeFilters));
-                }
-            }
 
             return files.Where(f => fileTypeFilters.Contains(f.FileType, StringComparer.OrdinalIgnoreCase));
         }
 
         private void AddFilesToVideoCollection(int index, IEnumerable<StorageFile> files)
         {
-            lock (locker)
+            transfers.ElementAt(index).IsLoading = true;
+
+            if (settings.Organizer.Global.EnableConcurrentLoading)
             {
-                transfers.ElementAt(index).IsLoading = true;
-
-                if (settings.ConcurrentVideoLoading)
+                Parallel.ForEach(files, file =>
                 {
-                    Parallel.ForEach(files, file =>
-                    {
-                        var video = new Video(file.Path);
-                        if (settings.RelativePosition)
-                        {
-                            video.TryLoad(settings.CacheLoad, settings.FramePercentage);
-                        }
-                        else
-                        {
-                            video.TryLoad(settings.CacheLoad, new TimeSpan(0, settings.Hours, settings.Minutes, settings.Seconds, settings.Milliseconds));
-                        }
-                        customization.CustomizeTitle(video);
-                        service.AddVideo(video);
-                        transfers.ElementAt(index).Increment();
-                        manager.SetTaskbar(transfers);
-                        service.LoadedID.Add(video.ID);
-                    });
-                }
-                else
-                {
-                    foreach (var file in files)
-                    {
-                        var video = new Video(file.Path);
-                        if (settings.RelativePosition)
-                        {
-                            video.TryLoad(settings.CacheLoad, settings.FramePercentage);
-                        }
-                        else
-                        {
-                            video.TryLoad(settings.CacheLoad, new TimeSpan(0, settings.Hours, settings.Minutes, settings.Seconds, settings.Milliseconds));
-                        }
-                        customization.CustomizeTitle(video);
-                        service.AddVideo(video);
-                        transfers.ElementAt(index).Increment();
-                        manager.SetTaskbar(transfers);
-                        service.LoadedID.Add(video.ID);
-                    }
-                }
+                    var video = new Video(file.Path);
+                    if (settings.PreviewImageCustomization.RelativePosition)
+                        video.Load(settings.Organizer.Global.EnableCacheLoading, settings.PreviewImageCustomization.FramePercentage);
 
-                transfers.ElementAt(index).IsLoading = false;
-                manager.SetTaskbar(transfers);
-                service.Update(UpdateType.UpdateSidepanel);
+                    else
+                        video.Load(settings.Organizer.Global.EnableConcurrentLoading, settings.PreviewImageCustomization.FrameTime);
+
+                    settings.TitleCustomization.ChangeTitle(video);
+                    service.Add(video);
+                    transfers.ElementAt(index).LoadedCount++;
+                    manager.SetTaskbar(transfers);
+                    IDCollection.Add(video.ID);
+                });
             }
+            else
+            {
+                foreach (var file in files)
+                {
+                    var video = new Video(file.Path);
+                    if (settings.PreviewImageCustomization.RelativePosition)
+                        video.Load(settings.Organizer.Global.EnableCacheLoading, settings.PreviewImageCustomization.FramePercentage);
+
+                    else
+                        video.Load(settings.Organizer.Global.EnableConcurrentLoading, settings.PreviewImageCustomization.FrameTime);
+
+                    settings.TitleCustomization.ChangeTitle(video);
+                    service.Add(video);
+                    transfers.ElementAt(index).LoadedCount++;
+                    manager.SetTaskbar(transfers);
+                    IDCollection.Add(video.ID);
+                }
+            }
+
+            transfers.ElementAt(index).IsLoading = false;
+            manager.SetTaskbar(transfers);
+            service.Update(UpdateType.UpdateSidePanel);
         }
 
-        private async Task TransferCleanup()
+
+        private void TransferCleanup()
         {
             if (transfers.All(t => !t.IsActive))
             {
-                if (!settings.DontShowTitleCustomizationAgain)
-                {
-                    customization.IsTemplateMode = false;
-                    Context.MainWindow.TryEnqueue(() => Context.MainWindow.ShowDialogAsync(ModalType.CustomizeLoading, "Customize video title", "Confirm"));
-                }
+                if (!settings.TitleCustomization.DontShowTitleCustomizationAgain)
+                    Context.Window.TryEnqueue(() => Context.Window.ShowDialogAsync(ModalType.CustomizeTitleFormat, "Customize video title", "Confirm", new Tuple<bool, IList<int>>(false, [.. IDCollection])));
 
-                manager.DisplayToast("Video loading finished!", $"{LoadedCount} videos were loaded successfully.");
+                manager.DisplayToast("Video loading finished!", $"{LoadedFileCount} videos were loaded successfully.");
                 while (transfers.TryDequeue(out _)) ;
-                service.Update(UpdateType.UpdateSidepanel);
-                service.LoadedID.Clear();
+                service.Update(UpdateType.UpdateSidePanel);
+                IDCollection.Clear();
             }
         }
     }

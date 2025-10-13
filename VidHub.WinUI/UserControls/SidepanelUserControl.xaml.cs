@@ -3,19 +3,17 @@ using VidHub.ViewModels;
 
 namespace VidHub.WinUI.UserControls
 {
-    public sealed partial class SidepanelUserControl : UserControl
+    public sealed partial class SidePanelUserControl : UserControl
     {
-        public SidepanelUserControl()
+        public SidePanelUserControl()
         {
             InitializeComponent();
         }
 
         private void UpdateTextFilter(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
         {
-            if (DataContext is SidepanelViewModel viewModel)
-            {
-                viewModel.UpdateTextFilter(sender.Text);
-            }
+            if (DataContext is SidePanelViewModel viewModel)
+                viewModel.UpdateTextFilter();
         }
     }
 }

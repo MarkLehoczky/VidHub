@@ -2,9 +2,9 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace VidHub.WinUI.UserControls
 {
-    public sealed partial class TitlebarUserControl : UserControl
+    public sealed partial class TitleBarUserControl : UserControl
     {
-        public TitlebarUserControl()
+        public TitleBarUserControl()
         {
             InitializeComponent();
         }

@@ -5,31 +5,27 @@ namespace VidHub.Core
 {
     internal class MetadataProcessor(string filePath)
     {
-        public string FilePath { get; set; } = filePath;
-        public int Timeout { get; set; } = 10000;
-
-
         public DateTime ExtractDate()
         {
-            string date = RunSuccessfulProcess("ffprobe", "-v", "error", "-show_entries", "format_tags=creation_time", "-of", "default=noprint_wrappers=1:nokey=1", FilePath);
+            string date = RunSuccessfulProcess("ffprobe", "-v", "error", "-show_entries", "format_tags=creation_time", "-of", "default=noprint_wrappers=1:nokey=1", filePath);
             return DateTime.Parse(date.Trim(), CultureInfo.InvariantCulture);
         }
 
         public TimeSpan ExtractDuration()
         {
-            string duration = RunSuccessfulProcess("ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", FilePath);
+            string duration = RunSuccessfulProcess("ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", filePath);
             return TimeSpan.FromSeconds(double.Parse(duration.Trim(), CultureInfo.InvariantCulture));
         }
 
-        public string GenerateThumbnail(string thumbnailName, TimeSpan frame)
+        public string ExtractPreviewImage(string imageName, TimeSpan frame)
         {
-            string thumbnailDirectory = Path.Combine(Path.GetTempPath(), "VidHub", "Thumbnails");
-            string thumbnailPath = Path.Combine(thumbnailDirectory, thumbnailName + ".jpg");
+            string previewDirectory = Path.Combine(Path.GetTempPath(), "VidHub", "Previews");
+            string previewPath = Path.Combine(previewDirectory, imageName + ".jpg");
 
-            Directory.CreateDirectory(thumbnailDirectory);
+            Directory.CreateDirectory(previewDirectory);
 
-            RunSuccessfulProcess("ffmpeg", "-v", "error", "-y", "-ss", frame.TotalSeconds.ToString(CultureInfo.InvariantCulture), "-i", FilePath, "-frames:v", "1", thumbnailPath);
-            return thumbnailPath;
+            RunSuccessfulProcess("ffmpeg", "-v", "error", "-y", "-ss", frame.TotalSeconds.ToString(CultureInfo.InvariantCulture), "-i", filePath, "-frames:v", "1", previewPath);
+            return previewPath;
         }
 
 
@@ -50,11 +46,10 @@ namespace VidHub.Core
             var outputTask = process.StandardOutput.ReadToEndAsync();
             var errorTask = process.StandardError.ReadToEndAsync();
 
-            if (!process.WaitForExit(Timeout))
+            if (!process.WaitForExit(10000))
             {
                 process.Kill();
-                Console.WriteLine($"Process `{filename} {string.Join(' ', arguments)}` timed out after {Timeout} ms.");
-                throw new TimeoutException($"Process `{filename} {string.Join(' ', arguments)}` timed out after {Timeout} ms.");
+                throw new TimeoutException($"Process `{filename} {string.Join(' ', arguments)}` timed out after {10000} ms.");
             }
 
             var output = outputTask.Result;
@@ -73,5 +68,4 @@ namespace VidHub.Core
             return output;
         }
     }
-
 }

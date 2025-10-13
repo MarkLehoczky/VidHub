@@ -7,9 +7,9 @@ using VidHub.Services.Settings.Interfaces;
 
 namespace VidHub.ViewModels
 {
-    public partial class SidepanelViewModel(IVideoOrganizeService organizeService, IVideoLoadService loadService, ISettingsService settingsService) : ObservableRecipient
+    public partial class SidePanelViewModel(IVideoOrganizerService organizeService, IVideoLoadService loadService, ISettingsService settingsService) : ObservableRecipient
     {
-        public bool OpenPanel => settingsService.OpenPanel;
+        public bool OpenPanel => settingsService.Organizer.Global.OpenedSidePanel;
 
         #region Organizer section
         public IEnumerable<string> SortOptions => organizeService.GetSortOptions();
@@ -21,7 +21,7 @@ namespace VidHub.ViewModels
         }
 
 
-        public string? SearchText
+        public string SearchText
         {
             get => organizeService.SearchText;
             set
@@ -30,7 +30,7 @@ namespace VidHub.ViewModels
                 OnPropertyChanged(nameof(Suggestions));
             }
         }
-        public bool LiveTextFiltering => settingsService.LiveTextFiltering;
+        public bool EnableLiveSearch => settingsService.Organizer.Global.EnableLiveSearch;
         public IEnumerable<string> Suggestions => organizeService.Suggestions();
 
         public bool FilterDate
@@ -69,42 +69,40 @@ namespace VidHub.ViewModels
 
         #region Transfer section
         public string TransferDescription => loadService.TransferDescription;
-        public bool HasTransfer => loadService.HasTransfer;
         public bool HasActiveTransfer => loadService.HasActiveTransfer;
-        public int LoadedCount => loadService.LoadedCount;
-        public int TotalCount => loadService.TotalCount;
+        public int LoadedCount => loadService.LoadedFileCount;
+        public int TotalCount => loadService.TotalFileCount;
         public bool Indeterminate => TotalCount - LoadedCount == 0;
         #endregion
 
 
-        public SidepanelViewModel() : this(
-            Context.MainHost.GetService<IVideoOrganizeService>(),
-            Context.MainHost.GetService<IVideoLoadService>(),
-            Context.MainHost.GetService<ISettingsService>())
+        public SidePanelViewModel() : this(
+            Context.Host.GetService<IVideoOrganizerService>(),
+            Context.Host.GetService<IVideoLoadService>(),
+            Context.Host.GetService<ISettingsService>())
         {
-            Context.MainHost.GetService<IMainService>().SubscribeToUpdateEvent(UpdateProperties);
+            Context.Host.GetService<IVideoService>().SubscribeToUpdateEvent(UpdateProperties);
         }
 
-        ~SidepanelViewModel()
+        ~SidePanelViewModel()
         {
-            Context.MainHost.GetService<IMainService>().UnsubscribeFromUpdateEvent(UpdateProperties);
+            Context.Host.GetService<IVideoService>().UnsubscribeFromUpdateEvent(UpdateProperties);
         }
 
 
-        public void UpdateTextFilter(string text)
+        public void UpdateTextFilter()
         {
-            organizeService.UpdateTextFilter(text);
+            organizeService.UpdateSearchText();
         }
 
 
         private void UpdateProperties(UpdateType type)
         {
-            if (type == UpdateType.UpdateSidepanel || type == UpdateType.UpdateAll || type == UpdateType.ResetSidepanel || type == UpdateType.ResetAll)
+            if (type == UpdateType.UpdateSidePanel || type == UpdateType.ForceUpdateSidePanel)
             {
                 OnPropertyChanged(nameof(OpenPanel));
-                OnPropertyChanged(nameof(LiveTextFiltering));
+                OnPropertyChanged(nameof(EnableLiveSearch));
                 OnPropertyChanged(nameof(TransferDescription));
-                OnPropertyChanged(nameof(HasTransfer));
                 OnPropertyChanged(nameof(HasActiveTransfer));
                 OnPropertyChanged(nameof(LoadedCount));
                 OnPropertyChanged(nameof(TotalCount));

@@ -68,7 +68,7 @@ namespace VidHub.WinUI.UserControls
 
         private void HandlePastedFiles(IEnumerable<IStorageItem> items)
         {
-            Context.MainHost.GetService<IVideoLoadService>().LoadExternal(items);
+            Platform.Context.Host.GetService<IVideoLoadService>().LoadItems(items, true);
         }
 
         private void TextTrimmingChanged(TextBlock sender, IsTextTrimmedChangedEventArgs args)

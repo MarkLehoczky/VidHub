@@ -30,7 +30,7 @@ namespace VidHub.Platform.Windows
         #endregion
 
         #region Flash Window
-        public void FlashWindow(nint windowHandle, int count = 3, uint timeout = 0)
+        public static void FlashWindow(nint windowHandle, int count = 3, uint timeout = 0)
         {
             var flashInfo = new FLASHWINFO
             {
@@ -46,8 +46,8 @@ namespace VidHub.Platform.Windows
         #endregion
 
         #region Overlay Icon / Badge
-        public void SetOverlayIcon(nint windowHandle, Icon icon, string description) =>
-            _taskbarInstance.SetOverlayIcon(windowHandle, icon?.Handle ?? nint.Zero, description);
+        public void SetOverlayIcon(nint windowHandle, Icon? icon, string? description) =>
+            _taskbarInstance.SetOverlayIcon(windowHandle, icon?.Handle ?? nint.Zero, description ?? string.Empty);
 
         public void ClearOverlayIcon(nint windowHandle) =>
             SetOverlayIcon(windowHandle, null, null);
@@ -55,6 +55,7 @@ namespace VidHub.Platform.Windows
 
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
             if (_taskbarInstance != null && Marshal.IsComObject(_taskbarInstance))
                 Marshal.ReleaseComObject(_taskbarInstance);
         }
