@@ -59,7 +59,7 @@
             <ToggleButton Content="Extension" IsChecked="{Binding IncludeExtension, Mode=TwoWay}" ToolTipService.ToolTip="Include file extension." Margin="5 0 0 0" HorizontalAlignment="Stretch" Grid.Column="4" />
         </Grid>
 
-        <Grid Visibility="{Binding ElementName=regex_toggle, Path=IsChecked}" Grid.Row="3">
+        <Grid Visibility="{Binding EnabledRegex}" Grid.Row="3">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="*" />
@@ -70,7 +70,7 @@
             <TextBlock Text="Invalid regex pattern" Foreground="Red" Visibility="{Binding InvalidRegex}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0 0 0 5" Grid.Row="2" />
         </Grid>
         
-        <CheckBox x:Name="regex_toggle" Content="Enable regex customization" IsChecked="{Binding EnabledRegex, Mode=TwoWay}" ToolTipService.ToolTip="When enabled the titles of the videos will be changed according to the pattern below." Grid.Row="4" />
+        <CheckBox Content="Enable regex customization" IsChecked="{Binding EnabledRegex, Mode=TwoWay}" ToolTipService.ToolTip="When enabled the titles of the videos will be changed according to the pattern below." Grid.Row="4" />
 
         <CheckBox Content="Don't show modal again" ToolTipService.ToolTip="When checked this modal will not appear again. It can be turned on again in the Settings." IsChecked="{Binding DontShowTitleCustomizationAgain, Mode=TwoWay}" Grid.Row="5" />
 

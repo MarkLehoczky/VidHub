@@ -4,10 +4,12 @@ using Microsoft.UI.Xaml;
 using System;
 using VidHub.Services.Base;
 using VidHub.Services.Base.Interfaces;
+using VidHub.Services.Connectors.Base;
+using VidHub.Services.Connectors.Base.Interfaces;
+using VidHub.Services.Connectors.Modals;
+using VidHub.Services.Connectors.Modals.Interfaces;
 using VidHub.Services.Logics;
 using VidHub.Services.Logics.Interfaces;
-using VidHub.Services.Modals;
-using VidHub.Services.Modals.Interfaces;
 using VidHub.Services.Settings;
 using VidHub.Services.Settings.Interfaces;
 using VidHub.Services.System;
@@ -34,13 +36,19 @@ namespace VidHub.WinUI
                     services.AddSingleton<IVideoLoadService, VideoLoadService>();
                     services.AddSingleton<IVideoOrganizerService, VideoOrganizerService>();
                     services.AddSingleton<IVideoCollectionService, VideoCollectionService>();
-                    services.AddSingleton<IVideoTitleFormatCustomizationService, VideoTitleFormatCustomizationService>();
-                    services.AddSingleton<IVideoPreviewImageCustomizationService, VideoPreviewImageCustomizationService>();
+                    services.AddSingleton<IVideoCollectionConnector, VideoCollectionConnector>();
+                    services.AddSingleton<ISidePanelConnector, SidePanelConnector>();
+                    services.AddSingleton<ITitleBarConnector, TitleBarConnector>();
+                    services.AddSingleton<IVideoDisplayCustomizationConnector, VideoDisplayCustomizationConnector>();
+                    services.AddSingleton<IVideoTitleFormatCustomizationConnector, VideoTitleFormatCustomizationConnector>();
+                    services.AddSingleton<IVideoPreviewImageCustomizationConnector, VideoPreviewImageCustomizationConnector>();
                     services.AddTransient<TitleBarViewModel>();
                     services.AddTransient<SidePanelViewModel>();
                     services.AddTransient<VideoCollectionViewModel>();
+                    services.AddTransient<VideoDisplayCustomizationViewModel>();
                     services.AddTransient<VideoTitleFormatCustomizationViewModel>();
                     services.AddTransient<VideoPreviewImageCustomizationViewModel>();
+                    services.AddTransient<RenameViewModel>();
                 })
                 .Build());
         }

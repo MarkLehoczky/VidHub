@@ -1,6 +1,8 @@
-﻿namespace VidHub.Services.Modals.Interfaces
+﻿using VidHub.Services.Base.Interfaces;
+
+namespace VidHub.Services.Connectors.Modals.Interfaces
 {
-    public interface IVideoPreviewImageCustomizationService
+    public interface IVideoPreviewImageCustomizationConnector : IUpdateService
     {
         int Hours { get; set; }
         int Milliseconds { get; set; }

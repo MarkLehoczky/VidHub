@@ -1,21 +1,23 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Collections.ObjectModel;
+using System.Text.RegularExpressions;
+using VidHub.Core;
 using VidHub.Core.Helpers;
 using VidHub.Core.Models;
 using VidHub.Services.Base.Interfaces;
-using VidHub.Services.Modals.Interfaces;
+using VidHub.Services.Connectors.Modals.Interfaces;
 using VidHub.Services.Settings.Interfaces;
 
-namespace VidHub.Services.Modals
+namespace VidHub.Services.Connectors.Modals
 {
-    public class VideoTitleFormatCustomizationService(IVideoService service, ISettingsService settings) : IVideoTitleFormatCustomizationService
+    public class VideoTitleFormatCustomizationConnector(IVideoService vs, ISettingsService settings) : IVideoTitleFormatCustomizationConnector
     {
-        public IList<VideoTitleTemplate> Videos { get; } = [];
+        public ObservableCollection<VideoTitleTemplate> Videos { get; } = [];
         public bool IsTemplateMode { get; set; }
 
         public bool IncludePath
         {
             get => settings.TitleCustomization.IncludePath;
-            set 
+            set
             {
                 settings.TitleCustomization.IncludePath = value;
                 UpdateFormats();
@@ -94,24 +96,17 @@ namespace VidHub.Services.Modals
         }
 
 
-        public void LoadFormats()
+        public void ChangeVideos(IEnumerable<int> ids)
         {
-            if (IsTemplateMode)
-            {
-                Videos.Clear();
-                foreach (var video in service)
-                {
-                    Videos.Add(new VideoTitleTemplate(video));
-                }
-            }
-            else
-            {
-                Videos.Clear();
-                foreach (var video in service)
-                {
-                    Videos.Add(new VideoTitleTemplate(video));
-                }
-            }
+            ChangeVideos(vs.Where(v => ids.Contains(v.ID)));
+        }
+        public void ChangeVideos(IEnumerable<Video> videos)
+        {
+            Videos.Clear();
+
+            foreach (var video in videos)
+                Videos.Add(new VideoTitleTemplate(video));
+
             UpdateFormats();
         }
 
@@ -132,10 +127,15 @@ namespace VidHub.Services.Modals
                 video.Title = settings.TitleCustomization.CustomizeTitle(video.FilePath, EnabledRegex && !InvalidRegex);
                 if (!IsTemplateMode)
                 {
-                    service.FirstOrDefault(v => v.ID == video.ID)!.Title = video.Title;
-                    service.Update(UpdateType.ForceUpdateVideoCollection);
+                    vs.FirstOrDefault(v => v.ID == video.ID)!.Title = video.Title;
                 }
             }
         }
+
+        public void SubscribeToUpdateEvent(Action<UpdateType> action) => vs.SubscribeToUpdateEvent(action);
+
+        public void UnsubscribeFromUpdateEvent(Action<UpdateType> action) => vs.UnsubscribeFromUpdateEvent(action);
+
+        public void Update(UpdateType type) => vs.Update(type);
     }
 }

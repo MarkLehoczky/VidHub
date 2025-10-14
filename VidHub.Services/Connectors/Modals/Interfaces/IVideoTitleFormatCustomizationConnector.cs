@@ -1,9 +1,11 @@
-﻿using VidHub.Core;
+﻿using System.Collections.ObjectModel;
+using VidHub.Core;
 using VidHub.Core.Models;
+using VidHub.Services.Base.Interfaces;
 
-namespace VidHub.Services.Modals.Interfaces
+namespace VidHub.Services.Connectors.Modals.Interfaces
 {
-    public interface IVideoTitleFormatCustomizationService
+    public interface IVideoTitleFormatCustomizationConnector : IUpdateService
     {
         bool DontShowTitleCustomizationAgain { get; set; }
         bool EnabledRegex { get; set; }
@@ -16,8 +18,8 @@ namespace VidHub.Services.Modals.Interfaces
         bool IsTemplateMode { get; set; }
         string RegexPattern { get; set; }
         string RegexReplacement { get; set; }
-        IList<VideoTitleTemplate> Videos { get; }
-        void LoadFormats();
-        void UpdateFormats();
+        ObservableCollection<VideoTitleTemplate> Videos { get; }
+        void ChangeVideos(IEnumerable<int> ids);
+        void ChangeVideos(IEnumerable<Video> videos);
     }
 }

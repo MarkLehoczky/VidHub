@@ -1,46 +1,50 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.Input;
+using VidHub.Core.Helpers;
 using VidHub.Platform;
-using VidHub.Services.Modals.Interfaces;
+using VidHub.Services.Connectors.Modals.Interfaces;
+using VidHub.ViewModels.Base;
 
 namespace VidHub.ViewModels.Modals
 {
-    public partial class VideoPreviewImageCustomizationViewModel(IVideoPreviewImageCustomizationService service) : ObservableRecipient
+    public partial class VideoPreviewImageCustomizationViewModel(IVideoPreviewImageCustomizationConnector connector) : ViewModelTemplate(connector)
     {
+        public VideoPreviewImageCustomizationViewModel() : this(Context.Host.GetService<IVideoPreviewImageCustomizationConnector>()) { }
+
+
         public int Hours
         {
-            get => service.Hours;
-            set => service.Hours = value;
+            get => connector.Hours;
+            set => connector.Hours = value;
         }
         public int Minutes
         {
-            get => service.Minutes;
-            set => service.Minutes = value;
+            get => connector.Minutes;
+            set => connector.Minutes = value;
         }
         public int Seconds
         {
-            get => service.Seconds;
-            set => service.Seconds = value;
+            get => connector.Seconds;
+            set => connector.Seconds = value;
         }
         public int Milliseconds
         {
-            get => service.Milliseconds;
-            set => service.Milliseconds = value;
+            get => connector.Milliseconds;
+            set => connector.Milliseconds = value;
         }
         public int Percentage
         {
-            get => service.Percentage;
-            set => service.Percentage = value;
+            get => connector.Percentage;
+            set => connector.Percentage = value;
         }
 
-        public bool FixedPosition => !service.RelativePosition;
+        public bool FixedPosition => !connector.RelativePosition;
 
         public bool RelativePosition
         {
-            get => service.RelativePosition;
+            get => connector.RelativePosition;
             set
             {
-                service.RelativePosition = value;
+                connector.RelativePosition = value;
                 OnPropertyChanged(nameof(FixedPosition));
                 OnPropertyChanged(nameof(RelativePosition));
             }
@@ -54,7 +58,7 @@ namespace VidHub.ViewModels.Modals
         private async Task RemoveAllPreviewImagesAsync()
         {
             ChangeButtonExecution(true);
-            await service.RemoveAllPreviewImagesAsync();
+            await connector.RemoveAllPreviewImagesAsync();
             ChangeButtonExecution(false);
         }
 
@@ -62,7 +66,7 @@ namespace VidHub.ViewModels.Modals
         private async Task ExtractLoadedVideoPreviewImagesAsync()
         {
             ChangeButtonExecution(true);
-            await service.ExtractLoadedVideoPreviewImagesAsync();
+            await connector.ExtractLoadedVideoPreviewImagesAsync();
             ChangeButtonExecution(false);
         }
 
@@ -72,9 +76,9 @@ namespace VidHub.ViewModels.Modals
             RemoveAllPreviewImagesCommand.NotifyCanExecuteChanged();
             ExtractLoadedVideoPreviewImagesCommand.NotifyCanExecuteChanged();
             OnPropertyChanged(nameof(ActiveThumbnailAction));
-            //Context.MainHost.GetService<IMainService>().Update(UpdateType.ResetVideoCollection);
         }
 
-        public VideoPreviewImageCustomizationViewModel() : this(Context.Host.GetService<IVideoPreviewImageCustomizationService>()) { }
+
+        override public void Update(UpdateType type) { }
     }
 }

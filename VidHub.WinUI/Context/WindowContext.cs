@@ -1,11 +1,14 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using VidHub.Core;
 using VidHub.Core.Helpers;
 using VidHub.Platform.Interfaces;
 using VidHub.WinUI.UserControls.Modals;
+using Windows.UI.Core;
 using WinRT.Interop;
 
 namespace VidHub.WinUI.Context
@@ -28,7 +31,7 @@ namespace VidHub.WinUI.Context
             switch (type)
             {
                 case ModalType.CustomizeVideoDisplayFormat: content = new VideoDisplayCustomizationUserControl(); break;
-                case ModalType.CustomizeTitleFormat: content = new VideoTitleFormatCustomizationUserControl(); break;
+                case ModalType.CustomizeTitleFormat: content = new VideoTitleFormatCustomizationUserControl(new Tuple<bool, IEnumerable<int>>(true, [])); break;
                 case ModalType.CustomizePreviewImageFrame: content = new VideoPreviewImageCustomizationUserControl(); break;
                 case ModalType.ChangeVideoTitle: content = new RenameUserControl(new Video()); break;
             }
@@ -51,7 +54,7 @@ namespace VidHub.WinUI.Context
             switch (type)
             {
                 case ModalType.CustomizeVideoDisplayFormat: content = new VideoDisplayCustomizationUserControl(); break;
-                case ModalType.CustomizeTitleFormat: content = new VideoTitleFormatCustomizationUserControl(); break;
+                case ModalType.CustomizeTitleFormat: content = new VideoTitleFormatCustomizationUserControl((Tuple<bool, IEnumerable<int>>)instance); break;
                 case ModalType.CustomizePreviewImageFrame: content = new VideoPreviewImageCustomizationUserControl(); break;
                 case ModalType.ChangeVideoTitle: content = new RenameUserControl((Video)instance); break;
             }

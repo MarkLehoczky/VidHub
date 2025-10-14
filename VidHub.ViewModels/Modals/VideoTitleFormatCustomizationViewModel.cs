@@ -1,74 +1,92 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using VidHub.Core;
+using VidHub.Core.Helpers;
 using VidHub.Core.Models;
 using VidHub.Platform;
-using VidHub.Services.Modals.Interfaces;
+using VidHub.Services.Connectors.Modals.Interfaces;
+using VidHub.ViewModels.Base;
 
 namespace VidHub.ViewModels.Modals
 {
-    public partial class VideoTitleFormatCustomizationViewModel(IVideoTitleFormatCustomizationService service) : ObservableRecipient
+    public partial class VideoTitleFormatCustomizationViewModel(IVideoTitleFormatCustomizationConnector connector) : ViewModelTemplate(connector)
     {
-        public IList<VideoTitleTemplate> TitleCollection => service.Videos;
+        public VideoTitleFormatCustomizationViewModel() : this(Context.Host.GetService<IVideoTitleFormatCustomizationConnector>()) { }
+
+
+        public IList<VideoTitleTemplate> TitleCollection => connector.Videos;
 
         public bool IncludePath
         {
-            get => service.IncludePath;
-            set => service.IncludePath = value;
+            get => connector.IncludePath;
+            set => connector.IncludePath = value;
         }
         public bool IncludeDate
         {
-            get => service.IncludeDate;
-            set => service.IncludeDate = value;
+            get => connector.IncludeDate;
+            set => connector.IncludeDate = value;
         }
         public bool IncludeFilename
         {
-            get => service.IncludeFilename;
-            set => service.IncludeFilename = value;
+            get => connector.IncludeFilename;
+            set => connector.IncludeFilename = value;
         }
         public bool IncludeMetadata
         {
-            get => service.IncludeMetadata;
-            set => service.IncludeMetadata = value;
+            get => connector.IncludeMetadata;
+            set => connector.IncludeMetadata = value;
         }
         public bool IncludeExtension
         {
-            get => service.IncludeExtension;
-            set => service.IncludeExtension = value;
+            get => connector.IncludeExtension;
+            set => connector.IncludeExtension = value;
         }
 
         public string RegexPattern
         {
-            get => service.RegexPattern;
+            get => connector.RegexPattern;
             set
             {
-                service.RegexPattern = value;
+                connector.RegexPattern = value;
                 OnPropertyChanged(nameof(InvalidRegex));
             }
         }
         public string RegexReplacement
         {
-            get => service.RegexReplacement;
+            get => connector.RegexReplacement;
             set
             {
-                service.RegexReplacement = value;
+                connector.RegexReplacement = value;
             }
         }
-        public bool InvalidRegex => service.InvalidRegex;
+        public bool InvalidRegex => connector.InvalidRegex;
 
         public bool EnabledRegex
         {
-            get => service.EnabledRegex;
-            set => service.EnabledRegex = value;
+            get => connector.EnabledRegex;
+            set => connector.EnabledRegex = value;
         }
         public bool DontShowTitleCustomizationAgain
         {
-            get => service.DontShowTitleCustomizationAgain;
-            set => service.DontShowTitleCustomizationAgain = value;
+            get => connector.DontShowTitleCustomizationAgain;
+            set => connector.DontShowTitleCustomizationAgain = value;
         }
 
-
-        public VideoTitleFormatCustomizationViewModel() : this(Context.Host.GetService<IVideoTitleFormatCustomizationService>())
+        public bool TemplateMode
         {
-            Context.Host.GetService<IVideoTitleFormatCustomizationService>().LoadFormats();
+            get => connector.IsTemplateMode;
+            set => connector.IsTemplateMode = value;
         }
+
+        public void ChangeVideos(IEnumerable<int> ids)
+        {
+            connector.ChangeVideos(ids);
+        }
+
+        public void ChangeVideos(IEnumerable<Video> videos)
+        {
+            connector.ChangeVideos(videos);
+        }
+
+
+        public override void Update(UpdateType type) { }
     }
 }

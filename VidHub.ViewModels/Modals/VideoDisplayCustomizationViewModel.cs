@@ -1,51 +1,55 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using VidHub.Core.Helpers;
 using VidHub.Platform;
-using VidHub.Services.Settings.Interfaces;
+using VidHub.Services.Connectors.Modals.Interfaces;
+using VidHub.ViewModels.Base;
 
 namespace VidHub.ViewModels.Modals
 {
-    public partial class VideoDisplayCustomizationViewModel(ISettingsService settings) : ObservableRecipient
+    public partial class VideoDisplayCustomizationViewModel(IVideoDisplayCustomizationConnector connector) : ViewModelTemplate(connector)
     {
+        public VideoDisplayCustomizationViewModel() : this(Context.Host.GetService<IVideoDisplayCustomizationConnector>()) { }
+
+
         public string DateFormat
         {
-            get => settings.DisplayCustomization.DateFormat;
-            set => settings.DisplayCustomization.DateFormat = value;
+            get => connector.DateFormat;
+            set => connector.DateFormat = value;
         }
 
         public string DurationDayFormat
         {
-            get => settings.DisplayCustomization.DurationDayFormat;
-            set => settings.DisplayCustomization.DurationDayFormat = value;
+            get => connector.DurationDayFormat;
+            set => connector.DurationDayFormat = value;
         }
         public string DurationHourFormat
         {
-            get => settings.DisplayCustomization.DurationHourFormat;
-            set => settings.DisplayCustomization.DurationHourFormat = value;
+            get => connector.DurationHourFormat;
+            set => connector.DurationHourFormat = value;
         }
         public string DurationMinuteFormat
         {
-            get => settings.DisplayCustomization.DurationMinuteFormat;
-            set => settings.DisplayCustomization.DurationMinuteFormat = value;
+            get => connector.DurationMinuteFormat;
+            set => connector.DurationMinuteFormat = value;
         }
         public string DurationSecondFormat
         {
-            get => settings.DisplayCustomization.DurationSecondFormat;
-            set => settings.DisplayCustomization.DurationSecondFormat = value;
+            get => connector.DurationSecondFormat;
+            set => connector.DurationSecondFormat = value;
         }
 
 
         public double PreviewImageWidth
         {
-            get => settings.DisplayCustomization.PreviewImageWidth;
-            set => settings.DisplayCustomization.PreviewImageWidth = value;
+            get => connector.PreviewImageWidth;
+            set => connector.PreviewImageWidth = value;
         }
         public double PreviewImageHeight
         {
-            get => settings.DisplayCustomization.PreviewImageHeight;
-            set => settings.DisplayCustomization.PreviewImageHeight = value;
+            get => connector.PreviewImageHeight;
+            set => connector.PreviewImageHeight = value;
         }
 
 
-        public VideoDisplayCustomizationViewModel() : this(Context.Host.GetService<ISettingsService>()) { }
+        override public void Update(UpdateType type) { }
     }
 }
