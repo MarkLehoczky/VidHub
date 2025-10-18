@@ -1,14 +1,12 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VidHub.Core;
 using VidHub.Core.Helpers;
 using VidHub.Platform.Interfaces;
 using VidHub.WinUI.UserControls.Modals;
-using Windows.UI.Core;
 using WinRT.Interop;
 
 namespace VidHub.WinUI.Context

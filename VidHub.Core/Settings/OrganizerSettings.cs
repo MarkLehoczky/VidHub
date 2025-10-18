@@ -20,11 +20,11 @@ namespace VidHub.Core.Settings
 
             if (Display.FilterDate)
                 if (Display.StartDate.HasValue && video.Date < Display.StartDate.Value) return false;
-                if (Display.EndDate.HasValue && video.Date > Display.EndDate.Value) return false;
+            if (Display.EndDate.HasValue && video.Date > Display.EndDate.Value) return false;
 
             if (Display.FilterDuration)
                 if (Display.MinDuration.HasValue && video.Duration < Display.MinDuration.Value) return false;
-                if (Display.MaxDuration.HasValue && video.Duration > Display.MaxDuration.Value) return false;
+            if (Display.MaxDuration.HasValue && video.Duration > Display.MaxDuration.Value) return false;
 
             return true;
         }

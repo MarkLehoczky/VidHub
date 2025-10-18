@@ -1,7 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using System.Text.RegularExpressions;
-using Windows.Devices.Power;
-using Windows.UI.Popups;
+﻿using System.Text.RegularExpressions;
 
 namespace VidHub.Core.Settings
 {

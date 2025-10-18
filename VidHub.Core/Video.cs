@@ -11,7 +11,7 @@ namespace VidHub.Core
     public class Video : ObservableObject, IComparable, IComparable<Video>, IComparer, IComparer<Video>, IEqualityComparer<Video>, IEquatable<Video>
     {
         public static List<string> ExtensionTypes => [".mp4", ".mov", ".wmv", ".mkv"];
-        
+
         private static int IDProvider = 0;
 
 
@@ -293,7 +293,7 @@ namespace VidHub.Core
         {
             return left is null ? right is null : ((IComparable<Video>)left).CompareTo(right) >= 0;
         }
-        
+
         public override string ToString() => $"Video ([{ID}]: {Title}    <{FilePath}>    ({Date:yyyy-MM-dd} - {Duration:h\\:mm\\:ss})";
     }
 }

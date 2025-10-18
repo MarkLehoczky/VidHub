@@ -1,5 +1,4 @@
-﻿using VidHub.Core;
-using VidHub.Core.Helpers;
+﻿using VidHub.Core.Helpers;
 using VidHub.Platform;
 using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Connectors.Base.Interfaces;

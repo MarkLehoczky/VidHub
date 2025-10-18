@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VidHub.Core;
-using VidHub.Platform;
 using VidHub.Services.Logics.Interfaces;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;

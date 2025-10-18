@@ -42,7 +42,7 @@ namespace VidHub.Services.Base
         public void Update(UpdateType type)
         {
             lock (locker)
-            Context.Window.TryEnqueue(() => UpdateEvent?.Invoke(type));
+                Context.Window.TryEnqueue(() => UpdateEvent?.Invoke(type));
         }
 
         public int IndexOf(Video item)
