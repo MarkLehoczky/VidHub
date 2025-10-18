@@ -86,10 +86,10 @@ namespace VidHub.Services.Logics
                 {
                     await Task.Run(async () =>
                     {
-                        var lines = await FileIO.ReadLinesAsync(file);
-                        var files = lines.Where(l => Path.Exists(l) && Video.ExtensionTypes.Contains(Path.GetExtension(l)));
+                        var files = await FileIO.ReadLinesAsync(file);
+                        var collectActions = new WrapActions<string>(WrapActions<string>.NoAction, UpdateUI);
                         var loadActions = new WrapActions<string>(LoadVideo, UpdateUI);
-                        await manager.QueueVideoLoading(files, loadActions);
+                        await manager.QueueVideoCollecting(files, false, collectActions, loadActions);
                     });
 
                 });

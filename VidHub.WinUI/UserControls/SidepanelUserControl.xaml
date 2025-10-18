@@ -57,7 +57,7 @@
                             <ColumnDefinition Width="auto" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="{Binding LoadedCount}" FontFamily="Consolas" Grid.Column="0" />
-                        <ProgressBar Minimum="0" Value="{Binding LoadedCount}" Maximum="{Binding TotalCount}" IsIndeterminate="{Binding Indeterminate}" Margin="10 0" Grid.Column="1" />
+                        <ProgressBar Minimum="0" Value="{Binding LoadedCount}" Maximum="{Binding TotalCount}" Margin="10 0" Grid.Column="1" />
                         <TextBlock Text="{Binding TotalCount}" FontFamily="Consolas" Grid.Column="2" />
                     </Grid>
 

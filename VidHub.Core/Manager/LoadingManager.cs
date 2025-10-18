@@ -6,9 +6,9 @@ namespace VidHub.Core.Manager
 {
     public class LoadingManager
     {
-        internal class QueueCollectItem(IEnumerable<IStorageItem> items, bool includeSubfolders, WrapActions<string> collectActions, WrapActions<string> loadActions)
+        internal class QueueCollectItem(IEnumerable<string> items, bool includeSubfolders, WrapActions<string> collectActions, WrapActions<string> loadActions)
         {
-            public IEnumerable<IStorageItem> Items { get; } = items;
+            public IEnumerable<string> Items { get; } = items;
             public bool IncludeSubfolders { get; } = includeSubfolders;
             public WrapActions<string> CollectActions { get; } = collectActions;
             public WrapActions<string> LoadActions { get; } = loadActions;
@@ -65,6 +65,11 @@ namespace VidHub.Core.Manager
 
         public async Task QueueVideoCollecting(IEnumerable<IStorageItem> items, bool includeSubfolders, WrapActions<string> collectActions, WrapActions<string> loadActions)
         {
+            collectQueue.Enqueue(new QueueCollectItem(items.Select(i => i.Path), includeSubfolders, collectActions, loadActions));
+            if (!IsCollecting) await ProcessNextCollecting();
+        }
+        public async Task QueueVideoCollecting(IEnumerable<string> items, bool includeSubfolders, WrapActions<string> collectActions, WrapActions<string> loadActions)
+        {
             collectQueue.Enqueue(new QueueCollectItem(items, includeSubfolders, collectActions, loadActions));
             if (!IsCollecting) await ProcessNextCollecting();
         }
@@ -80,8 +85,11 @@ namespace VidHub.Core.Manager
         }
         public async Task QueueVideoLoading(IEnumerable<string> files, WrapActions<string> loadActions)
         {
-            foreach (var file in files)
+            foreach (var file in files.Where(l => Path.Exists(l) && Video.ExtensionTypes.Contains(Path.GetExtension(l))))
+            {
                 await QueueVideoLoading(file, loadActions);
+                Interlocked.Increment(ref totalFileCount);
+            }
         }
         public async Task QueueVideoLoading(string file, WrapActions<string> loadActions)
         {
@@ -117,8 +125,8 @@ namespace VidHub.Core.Manager
             IsCollecting = true;
 
 
-            var files = currentCollectQueue.Items.OfType<StorageFile>().Where(f => Video.ExtensionTypes.Contains(f.Path)).Select(f => f.Path);
-            var folders = currentCollectQueue.Items.OfType<StorageFolder>().Select(f => f.Path);
+            var files = currentCollectQueue.Items.Where(File.Exists).Where(f => Video.ExtensionTypes.Contains(Path.GetExtension(f)));
+            var folders = currentCollectQueue.Items.Where(Directory.Exists);
 
             foreach (var file in files)
             {

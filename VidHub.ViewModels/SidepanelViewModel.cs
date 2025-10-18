@@ -68,7 +68,6 @@ namespace VidHub.ViewModels
         public bool HasActiveTransfer => connector.HasActiveTransfer;
         public int LoadedCount => connector.LoadedFileCount;
         public int TotalCount => connector.TotalFileCount;
-        public bool Indeterminate => TotalCount - LoadedCount == 0;
 
 
         public void UpdateTextFilter()
@@ -87,7 +86,6 @@ namespace VidHub.ViewModels
                 OnPropertyChanged(nameof(HasActiveTransfer));
                 OnPropertyChanged(nameof(LoadedCount));
                 OnPropertyChanged(nameof(TotalCount));
-                OnPropertyChanged(nameof(Indeterminate));
             }
         }
     }
