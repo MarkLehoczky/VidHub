@@ -13,17 +13,11 @@ namespace VidHub.WinUI.Converters
                 TimeSpan duration = (TimeSpan)value;
                 try
                 {
-                    if (duration.TotalDays >= 1)
-                    {
-                        return duration.ToString(Platform.Context.Host.GetService<ISettingsService>().DisplayCustomization.DurationDayFormat);
-                    }
-
-                    if (duration.TotalHours >= 1)
-                    {
-                        return duration.ToString(Platform.Context.Host.GetService<ISettingsService>().DisplayCustomization.DurationHourFormat);
-                    }
-
-                    return duration.TotalMinutes >= 1
+                    return duration.TotalDays >= 1
+                        ? duration.ToString(Platform.Context.Host.GetService<ISettingsService>().DisplayCustomization.DurationDayFormat)
+                        : duration.TotalHours >= 1
+                        ? duration.ToString(Platform.Context.Host.GetService<ISettingsService>().DisplayCustomization.DurationHourFormat)
+                        : duration.TotalMinutes >= 1
                         ? duration.ToString(Platform.Context.Host.GetService<ISettingsService>().DisplayCustomization.DurationMinuteFormat)
                         : duration >= TimeSpan.Zero
                         ? duration.ToString(Platform.Context.Host.GetService<ISettingsService>().DisplayCustomization.DurationSecondFormat)
@@ -31,17 +25,11 @@ namespace VidHub.WinUI.Converters
                 }
                 catch
                 {
-                    if (duration.TotalDays >= 1)
-                    {
-                        return duration.ToString("d' day(s) 'hh':'mm':'ss");
-                    }
-
-                    if (duration.TotalHours >= 1)
-                    {
-                        return duration.ToString("hh':'mm':'ss");
-                    }
-
-                    return duration.TotalMinutes >= 1
+                    return duration.TotalDays >= 1
+                        ? duration.ToString("d' day(s) 'hh':'mm':'ss")
+                        : duration.TotalHours >= 1
+                        ? duration.ToString("hh':'mm':'ss")
+                        : duration.TotalMinutes >= 1
                         ? duration.ToString("mm':'ss")
                         : duration >= TimeSpan.Zero ? duration.ToString("ss' second(s)'") : "n/a";
                 }

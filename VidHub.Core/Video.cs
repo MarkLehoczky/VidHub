@@ -181,27 +181,14 @@ namespace VidHub.Core
 
         public int Compare(object? x, object? y)
         {
-            if (ReferenceEquals(x, y))
-            {
-                return 0;
-            }
-
-            if (x is null)
-            {
-                return -1;
-            }
-
-            return y is null ? 1 : x is Video left && y is Video right ? ((IComparer<Video>)this).Compare(left, right) : 1;
+            return ReferenceEquals(x, y)
+                ? 0
+                : x is null ? -1 : y is null ? 1 : x is Video left && y is Video right ? ((IComparer<Video>)this).Compare(left, right) : 1;
         }
 
         public int Compare(Video? x, Video? y)
         {
-            if (ReferenceEquals(x, y))
-            {
-                return 0;
-            }
-
-            return x is null ? -1 : y is null ? 1 : ((IComparable<Video>)x).CompareTo(y);
+            return ReferenceEquals(x, y) ? 0 : x is null ? -1 : y is null ? 1 : ((IComparable<Video>)x).CompareTo(y);
         }
 
         public int GetHashCode(object obj)
@@ -211,7 +198,7 @@ namespace VidHub.Core
 
         public bool Equals(Video? x, Video? y)
         {
-            return ReferenceEquals(x, y) || x is not null && y is not null && string.Equals(x.Hash, y.Hash, StringComparison.Ordinal);
+            return ReferenceEquals(x, y) || (x is not null && y is not null && string.Equals(x.Hash, y.Hash, StringComparison.Ordinal));
         }
 
         public int GetHashCode(Video obj)
@@ -226,12 +213,7 @@ namespace VidHub.Core
 
         public override bool Equals(object? obj)
         {
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-
-            return obj is not null && obj is Video other && ((IEquatable<Video>)this).Equals(other);
+            return ReferenceEquals(this, obj) || (obj is not null && obj is Video other && ((IEquatable<Video>)this).Equals(other));
         }
 
         public override int GetHashCode()
