@@ -1,5 +1,5 @@
 ﻿using Microsoft.Toolkit.Uwp.Notifications;
-using VidHub.Core.Helpers;
+using VidHub.Core.Manager;
 using VidHub.Platform;
 using VidHub.Platform.Windows;
 using VidHub.Platform.Windows.Taskbar.Enums;
@@ -16,53 +16,60 @@ namespace VidHub.Services.System
 
         public void DisplayToast(params string[] texts)
         {
-            if (!settings.SystemNotifications) return;
+            if (!settings.Organizer.Global.EnableSystemNotification)
+            {
+                return;
+            }
 
-            var content = new ToastContentBuilder();
-            foreach (var text in texts)
+            ToastContentBuilder content = new();
+            foreach (string text in texts)
             {
                 content = content.AddText(text);
             }
-            content.GetToastContent();
+            _ = content.GetToastContent();
 
-            var toast = new ToastNotification(content.GetXml());
+            ToastNotification toast = new(content.GetXml());
             ToastNotificationManager.CreateToastNotifier().Show(toast);
         }
 
         public void FlashWindow()
         {
-            if (Context.MainWindow.IsActive) return;
+            if (Context.Window.IsActive)
+            {
+                return;
+            }
 
-            taskbar.FlashWindow(Context.MainWindow.HWND);
+            TaskbarManager.FlashWindow(Context.Window.HWND);
         }
 
         public void SetIndeterminateProgressbar()
         {
-            taskbar.SetProgressState(Context.MainWindow.HWND, TaskbarProgressState.Indeterminate);
+            taskbar.SetProgressState(Context.Window.HWND, TaskbarProgressState.Indeterminate);
         }
 
         public void SetProgressbar(int completed, int total)
         {
-            taskbar.SetProgressState(Context.MainWindow.HWND, TaskbarProgressState.Normal);
-            taskbar.SetProgressValue(Context.MainWindow.HWND, (ulong)completed, (ulong)total);
+            taskbar.SetProgressState(Context.Window.HWND, TaskbarProgressState.Normal);
+            taskbar.SetProgressValue(Context.Window.HWND, (ulong)completed, (ulong)total);
         }
 
         public void ClearProgressbar()
         {
-            taskbar.ClearProgress(Context.MainWindow.HWND);
+            taskbar.ClearProgress(Context.Window.HWND);
         }
 
-        public void SetTaskbar(IEnumerable<Transfer> transfers)
+        public void SetTaskbar(LoadingManager manager)
         {
-            if (transfers.Where(t => t.IsActive).Any(t => t.IsCollecting))
+            if (manager.IsCollecting)
             {
                 SetIndeterminateProgressbar();
             }
-            else if (transfers.Where(t => t.IsActive).All(t => !t.IsCollecting))
+            else if (!manager.IsCollecting && manager.IsLoading)
             {
-                SetProgressbar(transfers.Sum(t => t.LoadedCount), transfers.Sum(t => t.TotalCount));
+                SetProgressbar(manager.LoadedFileCount, manager.TotalFileCount);
             }
-            if (!transfers.Any(t => t.IsActive))
+
+            if (!manager.IsActive)
             {
                 ClearProgressbar();
                 FlashWindow();

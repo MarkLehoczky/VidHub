@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <UserControl
-    x:Class="VidHub.WinUI.UserControls.TitlebarUserControl"
+    x:Class="VidHub.WinUI.UserControls.TitleBarUserControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:VidHub.WinUI.UserControls"
@@ -10,7 +10,7 @@
     mc:Ignorable="d">
 
     <UserControl.DataContext>
-        <viewmodel:TitlebarViewModel />
+        <viewmodel:TitleBarViewModel />
     </UserControl.DataContext>
 
     <Grid Height="32">
@@ -44,7 +44,7 @@
                     <MenuFlyoutSubItem.Icon>
                         <FontIcon Glyph="&#xea8f;" FontFamily="Segoe Fluent Icons" />
                     </MenuFlyoutSubItem.Icon>
-                    <ToggleMenuFlyoutItem Text="System Notifications" ToolTipService.ToolTip="Show system notifications when important video events occur." IsChecked="{Binding SystemNotifications, Mode=TwoWay}" />
+                    <ToggleMenuFlyoutItem Text="System Notifications" ToolTipService.ToolTip="Show system notifications when important video events occur." IsChecked="{Binding EnableSystemNotification, Mode=TwoWay}" />
                 </MenuFlyoutSubItem>
                 
                 <!--MenuFlyoutSubItem Text="Video Checking">
@@ -59,17 +59,17 @@
                     <MenuFlyoutSubItem.Icon>
                         <FontIcon Glyph="&#xec4a;" FontFamily="Segoe Fluent Icons" />
                     </MenuFlyoutSubItem.Icon>
-                    <ToggleMenuFlyoutItem Text="Cached Loading" ToolTipService.ToolTip="Load video details from previously extracted metadata to speed up startup and scanning." IsChecked="{Binding CacheLoad, Mode=TwoWay}" />
-                    <ToggleMenuFlyoutItem Text="Parallel Loading" ToolTipService.ToolTip="Load multiple videos at the same time for faster processing." IsChecked="{Binding ConcurrentVideoLoading, Mode=TwoWay}" />
+                    <ToggleMenuFlyoutItem Text="Cached Loading" ToolTipService.ToolTip="Load video details from previously extracted metadata to speed up startup and scanning." IsChecked="{Binding EnableCacheLoading, Mode=TwoWay}" />
+                    <ToggleMenuFlyoutItem Text="Parallel Loading" ToolTipService.ToolTip="Load multiple videos at the same time for faster processing." IsChecked="{Binding EnableConcurrentLoading, Mode=TwoWay}" />
                 </MenuFlyoutSubItem>
 
                 <MenuFlyoutSubItem Text="Video Display">
                     <MenuFlyoutSubItem.Icon>
                         <FontIcon Glyph="&#xe786;" FontFamily="Segoe Fluent Icons" />
                     </MenuFlyoutSubItem.Icon>
-                    <ToggleMenuFlyoutItem Text="Show Titles" ToolTipService.ToolTip="Display video titles in the collection." IsChecked="{Binding ShowTitles, Mode=TwoWay}" />
-                    <ToggleMenuFlyoutItem Text="Show Dates" ToolTipService.ToolTip="Display video creation date in the collection." IsChecked="{Binding ShowDates, Mode=TwoWay}" />
-                    <ToggleMenuFlyoutItem Text="Show Durations" ToolTipService.ToolTip="Display video playback duration in the collection." IsChecked="{Binding ShowDurations, Mode=TwoWay}" />
+                    <ToggleMenuFlyoutItem Text="Show Titles" ToolTipService.ToolTip="Display video titles in the collection." IsChecked="{Binding DisplayTitles, Mode=TwoWay}" />
+                    <ToggleMenuFlyoutItem Text="Show Dates" ToolTipService.ToolTip="Display video creation date in the collection." IsChecked="{Binding DisplayDates, Mode=TwoWay}" />
+                    <ToggleMenuFlyoutItem Text="Show Durations" ToolTipService.ToolTip="Display video playback duration in the collection." IsChecked="{Binding DisplayDurations, Mode=TwoWay}" />
                     <MenuFlyoutItem Text="Customize Video Displaying" ToolTipService.ToolTip="" Command="{Binding CustomizeVideoDisplayingCommand}" />
                     <MenuFlyoutItem Text="Customize Video Loading" ToolTipService.ToolTip="" Command="{Binding CustomizeVideoLoadingCommand}" />
                     <MenuFlyoutItem Text="Customize Video Thumbnail" ToolTipService.ToolTip="" Command="{Binding CustomizeThumbnailCommand}" />
@@ -79,10 +79,10 @@
                     <MenuFlyoutSubItem.Icon>
                         <FontIcon Glyph="&#xe71c;" FontFamily="Segoe Fluent Icons" />
                     </MenuFlyoutSubItem.Icon>
-                    <ToggleMenuFlyoutItem Text="Restore Filters" ToolTipService.ToolTip="Automatically reload your last used filters when the app starts." IsChecked="{Binding KeepFilterStatus, Mode=TwoWay}" />
-                    <ToggleMenuFlyoutItem Text="Live Search" ToolTipService.ToolTip="Search video titles dynamically as you type in the filter box." IsChecked="{Binding LiveTextFiltering, Mode=TwoWay}" />
-                    <ToggleMenuFlyoutItem Text="Case Sensitive Search" ToolTipService.ToolTip="Match video titles exactly, respecting uppercase and lowercase letters." IsChecked="{Binding CaseSensitiveTextFiltering, Mode=TwoWay}" />
-                    <ToggleMenuFlyoutItem Text="Title Suggestions" ToolTipService.ToolTip="Show possible title matches while typing in the filter box." IsChecked="{Binding TextSuggestions, Mode=TwoWay}" />
+                    <ToggleMenuFlyoutItem Text="Restore Filters" ToolTipService.ToolTip="Automatically reload your last used filters when the app starts." IsChecked="{Binding SaveOrganizerSettings, Mode=TwoWay}" />
+                    <ToggleMenuFlyoutItem Text="Live Search" ToolTipService.ToolTip="Search video titles dynamically as you type in the filter box." IsChecked="{Binding EnableLiveSearch, Mode=TwoWay}" />
+                    <ToggleMenuFlyoutItem Text="Case Sensitive Search" ToolTipService.ToolTip="Match video titles exactly, respecting uppercase and lowercase letters." IsChecked="{Binding EnableCaseSensitiveSearch, Mode=TwoWay}" />
+                    <ToggleMenuFlyoutItem Text="Title Suggestions" ToolTipService.ToolTip="Show possible title matches while typing in the filter box." IsChecked="{Binding EnableSearchSuggestions, Mode=TwoWay}" />
                 </MenuFlyoutSubItem>
             </MenuBarItem>
         </MenuBar>

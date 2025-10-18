@@ -1,112 +1,120 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using VidHub.Core.Helpers;
+﻿using CommunityToolkit.Mvvm.Input;
+using VidHub.Core.Enums;
 using VidHub.Platform;
-using VidHub.Services.Logics.Interfaces;
-using VidHub.Services.Settings.Interfaces;
+using VidHub.Services.Connectors.Base.Interfaces;
+using VidHub.ViewModels.Base;
 
 namespace VidHub.ViewModels
 {
-    public partial class TitlebarViewModel(IVideoLoadService service, ISettingsService settings) : ObservableRecipient
+    public partial class TitleBarViewModel(ITitleBarConnector connector) : ViewModelTemplate(connector)
     {
-        private bool CanOpenSidePanel() => !settings.OpenPanel;
-        private bool CanCloseSidePanel() => settings.OpenPanel;
+        public TitleBarViewModel() : this(Context.Host.GetService<ITitleBarConnector>()) { }
 
 
-        public bool SystemNotifications
+        private bool CanOpenSidePanel()
         {
-            get => settings.SystemNotifications;
-            set => settings.SystemNotifications = value;
+            return !connector.OpenedSidePanel;
         }
 
-        public bool CacheLoad
+        private bool CanCloseSidePanel()
         {
-            get => settings.CacheLoad;
-            set => settings.CacheLoad = value;
+            return connector.OpenedSidePanel;
         }
 
-        public bool ConcurrentVideoLoading
+        public bool EnableSystemNotification
         {
-            get => settings.ConcurrentVideoLoading;
-            set => settings.ConcurrentVideoLoading = value;
+            get => connector.EnableSystemNotification;
+            set => connector.EnableSystemNotification = value;
         }
 
-        public bool KeepFilterStatus
+        public bool EnableCacheLoading
         {
-            get => settings.KeepFilterStatus;
-            set => settings.KeepFilterStatus = value;
+            get => connector.EnableCacheLoading;
+            set => connector.EnableCacheLoading = value;
         }
 
-        public bool LiveTextFiltering
+        public bool EnableConcurrentLoading
         {
-            get => settings.LiveTextFiltering;
-            set => settings.LiveTextFiltering = value;
+            get => connector.EnableConcurrentLoading;
+            set => connector.EnableConcurrentLoading = value;
         }
 
-        public bool CaseSensitiveTextFiltering
+        public bool SaveOrganizerSettings
         {
-            get => settings.CaseSensitiveTextFiltering;
-            set => settings.CaseSensitiveTextFiltering = value;
+            get => connector.SaveOrganizerSettings;
+            set => connector.SaveOrganizerSettings = value;
         }
 
-        public bool TextSuggestions
+        public bool EnableLiveSearch
         {
-            get => settings.TextSuggestions;
-            set => settings.TextSuggestions = value;
+            get => connector.EnableLiveSearch;
+            set => connector.EnableLiveSearch = value;
         }
 
-        public bool ShowTitles
+        public bool EnableCaseSensitiveSearch
         {
-            get => settings.ShowTitles;
-            set => settings.ShowTitles = value;
+            get => connector.EnableCaseSensitiveSearch;
+            set => connector.EnableCaseSensitiveSearch = value;
         }
-        public bool ShowDates
+
+        public bool EnableSearchSuggestions
         {
-            get => settings.ShowDates;
-            set => settings.ShowDates = value;
+            get => connector.EnableSearchSuggestions;
+            set => connector.EnableSearchSuggestions = value;
         }
-        public bool ShowDurations
+
+        public bool DisplayTitles
         {
-            get => settings.ShowDurations;
-            set => settings.ShowDurations = value;
+            get => connector.DisplayTitles;
+            set => connector.DisplayTitles = value;
+        }
+        public bool DisplayDates
+        {
+            get => connector.DisplayDates;
+            set => connector.DisplayDates = value;
+        }
+        public bool DisplayDurations
+        {
+            get => connector.DisplayDurations;
+            set => connector.DisplayDurations = value;
         }
 
 
         [RelayCommand(AllowConcurrentExecutions = true)]
         private async Task LoadFilesAsync()
         {
-            await service.LoadFilesAsync();
+            await connector.LoadFilesAsync();
         }
 
         [RelayCommand(AllowConcurrentExecutions = true)]
         private async Task LoadSingleFolderAsync()
         {
-            await service.LoadFoldersAsync(false);
+            await connector.LoadFoldersAsync(false);
         }
 
         [RelayCommand(AllowConcurrentExecutions = true)]
         private async Task LoadAllFolderAsync()
         {
-            await service.LoadFoldersAsync(true);
+            await connector.LoadFoldersAsync(true);
         }
 
         [RelayCommand]
         private async Task ImportCollectionAsync()
         {
-            await service.ImportCollectionAsync();
+            await connector.ImportCollectionAsync();
         }
 
         [RelayCommand]
         private async Task ExportCollectionAsync()
         {
-            await service.ExportCollectionAsync();
+            await connector.ExportCollectionAsync();
         }
 
 
         [RelayCommand(CanExecute = nameof(CanOpenSidePanel))]
         private void OpenSidePanel()
         {
-            settings.OpenPanel = true;
+            connector.OpenedSidePanel = true;
             OpenSidePanelCommand.NotifyCanExecuteChanged();
             CloseSidePanelCommand.NotifyCanExecuteChanged();
         }
@@ -114,7 +122,7 @@ namespace VidHub.ViewModels
         [RelayCommand(CanExecute = nameof(CanCloseSidePanel))]
         private void CloseSidePanel()
         {
-            settings.OpenPanel = false;
+            connector.OpenedSidePanel = false;
             OpenSidePanelCommand.NotifyCanExecuteChanged();
             CloseSidePanelCommand.NotifyCanExecuteChanged();
         }
@@ -122,26 +130,22 @@ namespace VidHub.ViewModels
         [RelayCommand]
         private async Task CustomizeVideoDisplayingAsync()
         {
-            await Context.MainWindow.ShowDialogAsync(ModalType.CustomizeDisplaying, "Customize video displaying", "Confirm");
+            await connector.CustomizeVideoDisplayingAsync();
         }
 
         [RelayCommand]
         private async Task CustomizeVideoLoadingAsync()
         {
-            Context.MainHost.GetService<IVideoCustomizationService>().IsTemplateMode = true;
-            await Context.MainWindow.ShowDialogAsync(ModalType.CustomizeLoading, "Change video title customization", "Confirm");
+            await connector.CustomizeVideoLoadingAsync();
         }
 
         [RelayCommand]
         private async Task CustomizeThumbnailAsync()
         {
-            await Context.MainWindow.ShowDialogAsync(ModalType.CustomizeThumbnail, "Customize video thumbnail", "Confirm");
+            await connector.CustomizeVideoPreviewImageAsync();
         }
 
 
-        public TitlebarViewModel() : this(
-            Context.MainHost.GetService<IVideoLoadService>(),
-            Context.MainHost.GetService<ISettingsService>())
-        { }
+        public override void Update(UpdateType type) { }
     }
 }

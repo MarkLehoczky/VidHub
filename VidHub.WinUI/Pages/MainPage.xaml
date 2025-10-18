@@ -15,14 +15,14 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <control:TitlebarUserControl Grid.Row="0" />
+        <control:TitleBarUserControl Grid.Row="0" />
 
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <control:SidepanelUserControl Grid.Column="0" />
+            <control:SidePanelUserControl Grid.Column="0" />
             <control:VideoCollectionUserControl Grid.Column="1" />
         </Grid>
 

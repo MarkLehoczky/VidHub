@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="VidHub.WinUI.UserControls.Modals.VideoPreviewImageCustomizationUserControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:VidHub.WinUI.UserControls.Modals"
+    xmlns:converter="using:VidHub.WinUI.Converters"
+    xmlns:viewmodel="using:VidHub.ViewModels.Modals"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <converter:FramePercentageConverter x:Key="PercentageFormatter" />
+    </UserControl.Resources>
+
+    <UserControl.DataContext>
+        <viewmodel:VideoPreviewImageCustomizationViewModel />
+    </UserControl.DataContext>
+
+    <StackPanel>
+        <Grid Grid.Row="0" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" CornerRadius="{ThemeResource ControlCornerRadius}" Margin="0 0 0 5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <FontIcon Glyph="&#xf167;" FontFamily="Segoe Fluent Icons" Foreground="{ThemeResource AccentFillColorDefaultBrush}" Margin="10 10 10 10" Grid.Row="0" Grid.Column="0" />
+            <TextBlock Text="Previously extracted thumbnails will not be changed." IsTextSelectionEnabled="True" FontWeight="Bold" VerticalAlignment="Center" Margin="0 0 10 0" Grid.Row="0" Grid.Column="1" />
+
+            <ProgressRing IsIndeterminate="{Binding ActiveThumbnailAction}" Margin="10 10 10 10" Grid.Row="1" Grid.Column="0" />
+            <Grid VerticalAlignment="Center" Grid.Row="1" Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Button Content="Remove Thumbnails" Command="{Binding RemoveAllPreviewImagesCommand}" ToolTipService.ToolTip="Removing all extracted thumbnails will delete the images. Thumbnails must be extracted again to be displayed." Margin="0 0 5 0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Column="0" />
+                <Button Content="Extract Thumbnails" Command="{Binding ExtractLoadedVideoPreviewImagesCommand}" ToolTipService.ToolTip="Extracting thumbnails again may take some time and does not affect any other previously cached videos." Margin="5 0 10 0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Column="1" />
+            </Grid>
+        </Grid>
+
+        <Grid Visibility="{Binding FixedPosition}" Margin="0 20 0 0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <NumberBox Header="hour" Value="{Binding Hours, Mode=TwoWay}" Minimum="0" SmallChange="1" Margin="5" Grid.Column="0" />
+            <NumberBox Header="minute" Value="{Binding Minutes, Mode=TwoWay}" Minimum="0" Maximum="60" SmallChange="1" Margin="5" Grid.Column="1" />
+            <NumberBox Header="second" Value="{Binding Seconds, Mode=TwoWay}" Minimum="0" Maximum="60" SmallChange="10" Margin="5" Grid.Column="2" />
+            <NumberBox Header="millisecond" Value="{Binding Milliseconds, Mode=TwoWay}" Minimum="0" Maximum="1000" SmallChange="100" Margin="5" Grid.Column="3" />
+        </Grid>
+
+        <Slider Header="Select relative position of thumbnail based on the duration" Value="{Binding Percentage, Mode=TwoWay}" ThumbToolTipValueConverter="{StaticResource PercentageFormatter}" Minimum="0" Maximum="100" StepFrequency="1" TickFrequency="10" TickPlacement="Outside" Visibility="{Binding RelativePosition}" Margin="0 20 0 0" />
+
+        <ToggleSwitch IsOn="{Binding RelativePosition, Mode=TwoWay}" OnContent="Relative Frame Position" OffContent="Relative Frame Position" Margin="0 10 0 0" />
+        
+        <ToggleSwitch OnContent="Use embedded thumbnail when available" OffContent="Use embedded thumbnail when available" IsEnabled="False" Margin="0 10 0 0" />
+    </StackPanel>
+</UserControl>

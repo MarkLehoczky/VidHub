@@ -1,15 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using System;
-using System.Threading.Tasks;
-using VidHub.Core;
-using VidHub.Core.Helpers;
-using VidHub.Platform;
-using VidHub.Platform.Interfaces;
 using VidHub.Services.Base;
 using VidHub.Services.Base.Interfaces;
+using VidHub.Services.Connectors.Base;
+using VidHub.Services.Connectors.Base.Interfaces;
+using VidHub.Services.Connectors.Modals;
+using VidHub.Services.Connectors.Modals.Interfaces;
 using VidHub.Services.Logics;
 using VidHub.Services.Logics.Interfaces;
 using VidHub.Services.Settings;
@@ -18,8 +16,7 @@ using VidHub.Services.System;
 using VidHub.Services.System.Interfaces;
 using VidHub.ViewModels;
 using VidHub.ViewModels.Modals;
-using VidHub.WinUI.UserControls.Modals;
-using WinRT.Interop;
+using VidHub.WinUI.Context;
 
 namespace VidHub.WinUI
 {
@@ -30,22 +27,28 @@ namespace VidHub.WinUI
         public App()
         {
             InitializeComponent();
-            Context.MainHost = new HostContext(Host.CreateDefaultBuilder()
+            Platform.Context.Host = new HostContext(Host.CreateDefaultBuilder()
                 .ConfigureServices(services =>
                 {
-                    services.AddSingleton<IMainService, MainService>();
-                    services.AddSingleton<ISettingsService, SettingsService>();
-                    services.AddSingleton<ISystemManager, SystemManager>();
-                    services.AddSingleton<IVideoLoadService, VideoLoadService>();
-                    services.AddSingleton<IVideoOrganizeService, VideoOrganizeService>();
-                    services.AddSingleton<IVideoCollectionService, VideoCollectionService>();
-                    services.AddSingleton<IVideoCustomizationService, VideoCustomizationService>();
-                    services.AddSingleton<IThumbnailCustomizationService, ThumbnailCustomizationService>();
-                    services.AddTransient<TitlebarViewModel>();
-                    services.AddTransient<SidepanelViewModel>();
-                    services.AddTransient<VideoCollectionViewModel>();
-                    services.AddTransient<TitleCustomizationViewModel>();
-                    services.AddTransient<VideoCustomizationViewModel>();
+                    _ = services.AddSingleton<IVideoService, VideoService>();
+                    _ = services.AddSingleton<ISettingsService, SettingsService>();
+                    _ = services.AddSingleton<ISystemManager, SystemManager>();
+                    _ = services.AddSingleton<IVideoLoadService, VideoLoadService>();
+                    _ = services.AddSingleton<IVideoOrganizerService, VideoOrganizerService>();
+                    _ = services.AddSingleton<IVideoCollectionService, VideoCollectionService>();
+                    _ = services.AddSingleton<IVideoCollectionConnector, VideoCollectionConnector>();
+                    _ = services.AddSingleton<ISidePanelConnector, SidePanelConnector>();
+                    _ = services.AddSingleton<ITitleBarConnector, TitleBarConnector>();
+                    _ = services.AddSingleton<IVideoDisplayCustomizationConnector, VideoDisplayCustomizationConnector>();
+                    _ = services.AddSingleton<IVideoTitleFormatCustomizationConnector, VideoTitleFormatCustomizationConnector>();
+                    _ = services.AddSingleton<IVideoPreviewImageCustomizationConnector, VideoPreviewImageCustomizationConnector>();
+                    _ = services.AddTransient<TitleBarViewModel>();
+                    _ = services.AddTransient<SidePanelViewModel>();
+                    _ = services.AddTransient<VideoCollectionViewModel>();
+                    _ = services.AddTransient<VideoDisplayCustomizationViewModel>();
+                    _ = services.AddTransient<VideoTitleFormatCustomizationViewModel>();
+                    _ = services.AddTransient<VideoPreviewImageCustomizationViewModel>();
+                    _ = services.AddTransient<RenameViewModel>();
                 })
                 .Build());
         }
@@ -54,85 +57,9 @@ namespace VidHub.WinUI
         {
             _window = new MainWindow();
             _window.Activate();
-            Context.MainWindow = new WindowContext(_window);
-            _window.Activated += (s, e) => Context.MainWindow.IsActive = e.WindowActivationState != WindowActivationState.Deactivated;
-            AppDomain.CurrentDomain.ProcessExit += (_, _) => Context.MainHost.GetService<IVideoOrganizeService>().Save();
-            AppDomain.CurrentDomain.ProcessExit += (_, _) => Context.MainHost.GetService<ISettingsService>().Save();
-        }
-    }
-
-
-
-    public class WindowContext(Window window) : IWindowContext
-    {
-        public object Window => window;
-
-        public nint HWND => WindowNative.GetWindowHandle(window);
-
-        public bool IsActive { get; set; }
-
-
-        public bool TryEnqueue(Action callback)
-        {
-            return window.DispatcherQueue.TryEnqueue(callback.Invoke);
-        }
-
-        public async Task ShowDialogAsync(object type, string title, string closeButton)
-        {
-            object content = new();
-
-            switch (type)
-            {
-                case ModalType.CustomizeDisplaying: content = new VideoCustomizationUserControl(); break;
-                case ModalType.CustomizeLoading: content = new TitleCustomizationUserControl(); break;
-                case ModalType.CustomizeThumbnail: content = new ThumbnailCustomizationUserControl(); break;
-                case ModalType.RenameVideo: content = new RenameUserControl(null); break;
-            }
-
-            var dialog = new ContentDialog()
-            {
-                Title = title,
-                CloseButtonText = closeButton,
-                DefaultButton = ContentDialogButton.Close,
-                Content = content,
-                XamlRoot = window.Content.XamlRoot
-            };
-
-            await dialog.ShowAsync();
-        }
-
-        public async Task ShowDialogAsync(object type, string title, string closeButton, object instance)
-        {
-            object content = new();
-
-            switch (type)
-            {
-                case ModalType.CustomizeDisplaying: content = new VideoCustomizationUserControl(); break;
-                case ModalType.CustomizeLoading: content = new TitleCustomizationUserControl(); break;
-                case ModalType.CustomizeThumbnail: content = new ThumbnailCustomizationUserControl(); break;
-                case ModalType.RenameVideo: content = new RenameUserControl((Video)instance); break;
-            }
-
-            var dialog = new ContentDialog()
-            {
-                Title = title,
-                CloseButtonText = closeButton,
-                DefaultButton = ContentDialogButton.Close,
-                Content = content,
-                XamlRoot = window.Content.XamlRoot
-            };
-
-            await dialog.ShowAsync();
-        }
-    }
-
-    public class HostContext(IHost host) : IHostContext
-    {
-        public object Host => host;
-
-        public T GetService<T>() where T : class
-        {
-            return host.Services.GetRequiredService<T>();
+            Platform.Context.Window = new WindowContext(_window);
+            _window.Activated += (s, e) => Platform.Context.Window.IsActive = e.WindowActivationState != WindowActivationState.Deactivated;
+            AppDomain.CurrentDomain.ProcessExit += (_, _) => Platform.Context.Host.GetService<ISettingsService>().Save();
         }
     }
 }

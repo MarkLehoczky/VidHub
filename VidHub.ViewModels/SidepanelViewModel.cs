@@ -1,114 +1,91 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using VidHub.Core.Helpers;
+﻿using VidHub.Core.Enums;
 using VidHub.Platform;
-using VidHub.Services.Base.Interfaces;
-using VidHub.Services.Logics.Interfaces;
-using VidHub.Services.Settings.Interfaces;
+using VidHub.Services.Connectors.Base.Interfaces;
+using VidHub.ViewModels.Base;
 
 namespace VidHub.ViewModels
 {
-    public partial class SidepanelViewModel(IVideoOrganizeService organizeService, IVideoLoadService loadService, ISettingsService settingsService) : ObservableRecipient
+    public partial class SidePanelViewModel(ISidePanelConnector connector) : ViewModelTemplate(connector)
     {
-        public bool OpenPanel => settingsService.OpenPanel;
+        public SidePanelViewModel() : this(Context.Host.GetService<ISidePanelConnector>()) { }
 
-        #region Organizer section
-        public IEnumerable<string> SortOptions => organizeService.GetSortOptions();
 
+        public bool OpenPanel => connector.OpenedSidePanel;
+
+        public IEnumerable<string> SortOptions => connector.GetSortOptions();
         public string? CurrentSortOption
         {
-            get => organizeService.CurrentSortOption;
-            set => organizeService.CurrentSortOption = value;
+            get => connector.CurrentSortOption;
+            set => connector.CurrentSortOption = value;
         }
 
-
-        public string? SearchText
+        public string SearchText
         {
-            get => organizeService.SearchText;
+            get => connector.SearchText;
             set
             {
-                organizeService.SearchText = value;
+                connector.SearchText = value;
                 OnPropertyChanged(nameof(Suggestions));
             }
         }
-        public bool LiveTextFiltering => settingsService.LiveTextFiltering;
-        public IEnumerable<string> Suggestions => organizeService.Suggestions();
+        public bool EnableLiveSearch => connector.EnableLiveSearch;
+        public IEnumerable<string> Suggestions => connector.Suggestions();
 
         public bool FilterDate
         {
-            get => organizeService.FilterDate;
-            set => organizeService.FilterDate = value;
+            get => connector.FilterDate;
+            set => connector.FilterDate = value;
         }
         public DateTimeOffset? StartDate
         {
-            get => organizeService.StartDate;
-            set => organizeService.StartDate = value;
+            get => connector.StartDate;
+            set => connector.StartDate = value;
         }
         public DateTimeOffset? EndDate
         {
-            get => organizeService.EndDate;
-            set => organizeService.EndDate = value;
+            get => connector.EndDate;
+            set => connector.EndDate = value;
         }
 
         public bool FilterDuration
         {
-            get => organizeService.FilterDuration;
-            set => organizeService.FilterDuration = value;
+            get => connector.FilterDuration;
+            set => connector.FilterDuration = value;
         }
         public TimeSpan? MinDuration
         {
-            get => organizeService.MinDuration;
-            set => organizeService.MinDuration = value;
+            get => connector.MinDuration;
+            set => connector.MinDuration = value;
         }
         public TimeSpan? MaxDuration
         {
-            get => organizeService.MaxDuration;
-            set => organizeService.MaxDuration = value;
-        }
-        #endregion
-
-
-        #region Transfer section
-        public string TransferDescription => loadService.TransferDescription;
-        public bool HasTransfer => loadService.HasTransfer;
-        public bool HasActiveTransfer => loadService.HasActiveTransfer;
-        public int LoadedCount => loadService.LoadedCount;
-        public int TotalCount => loadService.TotalCount;
-        public bool Indeterminate => TotalCount - LoadedCount == 0;
-        #endregion
-
-
-        public SidepanelViewModel() : this(
-            Context.MainHost.GetService<IVideoOrganizeService>(),
-            Context.MainHost.GetService<IVideoLoadService>(),
-            Context.MainHost.GetService<ISettingsService>())
-        {
-            Context.MainHost.GetService<IMainService>().SubscribeToUpdateEvent(UpdateProperties);
-        }
-
-        ~SidepanelViewModel()
-        {
-            Context.MainHost.GetService<IMainService>().UnsubscribeFromUpdateEvent(UpdateProperties);
+            get => connector.MaxDuration;
+            set => connector.MaxDuration = value;
         }
 
 
-        public void UpdateTextFilter(string text)
+        public string TransferDescription => connector.TransferDescription;
+        public bool HasActiveTransfer => connector.HasActiveTransfer;
+        public int LoadedCount => connector.LoadedFileCount;
+        public int TotalCount => connector.TotalFileCount;
+
+
+        public void UpdateTextFilter()
         {
-            organizeService.UpdateTextFilter(text);
+            connector.UpdateSearchText();
         }
 
 
-        private void UpdateProperties(UpdateType type)
+        public override void Update(UpdateType type)
         {
-            if (type == UpdateType.UpdateSidepanel || type == UpdateType.UpdateAll || type == UpdateType.ResetSidepanel || type == UpdateType.ResetAll)
+            if (type is UpdateType.UpdateSidePanel or UpdateType.ForceUpdateSidePanel)
             {
                 OnPropertyChanged(nameof(OpenPanel));
-                OnPropertyChanged(nameof(LiveTextFiltering));
+                OnPropertyChanged(nameof(EnableLiveSearch));
                 OnPropertyChanged(nameof(TransferDescription));
-                OnPropertyChanged(nameof(HasTransfer));
                 OnPropertyChanged(nameof(HasActiveTransfer));
                 OnPropertyChanged(nameof(LoadedCount));
                 OnPropertyChanged(nameof(TotalCount));
-                OnPropertyChanged(nameof(Indeterminate));
             }
         }
     }

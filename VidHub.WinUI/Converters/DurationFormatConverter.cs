@@ -1,6 +1,5 @@
 ﻿using Microsoft.UI.Xaml.Data;
 using System;
-using VidHub.Platform;
 using VidHub.Services.Settings.Interfaces;
 
 namespace VidHub.WinUI.Converters
@@ -12,10 +11,28 @@ namespace VidHub.WinUI.Converters
             try
             {
                 TimeSpan duration = (TimeSpan)value;
-                if (duration.TotalDays >= 1) return duration.ToString(Context.MainHost.GetService<ISettingsService>().DurationDayFormat);
-                if (duration.TotalHours >= 1) return duration.ToString(Context.MainHost.GetService<ISettingsService>().DurationHourFormat);
-                if (duration.TotalMinutes >= 1) return duration.ToString(Context.MainHost.GetService<ISettingsService>().DurationMinuteFormat);
-                return duration.ToString(Context.MainHost.GetService<ISettingsService>().DurationSecondFormat);
+                try
+                {
+                    return duration.TotalDays >= 1
+                        ? duration.ToString(Platform.Context.Host.GetService<ISettingsService>().DisplayCustomization.DurationDayFormat)
+                        : duration.TotalHours >= 1
+                        ? duration.ToString(Platform.Context.Host.GetService<ISettingsService>().DisplayCustomization.DurationHourFormat)
+                        : duration.TotalMinutes >= 1
+                        ? duration.ToString(Platform.Context.Host.GetService<ISettingsService>().DisplayCustomization.DurationMinuteFormat)
+                        : duration >= TimeSpan.Zero
+                        ? duration.ToString(Platform.Context.Host.GetService<ISettingsService>().DisplayCustomization.DurationSecondFormat)
+                        : "n/a";
+                }
+                catch
+                {
+                    return duration.TotalDays >= 1
+                        ? duration.ToString("d' day(s) 'hh':'mm':'ss")
+                        : duration.TotalHours >= 1
+                        ? duration.ToString("hh':'mm':'ss")
+                        : duration.TotalMinutes >= 1
+                        ? duration.ToString("mm':'ss")
+                        : duration >= TimeSpan.Zero ? duration.ToString("ss' second(s)'") : "n/a";
+                }
             }
             catch
             {

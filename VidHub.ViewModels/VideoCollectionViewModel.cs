@@ -1,43 +1,72 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using VidHub.Core;
-using VidHub.Core.Helpers;
+using VidHub.Core.Enums;
 using VidHub.Platform;
-using VidHub.Services.Base.Interfaces;
-using VidHub.Services.Logics.Interfaces;
-using VidHub.Services.Settings.Interfaces;
-using Windows.ApplicationModel.DataTransfer;
-using Windows.Storage;
-using Windows.Storage.Streams;
-using Windows.System;
+using VidHub.Services.Connectors.Base.Interfaces;
+using VidHub.ViewModels.Base;
 
 namespace VidHub.ViewModels
 {
-    public partial class VideoCollectionViewModel(IVideoCollectionService service, ISettingsService settings) : ObservableRecipient
+    public partial class VideoCollectionViewModel(IVideoCollectionConnector connector) : ViewModelTemplate(connector)
     {
-        public ObservableCollection<Video> Videos => service.DisplayedVideos;
-        public bool ShowTitles => settings.ShowTitles;
-        public bool ShowDates => settings.ShowDates;
-        public bool ShowDurations => settings.ShowDurations;
-        public double PreviewWidth => settings.FieldWidth;
-        public double PreviewHeight => settings.FieldHeight;
+        public VideoCollectionViewModel() : this(Context.Host.GetService<IVideoCollectionConnector>()) { }
 
 
-        public VideoCollectionViewModel() : this(Context.MainHost.GetService<IVideoCollectionService>(),
-            Context.MainHost.GetService<ISettingsService>())
+        public ObservableCollection<Video> Videos => connector.DisplayedVideos;
+        public bool ShowTitles => connector.DisplayTitles;
+        public bool ShowDates => connector.DisplayDates;
+        public bool ShowDurations => connector.DisplayDurations;
+        public double PreviewWidth => connector.PreviewImageWidth;
+        public double PreviewHeight => connector.PreviewImageHeight;
+
+
+        [RelayCommand]
+        private async Task OpenAsync(Video video)
         {
-            Context.MainHost.GetService<IMainService>().SubscribeToUpdateEvent(UpdateProperties);
+            await connector.OpenAsync(video);
         }
 
-        ~VideoCollectionViewModel()
+        [RelayCommand]
+        private async Task OpenFileExplorerAsync(Video video)
         {
-            Context.MainHost.GetService<IMainService>().UnsubscribeFromUpdateEvent(UpdateProperties);
+            await connector.OpenFileExplorerAsync(video);
         }
 
-        private void UpdateProperties(UpdateType type)
+        [RelayCommand]
+        private async Task RenameAsync(Video video)
         {
-            if (type == UpdateType.UpdateVideoCollection || type == UpdateType.UpdateAll || type == UpdateType.ResetVideoCollection || type == UpdateType.ResetAll)
+            await connector.RenameAsync(video);
+        }
+
+        [RelayCommand]
+        private async Task CopyFileAsync(Video video)
+        {
+            await connector.CopyFileAsync(video);
+        }
+
+        [RelayCommand]
+        private async Task CopyFilePathAsync(Video video)
+        {
+            await connector.CopyFilePathAsync(video);
+        }
+
+        [RelayCommand]
+        private async Task CopyPreviewImageAsync(Video video)
+        {
+            await connector.CopyPreviewImageAsync(video);
+        }
+
+        [RelayCommand]
+        private async Task RemoveVideoAsync(Video video)
+        {
+            await connector.RemoveVideoAsync(video);
+        }
+
+
+        public override void Update(UpdateType type)
+        {
+            if (type is UpdateType.UpdateVideoCollection or UpdateType.ForceUpdateVideoCollection)
             {
                 OnPropertyChanged(nameof(Videos));
                 OnPropertyChanged(nameof(ShowTitles));
@@ -46,75 +75,6 @@ namespace VidHub.ViewModels
                 OnPropertyChanged(nameof(PreviewWidth));
                 OnPropertyChanged(nameof(PreviewHeight));
             }
-        }
-
-
-
-        [RelayCommand]
-        private async Task OpenAsync(Video video)
-        {
-            var file = await StorageFile.GetFileFromPathAsync(video.FilePath);
-            await Launcher.LaunchFileAsync(file);
-        }
-
-        [RelayCommand]
-        private async Task OpenFileExplorerAsync(Video video)
-        {
-            var folder = await StorageFolder.GetFolderFromPathAsync(Path.GetDirectoryName(video.FilePath) ?? string.Empty);
-            await Launcher.LaunchFolderAsync(folder);
-        }
-
-        [RelayCommand]
-        private async Task RenameAsync(Video video)
-        {
-            await Context.MainWindow.ShowDialogAsync(ModalType.RenameVideo, $"Rename '{video.Title}'", "Confirm", video);
-            Context.MainHost.GetService<IMainService>().Update(UpdateType.ResetVideoCollection);
-        }
-
-        [RelayCommand]
-        private async Task CopyVideoAsync(Video video)
-        {
-            var file = await StorageFile.GetFileFromPathAsync(video.FilePath);
-
-            var data = new DataPackage();
-            data.RequestedOperation = DataPackageOperation.Copy;
-            data.Properties.Title = video.Title;
-            data.Properties.Description = $"File '{video.FilePath}' copied to clipboard.";
-            data.SetStorageItems([file]);
-
-            Clipboard.SetContent(data);
-        }
-
-        [RelayCommand]
-        private void CopyFilePath(Video video)
-        {
-            var data = new DataPackage();
-            data.RequestedOperation = DataPackageOperation.Copy;
-            data.Properties.Title = video.Title;
-            data.Properties.Description = $"Filepath '{video.FilePath}' copied to clipboard.";
-            data.SetText(video.FilePath);
-
-            Clipboard.SetContent(data);
-        }
-
-        [RelayCommand]
-        private async Task CopyThumbnailAsync(Video video)
-        {
-            var file = await StorageFile.GetFileFromPathAsync(video.ThumbnailPath);
-
-            var data = new DataPackage();
-            data.RequestedOperation = DataPackageOperation.Copy;
-            data.Properties.Title = video.Title;
-            data.Properties.Description = $"Thumbnail of '{video.FilePath}' file copied to clipboard.";
-            data.SetBitmap(RandomAccessStreamReference.CreateFromFile(file));
-
-            Clipboard.SetContent(data);
-        }
-
-        [RelayCommand]
-        private void RemoveVideo(Video video)
-        {
-            Context.MainHost.GetService<IMainService>().RemoveVideo(video);
         }
     }
 }
