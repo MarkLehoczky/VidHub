@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using VidHub.Core.Helpers;
+using VidHub.Core.Enums;
 using VidHub.Services.Base.Interfaces;
 
 namespace VidHub.ViewModels.Base

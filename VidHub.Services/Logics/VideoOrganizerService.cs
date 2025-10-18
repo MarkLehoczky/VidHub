@@ -1,5 +1,5 @@
 ﻿using VidHub.Core;
-using VidHub.Core.Helpers;
+using VidHub.Core.Enums;
 using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Logics.Interfaces;
 using VidHub.Services.Settings.Interfaces;
@@ -37,7 +37,10 @@ namespace VidHub.Services.Logics
             set
             {
                 if (settings.Organizer.Global.EnableLiveSearch)
+                {
                     settings.Organizer.Display.SearchText = value;
+                }
+
                 localSearchText = value;
                 UpdateOrganizers();
             }
@@ -100,7 +103,10 @@ namespace VidHub.Services.Logics
         }
 
 
-        public IEnumerable<string> GetSortOptions() => sortOptions.Keys;
+        public IEnumerable<string> GetSortOptions()
+        {
+            return sortOptions.Keys;
+        }
 
         public void UpdateSearchText()
         {
@@ -120,8 +126,8 @@ namespace VidHub.Services.Logics
         {
             if (settings.Organizer.Global.EnableSearchSuggestions)
             {
-                var startsWith = service.Select(v => v.Title).Where(v => v.StartsWith(SearchText, settings.Organizer.SearchComparison));
-                var contains = service.Select(v => v.Title).Except(startsWith).Where(v => v.Contains(SearchText, settings.Organizer.SearchComparison));
+                IEnumerable<string> startsWith = service.Select(v => v.Title).Where(v => v.StartsWith(SearchText, settings.Organizer.SearchComparison));
+                IEnumerable<string> contains = service.Select(v => v.Title).Except(startsWith).Where(v => v.Contains(SearchText, settings.Organizer.SearchComparison));
                 return startsWith.Union(contains);
             }
 

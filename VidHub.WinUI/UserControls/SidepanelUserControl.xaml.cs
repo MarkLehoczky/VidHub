@@ -13,7 +13,9 @@ namespace VidHub.WinUI.UserControls
         private void UpdateTextFilter(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
         {
             if (DataContext is SidePanelViewModel viewModel)
+            {
                 viewModel.UpdateTextFilter();
+            }
         }
     }
 }

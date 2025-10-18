@@ -1,4 +1,4 @@
-﻿using VidHub.Core.Helpers;
+﻿using VidHub.Core.Enums;
 using VidHub.Platform;
 using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Connectors.Modals.Interfaces;
@@ -20,7 +20,9 @@ namespace VidHub.Services.Connectors.Modals
             await Task.Run(() =>
             {
                 if (Directory.Exists(Path.Combine(Path.GetTempPath(), "VidHub", "Previews")))
+                {
                     Directory.Delete(Path.Combine(Path.GetTempPath(), "VidHub", "Previews"), true);
+                }
             });
             vs.Update(UpdateType.ForceUpdateVideoCollection);
         }
@@ -29,20 +31,34 @@ namespace VidHub.Services.Connectors.Modals
         {
             await Task.Run(() =>
             {
-                foreach (var item in Context.Host.GetService<IVideoService>())
+                foreach (Core.Video item in Context.Host.GetService<IVideoService>())
+                {
                     if (RelativePosition)
+                    {
                         item.ExtractPreviewImage(item.Duration * settings.PreviewImageCustomization.FramePercentage);
-
+                    }
                     else
+                    {
                         item.ExtractPreviewImage(settings.PreviewImageCustomization.FrameTime);
+                    }
+                }
             });
             vs.Update(UpdateType.ForceUpdateVideoCollection);
         }
 
-        public void SubscribeToUpdateEvent(Action<UpdateType> action) => vs.SubscribeToUpdateEvent(action);
+        public void SubscribeToUpdateEvent(Action<UpdateType> action)
+        {
+            vs.SubscribeToUpdateEvent(action);
+        }
 
-        public void UnsubscribeFromUpdateEvent(Action<UpdateType> action) => vs.UnsubscribeFromUpdateEvent(action);
+        public void UnsubscribeFromUpdateEvent(Action<UpdateType> action)
+        {
+            vs.UnsubscribeFromUpdateEvent(action);
+        }
 
-        public void Update(UpdateType type) => vs.Update(type);
+        public void Update(UpdateType type)
+        {
+            vs.Update(type);
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿using VidHub.Core.Helpers;
+﻿using VidHub.Core.Enums;
 
 namespace VidHub.Platform.Interfaces
 {

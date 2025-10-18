@@ -9,6 +9,9 @@
 
         public WrapActions(Action<T> action) : this(action, action) { }
 
-        public static implicit operator WrapActions<T>(Action<T> action) => new(action);
+        public static implicit operator WrapActions<T>(Action<T> action)
+        {
+            return new(action);
+        }
     }
 }

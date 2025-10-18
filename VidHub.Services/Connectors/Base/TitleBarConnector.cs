@@ -1,4 +1,4 @@
-﻿using VidHub.Core.Helpers;
+﻿using VidHub.Core.Enums;
 using VidHub.Platform;
 using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Connectors.Base.Interfaces;
@@ -147,10 +147,19 @@ namespace VidHub.Services.Connectors.Base
             await load.LoadItems(items, includeSubfolders);
         }
 
-        public void SubscribeToUpdateEvent(Action<UpdateType> action) => vs.SubscribeToUpdateEvent(action);
+        public void SubscribeToUpdateEvent(Action<UpdateType> action)
+        {
+            vs.SubscribeToUpdateEvent(action);
+        }
 
-        public void UnsubscribeFromUpdateEvent(Action<UpdateType> action) => vs.UnsubscribeFromUpdateEvent(action);
+        public void UnsubscribeFromUpdateEvent(Action<UpdateType> action)
+        {
+            vs.UnsubscribeFromUpdateEvent(action);
+        }
 
-        public void Update(UpdateType type) => vs.Update(type);
+        public void Update(UpdateType type)
+        {
+            vs.Update(type);
+        }
     }
 }

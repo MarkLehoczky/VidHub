@@ -1,5 +1,5 @@
 ﻿using VidHub.Core;
-using VidHub.Core.Helpers;
+using VidHub.Core.Enums;
 using VidHub.Core.Manager;
 using VidHub.Platform;
 using VidHub.Services.Base.Interfaces;
@@ -39,7 +39,7 @@ namespace VidHub.Services.Logics
             {
                 await Task.Run(async () =>
                 {
-                    var loadActions = new WrapActions<string>(LoadVideo, UpdateUI);
+                    WrapActions<string> loadActions = new(LoadVideo, UpdateUI);
                     await manager.QueueVideoLoading(files.Select(f => f.Path), loadActions);
                 });
             }
@@ -54,8 +54,8 @@ namespace VidHub.Services.Logics
             {
                 await Task.Run(async () =>
                 {
-                    var collectActions = new WrapActions<string>(WrapActions<string>.NoAction, UpdateUI);
-                    var loadActions = new WrapActions<string>(LoadVideo, UpdateUI);
+                    WrapActions<string> collectActions = new(WrapActions<string>.NoAction, UpdateUI);
+                    WrapActions<string> loadActions = new(LoadVideo, UpdateUI);
                     await manager.QueueVideoCollecting([folder], includeSubfolders, collectActions, loadActions);
                 });
             }
@@ -68,8 +68,8 @@ namespace VidHub.Services.Logics
             {
                 await Task.Run(async () =>
                 {
-                    var collectActions = new WrapActions<string>(WrapActions<string>.NoAction, UpdateUI);
-                    var loadActions = new WrapActions<string>(LoadVideo, UpdateUI);
+                    WrapActions<string> collectActions = new(WrapActions<string>.NoAction, UpdateUI);
+                    WrapActions<string> loadActions = new(LoadVideo, UpdateUI);
                     await manager.QueueVideoCollecting(items, includeSubfolders, collectActions, loadActions);
                 });
             }
@@ -86,9 +86,9 @@ namespace VidHub.Services.Logics
                 {
                     await Task.Run(async () =>
                     {
-                        var files = await FileIO.ReadLinesAsync(file);
-                        var collectActions = new WrapActions<string>(WrapActions<string>.NoAction, UpdateUI);
-                        var loadActions = new WrapActions<string>(LoadVideo, UpdateUI);
+                        IList<string> files = await FileIO.ReadLinesAsync(file);
+                        WrapActions<string> collectActions = new(WrapActions<string>.NoAction, UpdateUI);
+                        WrapActions<string> loadActions = new(LoadVideo, UpdateUI);
                         await manager.QueueVideoCollecting(files, false, collectActions, loadActions);
                     });
 
@@ -101,13 +101,15 @@ namespace VidHub.Services.Logics
             StorageFile? file = await FileSaver("Export");
 
             if (file != null)
+            {
                 await FileIO.WriteTextAsync(file, string.Join('\n', service.Select(v => v.FilePath)));
+            }
         }
 
 
         private static async Task<StorageFile?> SingleFileOpener(string commitButtonText)
         {
-            var picker = new FileOpenPicker
+            FileOpenPicker picker = new()
             {
                 CommitButtonText = commitButtonText,
                 SuggestedStartLocation = PickerLocationId.HomeGroup,
@@ -121,14 +123,16 @@ namespace VidHub.Services.Logics
 
         private static async Task<IReadOnlyList<StorageFile>> MultiFileOpener(string commitButtonText)
         {
-            var picker = new FileOpenPicker
+            FileOpenPicker picker = new()
             {
                 CommitButtonText = commitButtonText,
                 SuggestedStartLocation = PickerLocationId.HomeGroup,
                 ViewMode = PickerViewMode.Thumbnail
             };
-            foreach (var filter in Video.ExtensionTypes)
+            foreach (string filter in Video.ExtensionTypes)
+            {
                 picker.FileTypeFilter.Add(filter);
+            }
 
             InitializeWithWindow.Initialize(picker, Context.Window.HWND);
             return await picker.PickMultipleFilesAsync();
@@ -136,7 +140,7 @@ namespace VidHub.Services.Logics
 
         private static async Task<StorageFolder?> FolderOpener(string commitButtonText)
         {
-            var picker = new FolderPicker
+            FolderPicker picker = new()
             {
                 CommitButtonText = commitButtonText,
                 SuggestedStartLocation = PickerLocationId.VideosLibrary,
@@ -150,7 +154,7 @@ namespace VidHub.Services.Logics
         // TODO: Implement auto file name increment
         private static async Task<StorageFile?> FileSaver(string commitButtonText)
         {
-            var picker = new FileSavePicker
+            FileSavePicker picker = new()
             {
                 CommitButtonText = commitButtonText,
                 DefaultFileExtension = ".vhc",
@@ -166,12 +170,15 @@ namespace VidHub.Services.Logics
 
         private static async Task<IEnumerable<StorageFile>> CollectFilesAsync(StorageFolder folder, bool includeSubfolders, List<string> fileTypeFilters)
         {
-            var files = new List<StorageFile>();
-            files.AddRange(await folder.GetFilesAsync());
+            List<StorageFile> files = [.. await folder.GetFilesAsync()];
 
             if (includeSubfolders)
-                foreach (var subfolder in await folder.GetFoldersAsync())
+            {
+                foreach (StorageFolder? subfolder in await folder.GetFoldersAsync())
+                {
                     files.AddRange(await CollectFilesAsync(subfolder, includeSubfolders, fileTypeFilters));
+                }
+            }
 
             return files.Where(f => fileTypeFilters.Contains(f.FileType, StringComparer.OrdinalIgnoreCase));
         }
@@ -179,9 +186,16 @@ namespace VidHub.Services.Logics
 
         private Action<string> LoadVideo => file =>
         {
-            var video = new Video(file);
-            if (settings.PreviewImageCustomization.RelativePosition) video.Load(settings.Organizer.Global.EnableCacheLoading, settings.PreviewImageCustomization.FramePercentage);
-            else video.Load(settings.Organizer.Global.EnableConcurrentLoading, settings.PreviewImageCustomization.FrameTime);
+            Video video = new(file);
+            if (settings.PreviewImageCustomization.RelativePosition)
+            {
+                video.Load(settings.Organizer.Global.EnableCacheLoading, settings.PreviewImageCustomization.FramePercentage);
+            }
+            else
+            {
+                video.Load(settings.Organizer.Global.EnableConcurrentLoading, settings.PreviewImageCustomization.FrameTime);
+            }
+
             video.Title = settings.TitleCustomization.CustomizeTitle(video.Title);
 
             service.Add(video);
@@ -206,7 +220,9 @@ namespace VidHub.Services.Logics
                 manager.LoadingFinished += () =>
                 {
                     if (!settings.TitleCustomization.DontShowTitleCustomizationAgain)
-                        Context.Window.TryEnqueue(() => Context.Window.ShowDialogAsync(ModalType.CustomizeTitleFormat, "Customize video title", "Confirm", new Tuple<bool, IEnumerable<int>>(false, IDCollection)));
+                    {
+                        _ = Context.Window.TryEnqueue(() => Context.Window.ShowDialogAsync(ModalType.CustomizeTitleFormat, "Customize video title", "Confirm", new Tuple<bool, IEnumerable<int>>(false, IDCollection)));
+                    }
 
                     system.DisplayToast("Video loading finished!", $"{IDCollection.Count} videos were loaded successfully.");
                     service.Update(UpdateType.UpdateSidePanel);

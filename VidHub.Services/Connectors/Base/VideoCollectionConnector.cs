@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using VidHub.Core;
-using VidHub.Core.Helpers;
+using VidHub.Core.Enums;
 using VidHub.Platform;
 using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Connectors.Base.Interfaces;
@@ -29,9 +29,9 @@ namespace VidHub.Services.Connectors.Base
 
         public async Task CopyFileAsync(Video video)
         {
-            var file = await StorageFile.GetFileFromPathAsync(video.FilePath);
+            StorageFile file = await StorageFile.GetFileFromPathAsync(video.FilePath);
 
-            var data = new DataPackage
+            DataPackage data = new()
             {
                 RequestedOperation = DataPackageOperation.Copy
             };
@@ -46,7 +46,7 @@ namespace VidHub.Services.Connectors.Base
         {
             await Task.Run(() =>
             {
-                var data = new DataPackage
+                DataPackage data = new()
                 {
                     RequestedOperation = DataPackageOperation.Copy
                 };
@@ -60,9 +60,9 @@ namespace VidHub.Services.Connectors.Base
 
         public async Task CopyPreviewImageAsync(Video video)
         {
-            var file = await StorageFile.GetFileFromPathAsync(video.PreviewImagePath);
+            StorageFile file = await StorageFile.GetFileFromPathAsync(video.PreviewImagePath);
 
-            var data = new DataPackage
+            DataPackage data = new()
             {
                 RequestedOperation = DataPackageOperation.Copy
             };
@@ -75,19 +75,19 @@ namespace VidHub.Services.Connectors.Base
 
         public async Task OpenAsync(Video video)
         {
-            var file = await StorageFile.GetFileFromPathAsync(video.FilePath);
-            await Launcher.LaunchFileAsync(file);
+            StorageFile file = await StorageFile.GetFileFromPathAsync(video.FilePath);
+            _ = await Launcher.LaunchFileAsync(file);
         }
 
         public async Task OpenFileExplorerAsync(Video video)
         {
-            var folder = await StorageFolder.GetFolderFromPathAsync(Path.GetDirectoryName(video.FilePath) ?? string.Empty);
-            await Launcher.LaunchFolderAsync(folder);
+            StorageFolder folder = await StorageFolder.GetFolderFromPathAsync(Path.GetDirectoryName(video.FilePath) ?? string.Empty);
+            _ = await Launcher.LaunchFolderAsync(folder);
         }
 
         public async Task RemoveVideoAsync(Video video)
         {
-            await Task.Run(() => vs.Remove(video));
+            _ = await Task.Run(() => vs.Remove(video));
         }
 
         public async Task RenameAsync(Video video)
@@ -96,10 +96,19 @@ namespace VidHub.Services.Connectors.Base
             Context.Host.GetService<IVideoService>().Update(UpdateType.ForceUpdateVideoCollection);
         }
 
-        public void SubscribeToUpdateEvent(Action<UpdateType> action) => vs.SubscribeToUpdateEvent(action);
+        public void SubscribeToUpdateEvent(Action<UpdateType> action)
+        {
+            vs.SubscribeToUpdateEvent(action);
+        }
 
-        public void UnsubscribeFromUpdateEvent(Action<UpdateType> action) => vs.UnsubscribeFromUpdateEvent(action);
+        public void UnsubscribeFromUpdateEvent(Action<UpdateType> action)
+        {
+            vs.UnsubscribeFromUpdateEvent(action);
+        }
 
-        public void Update(UpdateType type) => vs.Update(type);
+        public void Update(UpdateType type)
+        {
+            vs.Update(type);
+        }
     }
 }

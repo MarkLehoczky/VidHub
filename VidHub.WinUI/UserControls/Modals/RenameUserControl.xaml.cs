@@ -10,6 +10,8 @@ public sealed partial class RenameUserControl : UserControl
     {
         InitializeComponent();
         if (DataContext is RenameViewModel viewmodel)
+        {
             viewmodel.Video = video;
+        }
     }
 }

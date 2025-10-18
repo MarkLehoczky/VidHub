@@ -17,91 +17,127 @@ namespace VidHub.Core.Settings
 
         public void ChangeTitle(Video video)
         {
-            var newTitle = CustomizeTitle(video.Title);
+            string newTitle = CustomizeTitle(video.Title);
             video.Title = newTitle;
         }
 
         public string CustomizeTitle(string filePath)
         {
-            var newTitle = "";
+            string newTitle = "";
             if (IncludePath)
+            {
                 newTitle += Path.GetFullPath(filePath)[..^Path.GetFileName(filePath).Length];
+            }
 
             if (IncludeDate)
+            {
                 newTitle += File.GetCreationTime(filePath).ToString("yyyy-MM-dd");
+            }
 
             if (IncludeFilename)
+            {
                 newTitle += IncludeDate ? $"_{Path.GetFileNameWithoutExtension(filePath)}" : Path.GetFileNameWithoutExtension(filePath);
+            }
 
             if (IncludeMetadata)
+            {
                 newTitle += "[Metadata]";
+            }
 
             if (IncludeExtension)
+            {
                 newTitle += Path.GetExtension(filePath);
+            }
 
             if (EnabledRegex)
+            {
                 try
                 {
-                    var regex = new Regex(RegexPattern);
+                    Regex regex = new(RegexPattern);
                     newTitle = regex.Replace(newTitle, RegexReplacement);
                 }
                 catch { }
+            }
 
             return newTitle;
         }
         public string CustomizeTitle(string filePath, bool useRegex)
         {
-            var newTitle = "";
+            string newTitle = "";
             if (IncludePath)
+            {
                 newTitle += Path.GetFullPath(filePath)[..^Path.GetFileName(filePath).Length];
+            }
 
             if (IncludeDate)
+            {
                 newTitle += File.GetCreationTime(filePath).ToString("yyyy-MM-dd");
+            }
 
             if (IncludeFilename)
+            {
                 newTitle += IncludeDate ? $"_{Path.GetFileNameWithoutExtension(filePath)}" : Path.GetFileNameWithoutExtension(filePath);
+            }
 
             if (IncludeMetadata)
+            {
                 newTitle += "[Metadata]";
+            }
 
             if (IncludeExtension)
+            {
                 newTitle += Path.GetExtension(filePath);
+            }
 
             if (useRegex)
+            {
                 try
                 {
-                    var regex = new Regex(RegexPattern);
+                    Regex regex = new(RegexPattern);
                     newTitle = regex.Replace(newTitle, RegexReplacement);
                 }
                 catch { }
+            }
 
             return newTitle;
         }
         public string CustomizeTitle(Video Video)
         {
-            var newTitle = "";
+            string newTitle = "";
             if (IncludePath)
+            {
                 newTitle += Path.GetFullPath(Video.FilePath)[..^Path.GetFileName(Video.FilePath).Length];
+            }
 
             if (IncludeDate)
+            {
                 newTitle += File.GetCreationTime(Video.FilePath).ToString("yyyy-MM-dd");
+            }
 
             if (IncludeFilename)
+            {
                 newTitle += IncludeDate ? $"_{Path.GetFileNameWithoutExtension(Video.FilePath)}" : Path.GetFileNameWithoutExtension(Video.FilePath);
+            }
 
             if (IncludeMetadata)
+            {
                 newTitle += "[Metadata]";
+            }
 
             if (IncludeExtension)
+            {
                 newTitle += Path.GetExtension(Video.FilePath);
+            }
 
             if (EnabledRegex)
+            {
                 try
                 {
-                    var regex = new Regex(RegexPattern);
+                    Regex regex = new(RegexPattern);
                     newTitle = regex.Replace(newTitle, RegexReplacement);
                 }
                 catch { }
+            }
 
             return newTitle;
         }

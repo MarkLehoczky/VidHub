@@ -18,7 +18,7 @@ namespace VidHub.WinUI.UserControls
         {
             InitializeComponent();
 
-            var pasteAccelerator = new KeyboardAccelerator
+            KeyboardAccelerator pasteAccelerator = new()
             {
                 Key = Windows.System.VirtualKey.V,
                 Modifiers = Windows.System.VirtualKeyModifiers.Control
@@ -34,32 +34,25 @@ namespace VidHub.WinUI.UserControls
         {
             args.Handled = true;
 
-            var dataPackageView = Clipboard.GetContent();
+            DataPackageView dataPackageView = Clipboard.GetContent();
 
             if (dataPackageView.Contains(StandardDataFormats.StorageItems))
             {
-                var items = await dataPackageView.GetStorageItemsAsync();
+                IReadOnlyList<IStorageItem> items = await dataPackageView.GetStorageItemsAsync();
                 HandlePastedFiles(items);
             }
         }
 
         private void DragOverItems(object sender, DragEventArgs e)
         {
-            if (e.DataView.Contains(StandardDataFormats.StorageItems))
-            {
-                e.AcceptedOperation = DataPackageOperation.Copy;
-            }
-            else
-            {
-                e.AcceptedOperation = DataPackageOperation.None;
-            }
+            e.AcceptedOperation = e.DataView.Contains(StandardDataFormats.StorageItems) ? DataPackageOperation.Copy : DataPackageOperation.None;
         }
 
         private async void DropItems(object sender, DragEventArgs e)
         {
             if (e.DataView.Contains(StandardDataFormats.StorageItems))
             {
-                var items = await e.DataView.GetStorageItemsAsync().AsTask();
+                IReadOnlyList<IStorageItem> items = await e.DataView.GetStorageItemsAsync().AsTask();
                 HandlePastedFiles(items);
             }
         }
@@ -67,7 +60,7 @@ namespace VidHub.WinUI.UserControls
 
         private void HandlePastedFiles(IEnumerable<IStorageItem> items)
         {
-            Platform.Context.Host.GetService<IVideoLoadService>().LoadItems(items, true);
+            _ = Platform.Context.Host.GetService<IVideoLoadService>().LoadItems(items, true);
         }
 
         private void TextTrimmingChanged(TextBlock sender, IsTextTrimmedChangedEventArgs args)
@@ -86,10 +79,10 @@ namespace VidHub.WinUI.UserControls
         {
             if (sender is FrameworkElement element && element.DataContext is Video video)
             {
-                Task.Run(async () =>
+                _ = Task.Run(async () =>
                 {
-                    var file = await StorageFile.GetFileFromPathAsync(video.FilePath);
-                    await Launcher.LaunchFileAsync(file);
+                    StorageFile file = await StorageFile.GetFileFromPathAsync(video.FilePath);
+                    _ = await Launcher.LaunchFileAsync(file);
                 });
             }
         }

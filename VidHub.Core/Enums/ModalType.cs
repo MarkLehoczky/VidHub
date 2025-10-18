@@ -1,4 +1,4 @@
-﻿namespace VidHub.Core.Helpers
+﻿namespace VidHub.Core.Enums
 {
     public enum ModalType
     {

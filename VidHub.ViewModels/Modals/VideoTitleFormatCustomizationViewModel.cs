@@ -1,5 +1,5 @@
 ﻿using VidHub.Core;
-using VidHub.Core.Helpers;
+using VidHub.Core.Enums;
 using VidHub.Core.Models;
 using VidHub.Platform;
 using VidHub.Services.Connectors.Modals.Interfaces;
@@ -51,11 +51,7 @@ namespace VidHub.ViewModels.Modals
         }
         public string RegexReplacement
         {
-            get => connector.RegexReplacement;
-            set
-            {
-                connector.RegexReplacement = value;
-            }
+            get => connector.RegexReplacement; set => connector.RegexReplacement = value;
         }
         public bool InvalidRegex => connector.InvalidRegex;
 

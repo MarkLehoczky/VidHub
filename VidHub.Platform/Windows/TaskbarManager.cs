@@ -19,20 +19,26 @@ namespace VidHub.Platform.Windows
         }
 
         #region Progress Bar
-        public void SetProgressState(nint windowHandle, TaskbarProgressState state) =>
+        public void SetProgressState(nint windowHandle, TaskbarProgressState state)
+        {
             _taskbarInstance.SetProgressState(windowHandle, (TBPFLAG)state);
+        }
 
-        public void SetProgressValue(nint windowHandle, ulong current, ulong maximum) =>
+        public void SetProgressValue(nint windowHandle, ulong current, ulong maximum)
+        {
             _taskbarInstance.SetProgressValue(windowHandle, current, maximum);
+        }
 
-        public void ClearProgress(nint windowHandle) =>
+        public void ClearProgress(nint windowHandle)
+        {
             SetProgressState(windowHandle, TaskbarProgressState.NoProgress);
+        }
         #endregion
 
         #region Flash Window
         public static void FlashWindow(nint windowHandle, int count = 3, uint timeout = 0)
         {
-            var flashInfo = new FLASHWINFO
+            FLASHWINFO flashInfo = new()
             {
                 cbSize = (uint)Marshal.SizeOf(typeof(FLASHWINFO)),
                 hwnd = windowHandle,
@@ -41,23 +47,29 @@ namespace VidHub.Platform.Windows
                 dwTimeout = timeout
             };
 
-            NativeMethods.FlashWindowEx(ref flashInfo);
+            _ = NativeMethods.FlashWindowEx(ref flashInfo);
         }
         #endregion
 
         #region Overlay Icon / Badge
-        public void SetOverlayIcon(nint windowHandle, Icon? icon, string? description) =>
+        public void SetOverlayIcon(nint windowHandle, Icon? icon, string? description)
+        {
             _taskbarInstance.SetOverlayIcon(windowHandle, icon?.Handle ?? nint.Zero, description ?? string.Empty);
+        }
 
-        public void ClearOverlayIcon(nint windowHandle) =>
+        public void ClearOverlayIcon(nint windowHandle)
+        {
             SetOverlayIcon(windowHandle, null, null);
+        }
         #endregion
 
         public void Dispose()
         {
             GC.SuppressFinalize(this);
             if (_taskbarInstance != null && Marshal.IsComObject(_taskbarInstance))
-                Marshal.ReleaseComObject(_taskbarInstance);
+            {
+                _ = Marshal.ReleaseComObject(_taskbarInstance);
+            }
         }
     }
 }

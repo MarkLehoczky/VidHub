@@ -7,17 +7,15 @@ namespace VidHub.WinUI.Converters
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            if (value is double number)
-            {
-                return number switch
+            return value is double number
+                ? number switch
                 {
                     0 => $"First frame",
                     50 => $"Middle frame",
                     100 => $"Last frame",
                     _ => $"{(int)number}%",
-                };
-            }
-            return value;
+                }
+                : value;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

@@ -35,7 +35,7 @@ namespace VidHub.Core
 
         public Video()
         {
-            Interlocked.Increment(ref IDProvider);
+            _ = Interlocked.Increment(ref IDProvider);
             id = IDProvider;
             hash = string.Empty;
             title = string.Empty;
@@ -64,22 +64,30 @@ namespace VidHub.Core
         public void Load(bool cacheLoad, TimeSpan frame)
         {
             if (cacheLoad && LoadCache())
+            {
                 return;
+            }
 
-            foreach (var action in LoadActions(frame))
+            foreach (Action action in LoadActions(frame))
+            {
                 try { action(); }
                 catch { }
+            }
 
             SaveCache();
         }
         public void Load(bool cacheLoad, double percentage)
         {
             if (cacheLoad && LoadCache())
+            {
                 return;
+            }
 
-            foreach (var action in LoadActions(percentage))
+            foreach (Action action in LoadActions(percentage))
+            {
                 try { action(); }
                 catch { }
+            }
 
             SaveCache();
         }
@@ -91,22 +99,27 @@ namespace VidHub.Core
         }
 
 
-        private List<Action> LoadActions(TimeSpan frame) =>
-            [
+        private List<Action> LoadActions(TimeSpan frame)
+        {
+            return [
             () => Title = Path.GetFileNameWithoutExtension(FilePath),
             () => Date = File.GetLastWriteTime(FilePath),
             () => Date = new MetadataProcessor(FilePath).ExtractDate(),
             () => Duration = new MetadataProcessor(FilePath).ExtractDuration(),
             () => ExtractPreviewImage(frame),
             ];
-        private List<Action> LoadActions(double percentage) =>
-            [
-            () => Title = Path.GetFileNameWithoutExtension(FilePath),
+        }
+
+        private List<Action> LoadActions(double percentage)
+        {
+            return [
+                    () => Title = Path.GetFileNameWithoutExtension(FilePath),
             () => Date = File.GetLastWriteTime(FilePath),
             () => Date = new MetadataProcessor(FilePath).ExtractDate(),
             () => Duration = new MetadataProcessor(FilePath).ExtractDuration(),
             () => ExtractPreviewImage(Duration * percentage),
             ];
+        }
 
         private bool LoadCache()
         {
@@ -114,16 +127,22 @@ namespace VidHub.Core
             string cachePath = Path.Combine(cacheDirectory, Hash + ".json");
 
             if (!File.Exists(cachePath))
+            {
                 return false;
+            }
 
-            var json = File.ReadAllText(cachePath);
-            var video = JsonSerializer.Deserialize<Video>(json);
+            string json = File.ReadAllText(cachePath);
+            Video? video = JsonSerializer.Deserialize<Video>(json);
 
             if (video is null)
+            {
                 return false;
+            }
 
             if (!File.Exists(video.PreviewImagePath))
+            {
                 return false;
+            }
 
             Title = video.Title;
             Date = video.Date;
@@ -140,100 +159,69 @@ namespace VidHub.Core
             string cacheDirectory = Path.Combine(Path.GetTempPath(), "VidHub", "Cache");
             string cachePath = Path.Combine(cacheDirectory, Hash + ".json");
 
-            Directory.CreateDirectory(cacheDirectory);
+            _ = Directory.CreateDirectory(cacheDirectory);
             File.WriteAllText(cachePath, JsonSerializer.Serialize(this));
         }
 
         // TODO: Handle key collision
-        private string GetFileHash() => BitConverter.ToString(MD5.HashData(Encoding.UTF8.GetBytes(FilePath))).TrimStart('-').ToLowerInvariant();
-
+        private string GetFileHash()
+        {
+            return BitConverter.ToString(MD5.HashData(Encoding.UTF8.GetBytes(FilePath))).TrimStart('-').ToLowerInvariant();
+        }
 
         public int CompareTo(object? obj)
         {
-            if (obj is null)
-                return 1;
-
-            if (obj is Video other)
-                return ((IComparable<Video>)this).CompareTo(other);
-
-            return 1;
+            return obj is null ? 1 : obj is Video other ? ((IComparable<Video>)this).CompareTo(other) : 1;
         }
 
         public int CompareTo(Video? other)
         {
-            if (other is null)
-                return 1;
-
-            return Comparer<int>.Default.Compare(ID, other.ID);
+            return other is null ? 1 : Comparer<int>.Default.Compare(ID, other.ID);
         }
 
         public int Compare(object? x, object? y)
         {
             if (ReferenceEquals(x, y))
+            {
                 return 0;
+            }
 
             if (x is null)
+            {
                 return -1;
+            }
 
-            if (y is null)
-                return 1;
-
-            if (x is Video left && y is Video right)
-                return ((IComparer<Video>)this).Compare(left, right);
-
-            return 1;
+            return y is null ? 1 : x is Video left && y is Video right ? ((IComparer<Video>)this).Compare(left, right) : 1;
         }
 
         public int Compare(Video? x, Video? y)
         {
             if (ReferenceEquals(x, y))
+            {
                 return 0;
+            }
 
-            if (x is null)
-                return -1;
-
-            if (y is null)
-                return 1;
-
-            return ((IComparable<Video>)x).CompareTo(y);
+            return x is null ? -1 : y is null ? 1 : ((IComparable<Video>)x).CompareTo(y);
         }
 
         public int GetHashCode(object obj)
         {
-            if (obj is Video video)
-                return ((IEqualityComparer<Video>)this).GetHashCode(video);
-
-            return 0;
+            return obj is Video video ? ((IEqualityComparer<Video>)this).GetHashCode(video) : 0;
         }
 
         public bool Equals(Video? x, Video? y)
         {
-            if (ReferenceEquals(x, y))
-                return true;
-
-            if (x is null || y is null)
-                return false;
-
-            return string.Equals(x.Hash, y.Hash, StringComparison.Ordinal);
+            return ReferenceEquals(x, y) || x is not null && y is not null && string.Equals(x.Hash, y.Hash, StringComparison.Ordinal);
         }
 
         public int GetHashCode(Video obj)
         {
-            if (obj is null)
-                return 0;
-
-            return obj.Hash != null ? StringComparer.Ordinal.GetHashCode(obj.Hash) : 0;
+            return obj is null ? 0 : obj.Hash != null ? StringComparer.Ordinal.GetHashCode(obj.Hash) : 0;
         }
 
         public bool Equals(Video? other)
         {
-            if (other is null)
-                return false;
-
-            if (ReferenceEquals(this, other))
-                return true;
-
-            return string.Equals(Hash, other.Hash, StringComparison.Ordinal);
+            return other is not null && (ReferenceEquals(this, other) || string.Equals(Hash, other.Hash, StringComparison.Ordinal));
         }
 
         public override bool Equals(object? obj)
@@ -243,15 +231,7 @@ namespace VidHub.Core
                 return true;
             }
 
-            if (obj is null)
-            {
-                return false;
-            }
-
-            if (obj is Video other)
-                return ((IEquatable<Video>)this).Equals(other);
-
-            return false;
+            return obj is not null && obj is Video other && ((IEquatable<Video>)this).Equals(other);
         }
 
         public override int GetHashCode()
@@ -261,12 +241,7 @@ namespace VidHub.Core
 
         public static bool operator ==(Video left, Video right)
         {
-            if (left is null)
-            {
-                return right is null;
-            }
-
-            return left.Equals(right);
+            return left is null ? right is null : left.Equals(right);
         }
 
         public static bool operator !=(Video left, Video right)
@@ -294,6 +269,9 @@ namespace VidHub.Core
             return left is null ? right is null : ((IComparable<Video>)left).CompareTo(right) >= 0;
         }
 
-        public override string ToString() => $"Video ([{ID}]: {Title}    <{FilePath}>    ({Date:yyyy-MM-dd} - {Duration:h\\:mm\\:ss})";
+        public override string ToString()
+        {
+            return $"Video ([{ID}]: {Title}    <{FilePath}>    ({Date:yyyy-MM-dd} - {Duration:h\\:mm\\:ss})";
+        }
     }
 }

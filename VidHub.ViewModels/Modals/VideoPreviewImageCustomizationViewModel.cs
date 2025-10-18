@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using VidHub.Core.Helpers;
+using VidHub.Core.Enums;
 using VidHub.Platform;
 using VidHub.Services.Connectors.Modals.Interfaces;
 using VidHub.ViewModels.Base;
@@ -79,6 +79,6 @@ namespace VidHub.ViewModels.Modals
         }
 
 
-        override public void Update(UpdateType type) { }
+        public override void Update(UpdateType type) { }
     }
 }

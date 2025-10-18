@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VidHub.Core;
-using VidHub.Core.Helpers;
+using VidHub.Core.Enums;
 using VidHub.Platform.Interfaces;
 using VidHub.WinUI.UserControls.Modals;
 using WinRT.Interop;
@@ -34,7 +34,7 @@ namespace VidHub.WinUI.Context
                 case ModalType.ChangeVideoTitle: content = new RenameUserControl(new Video()); break;
             }
 
-            var dialog = new ContentDialog()
+            ContentDialog dialog = new()
             {
                 Title = title,
                 CloseButtonText = closeButton,
@@ -43,7 +43,7 @@ namespace VidHub.WinUI.Context
                 XamlRoot = window.Content.XamlRoot
             };
 
-            await dialog.ShowAsync();
+            _ = await dialog.ShowAsync();
         }
         public async Task ShowDialogAsync(ModalType type, string title, string closeButton, object instance)
         {
@@ -57,7 +57,7 @@ namespace VidHub.WinUI.Context
                 case ModalType.ChangeVideoTitle: content = new RenameUserControl((Video)instance); break;
             }
 
-            var dialog = new ContentDialog()
+            ContentDialog dialog = new()
             {
                 Title = title,
                 CloseButtonText = closeButton,
@@ -66,7 +66,7 @@ namespace VidHub.WinUI.Context
                 XamlRoot = window.Content.XamlRoot
             };
 
-            await dialog.ShowAsync();
+            _ = await dialog.ShowAsync();
         }
     }
 }

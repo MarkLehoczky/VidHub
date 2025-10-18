@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using VidHub.Core.Helpers;
+using VidHub.Core.Enums;
 using VidHub.Platform;
 using VidHub.Services.Connectors.Base.Interfaces;
 using VidHub.ViewModels.Base;
@@ -11,9 +11,15 @@ namespace VidHub.ViewModels
         public TitleBarViewModel() : this(Context.Host.GetService<ITitleBarConnector>()) { }
 
 
-        private bool CanOpenSidePanel() => !connector.OpenedSidePanel;
-        private bool CanCloseSidePanel() => connector.OpenedSidePanel;
+        private bool CanOpenSidePanel()
+        {
+            return !connector.OpenedSidePanel;
+        }
 
+        private bool CanCloseSidePanel()
+        {
+            return connector.OpenedSidePanel;
+        }
 
         public bool EnableSystemNotification
         {
@@ -140,6 +146,6 @@ namespace VidHub.ViewModels
         }
 
 
-        override public void Update(UpdateType type) { }
+        public override void Update(UpdateType type) { }
     }
 }

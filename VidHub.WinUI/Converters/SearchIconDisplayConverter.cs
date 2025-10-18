@@ -8,10 +8,7 @@ namespace VidHub.WinUI.Converters
     {
         public object? Convert(object value, Type targetType, object parameter, string language)
         {
-            if (value is bool liveFiltering && liveFiltering)
-                return null;
-
-            return new SymbolIcon(Symbol.Find);
+            return value is bool liveFiltering && liveFiltering ? null : (object)new SymbolIcon(Symbol.Find);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

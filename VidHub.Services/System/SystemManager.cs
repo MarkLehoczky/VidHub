@@ -16,22 +16,28 @@ namespace VidHub.Services.System
 
         public void DisplayToast(params string[] texts)
         {
-            if (!settings.Organizer.Global.EnableSystemNotification) return;
+            if (!settings.Organizer.Global.EnableSystemNotification)
+            {
+                return;
+            }
 
-            var content = new ToastContentBuilder();
-            foreach (var text in texts)
+            ToastContentBuilder content = new();
+            foreach (string text in texts)
             {
                 content = content.AddText(text);
             }
-            content.GetToastContent();
+            _ = content.GetToastContent();
 
-            var toast = new ToastNotification(content.GetXml());
+            ToastNotification toast = new(content.GetXml());
             ToastNotificationManager.CreateToastNotifier().Show(toast);
         }
 
         public void FlashWindow()
         {
-            if (Context.Window.IsActive) return;
+            if (Context.Window.IsActive)
+            {
+                return;
+            }
 
             TaskbarManager.FlashWindow(Context.Window.HWND);
         }
@@ -55,10 +61,13 @@ namespace VidHub.Services.System
         public void SetTaskbar(LoadingManager manager)
         {
             if (manager.IsCollecting)
+            {
                 SetIndeterminateProgressbar();
-
+            }
             else if (!manager.IsCollecting && manager.IsLoading)
+            {
                 SetProgressbar(manager.LoadedFileCount, manager.TotalFileCount);
+            }
 
             if (!manager.IsActive)
             {

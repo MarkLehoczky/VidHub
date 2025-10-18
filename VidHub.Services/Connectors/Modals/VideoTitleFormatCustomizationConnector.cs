@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
 using VidHub.Core;
-using VidHub.Core.Helpers;
+using VidHub.Core.Enums;
 using VidHub.Core.Models;
 using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Connectors.Modals.Interfaces;
@@ -104,8 +104,10 @@ namespace VidHub.Services.Connectors.Modals
         {
             Videos.Clear();
 
-            foreach (var video in videos)
+            foreach (Video video in videos)
+            {
                 Videos.Add(new VideoTitleTemplate(video));
+            }
 
             UpdateFormats();
         }
@@ -114,7 +116,7 @@ namespace VidHub.Services.Connectors.Modals
         {
             try
             {
-                var regex = new Regex(RegexPattern);
+                Regex regex = new(RegexPattern);
                 InvalidRegex = false;
             }
             catch
@@ -122,7 +124,7 @@ namespace VidHub.Services.Connectors.Modals
                 InvalidRegex = true;
             }
 
-            foreach (var video in Videos)
+            foreach (VideoTitleTemplate video in Videos)
             {
                 video.Title = settings.TitleCustomization.CustomizeTitle(video.FilePath, EnabledRegex && !InvalidRegex);
                 if (!IsTemplateMode)
@@ -132,10 +134,19 @@ namespace VidHub.Services.Connectors.Modals
             }
         }
 
-        public void SubscribeToUpdateEvent(Action<UpdateType> action) => vs.SubscribeToUpdateEvent(action);
+        public void SubscribeToUpdateEvent(Action<UpdateType> action)
+        {
+            vs.SubscribeToUpdateEvent(action);
+        }
 
-        public void UnsubscribeFromUpdateEvent(Action<UpdateType> action) => vs.UnsubscribeFromUpdateEvent(action);
+        public void UnsubscribeFromUpdateEvent(Action<UpdateType> action)
+        {
+            vs.UnsubscribeFromUpdateEvent(action);
+        }
 
-        public void Update(UpdateType type) => vs.Update(type);
+        public void Update(UpdateType type)
+        {
+            vs.Update(type);
+        }
     }
 }

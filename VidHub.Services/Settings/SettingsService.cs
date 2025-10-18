@@ -14,15 +14,15 @@ namespace VidHub.Services.Settings
 
         public void Load()
         {
-            var appDataDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "VidHub");
-            var appDataSettings = Path.Combine(appDataDirectory, "VidHub.json");
+            string appDataDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "VidHub");
+            string appDataSettings = Path.Combine(appDataDirectory, "VidHub.json");
 
-            Directory.CreateDirectory(appDataDirectory);
+            _ = Directory.CreateDirectory(appDataDirectory);
 
             if (File.Exists(appDataSettings))
             {
                 string json = File.ReadAllText(appDataSettings);
-                var settings = JsonSerializer.Deserialize<SettingsService>(json);
+                SettingsService? settings = JsonSerializer.Deserialize<SettingsService>(json);
 
                 if (settings != null)
                 {
@@ -32,17 +32,19 @@ namespace VidHub.Services.Settings
                     TitleCustomization = settings.TitleCustomization;
 
                     if (Organizer.Global.SaveOrganizerSettings == false)
+                    {
                         Organizer.Display = new DisplayOrganizerSettings();
+                    }
                 }
             }
         }
 
         public void Save()
         {
-            var appDataDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "VidHub");
-            var appDataSettings = Path.Combine(appDataDirectory, "VidHub.json");
+            string appDataDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "VidHub");
+            string appDataSettings = Path.Combine(appDataDirectory, "VidHub.json");
 
-            Directory.CreateDirectory(appDataDirectory);
+            _ = Directory.CreateDirectory(appDataDirectory);
 
             string json = JsonSerializer.Serialize(this);
             File.WriteAllText(appDataSettings, json);

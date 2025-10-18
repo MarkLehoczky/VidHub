@@ -30,25 +30,25 @@ namespace VidHub.WinUI
             Platform.Context.Host = new HostContext(Host.CreateDefaultBuilder()
                 .ConfigureServices(services =>
                 {
-                    services.AddSingleton<IVideoService, VideoService>();
-                    services.AddSingleton<ISettingsService, SettingsService>();
-                    services.AddSingleton<ISystemManager, SystemManager>();
-                    services.AddSingleton<IVideoLoadService, VideoLoadService>();
-                    services.AddSingleton<IVideoOrganizerService, VideoOrganizerService>();
-                    services.AddSingleton<IVideoCollectionService, VideoCollectionService>();
-                    services.AddSingleton<IVideoCollectionConnector, VideoCollectionConnector>();
-                    services.AddSingleton<ISidePanelConnector, SidePanelConnector>();
-                    services.AddSingleton<ITitleBarConnector, TitleBarConnector>();
-                    services.AddSingleton<IVideoDisplayCustomizationConnector, VideoDisplayCustomizationConnector>();
-                    services.AddSingleton<IVideoTitleFormatCustomizationConnector, VideoTitleFormatCustomizationConnector>();
-                    services.AddSingleton<IVideoPreviewImageCustomizationConnector, VideoPreviewImageCustomizationConnector>();
-                    services.AddTransient<TitleBarViewModel>();
-                    services.AddTransient<SidePanelViewModel>();
-                    services.AddTransient<VideoCollectionViewModel>();
-                    services.AddTransient<VideoDisplayCustomizationViewModel>();
-                    services.AddTransient<VideoTitleFormatCustomizationViewModel>();
-                    services.AddTransient<VideoPreviewImageCustomizationViewModel>();
-                    services.AddTransient<RenameViewModel>();
+                    _ = services.AddSingleton<IVideoService, VideoService>();
+                    _ = services.AddSingleton<ISettingsService, SettingsService>();
+                    _ = services.AddSingleton<ISystemManager, SystemManager>();
+                    _ = services.AddSingleton<IVideoLoadService, VideoLoadService>();
+                    _ = services.AddSingleton<IVideoOrganizerService, VideoOrganizerService>();
+                    _ = services.AddSingleton<IVideoCollectionService, VideoCollectionService>();
+                    _ = services.AddSingleton<IVideoCollectionConnector, VideoCollectionConnector>();
+                    _ = services.AddSingleton<ISidePanelConnector, SidePanelConnector>();
+                    _ = services.AddSingleton<ITitleBarConnector, TitleBarConnector>();
+                    _ = services.AddSingleton<IVideoDisplayCustomizationConnector, VideoDisplayCustomizationConnector>();
+                    _ = services.AddSingleton<IVideoTitleFormatCustomizationConnector, VideoTitleFormatCustomizationConnector>();
+                    _ = services.AddSingleton<IVideoPreviewImageCustomizationConnector, VideoPreviewImageCustomizationConnector>();
+                    _ = services.AddTransient<TitleBarViewModel>();
+                    _ = services.AddTransient<SidePanelViewModel>();
+                    _ = services.AddTransient<VideoCollectionViewModel>();
+                    _ = services.AddTransient<VideoDisplayCustomizationViewModel>();
+                    _ = services.AddTransient<VideoTitleFormatCustomizationViewModel>();
+                    _ = services.AddTransient<VideoPreviewImageCustomizationViewModel>();
+                    _ = services.AddTransient<RenameViewModel>();
                 })
                 .Build());
         }
