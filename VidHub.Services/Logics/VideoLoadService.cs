@@ -1,7 +1,6 @@
-﻿using System.Collections.Concurrent;
-using VidHub.Core;
+﻿using VidHub.Core;
 using VidHub.Core.Helpers;
-using VidHub.Core.Models;
+using VidHub.Core.Manager;
 using VidHub.Platform;
 using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Logics.Interfaces;
@@ -13,167 +12,92 @@ using WinRT.Interop;
 
 namespace VidHub.Services.Logics
 {
-    // TODO: Implement transfer amnager and proper queue system
-    // TODO: Optimize video loading with yielding
-    // TODO: Optimize video loading by using string instead of StorageItem
-    public class VideoLoadService(IVideoService service, ISettingsService settings, ISystemManager manager) : IVideoLoadService
+    public class VideoLoadService(IVideoService service, ISettingsService settings, ISystemManager system) : IVideoLoadService
     {
-        private readonly ConcurrentQueue<Transfer> transfers = [];
+        private readonly LoadingManager manager = new();
         private readonly List<int> IDCollection = [];
 
-        public bool HasActiveTransfer => !transfers.IsEmpty;
+        public bool HasActiveTransfer => manager.IsActive;
 
-        public string TransferDescription => transfers.Where(t => t.IsActive).All(t => t.IsCollecting)
-            ? "Collecting videos"
-            : transfers.Where(t => t.IsActive).Any(t => t.IsCollecting)
+        public string TransferDescription => !manager.IsActive
+            ? "No active loading..."
+            : manager.IsCollecting
                 ? "Collecting and loading videos"
                 : "Loading videos";
 
-        public int LoadedFileCount => transfers.Sum(t => t.LoadedCount);
+        public int LoadedFileCount => manager.LoadedFileCount;
 
-        public int TotalFileCount => transfers.Sum(t => t.TotalCount);
+        public int TotalFileCount => manager.TotalFileCount;
 
 
         public async Task LoadFilesAsync()
         {
+            InitLoadingManager();
             IReadOnlyList<StorageFile> files = await MultiFileOpener("Load");
 
             if (files.Count > 0)
             {
-                await Task.Run(() =>
+                await Task.Run(async () =>
                 {
-                    var index = transfers.Count;
-                    var transfer = new Transfer
-                    {
-                        TotalCount = files.Count
-                    };
-                    transfers.Enqueue(transfer);
-                    manager.SetTaskbar(transfers);
-                    service.Update(UpdateType.UpdateSidePanel);
-                    service.Update(UpdateType.UpdateVideoCollection);
-
-                    AddFilesToVideoCollection(index, files);
-
-                    transfers.ElementAt(index).IsActive = false;
-                    manager.SetTaskbar(transfers);
-                    service.Update(UpdateType.UpdateSidePanel);
-                    service.Update(UpdateType.UpdateVideoCollection);
-                    TransferCleanup();
+                    var loadActions = new WrapActions<string>(LoadVideo, UpdateUI);
+                    await manager.QueueVideoLoading(files.Select(f => f.Path), loadActions);
                 });
             }
         }
 
         public async Task LoadFoldersAsync(bool includeSubfolders)
         {
+            InitLoadingManager();
             StorageFolder? folder = await FolderOpener("Load");
 
             if (folder != null)
             {
                 await Task.Run(async () =>
                 {
-                    var index = transfers.Count;
-                    var transfer = new Transfer
-                    {
-                        IsCollecting = true
-                    };
-                    transfers.Enqueue(transfer);
-                    manager.SetTaskbar(transfers);
-                    service.Update(UpdateType.UpdateSidePanel);
-                    service.Update(UpdateType.UpdateVideoCollection);
-
-                    transfers.ElementAt(index).IsCollecting = true;
-                    var files = await CollectFilesAsync(folder, includeSubfolders, Video.ExtensionTypes);
-                    transfers.ElementAt(index).IsCollecting = false;
-                    transfers.ElementAt(index).TotalCount = files.Count();
-                    AddFilesToVideoCollection(index, files);
-
-                    transfers.ElementAt(index).IsActive = false;
-                    manager.SetTaskbar(transfers);
-                    service.Update(UpdateType.UpdateSidePanel);
-                    service.Update(UpdateType.UpdateVideoCollection);
-                    TransferCleanup();
+                    var collectActions = new WrapActions<string>(WrapActions<string>.NoAction, UpdateUI);
+                    var loadActions = new WrapActions<string>(LoadVideo, UpdateUI);
+                    await manager.QueueVideoCollecting([folder], includeSubfolders, collectActions, loadActions);
                 });
             }
         }
 
         public async Task LoadItems(IEnumerable<IStorageItem> items, bool includeSubfolders)
         {
+            InitLoadingManager();
             if (items.Any())
             {
                 await Task.Run(async () =>
                 {
-                    var index = transfers.Count;
-                    var transfer = new Transfer();
-                    transfers.Enqueue(transfer);
-                    manager.SetTaskbar(transfers);
-                    service.Update(UpdateType.UpdateSidePanel);
-                    service.Update(UpdateType.UpdateVideoCollection);
-
-                    transfers.ElementAt(index).IsCollecting = true;
-                    var files = items.OfType<StorageFile>().Where(f => Video.ExtensionTypes.Contains(f.FileType)).ToList();
-                    foreach (var folder in items.OfType<StorageFolder>())
-                    {
-                        files.AddRange(await CollectFilesAsync(folder, includeSubfolders, Video.ExtensionTypes));
-                    }
-                    if (files.Count > 0)
-                    {
-                        transfers.ElementAt(index).IsCollecting = false;
-                        transfers.ElementAt(index).TotalCount = files.Count;
-                        AddFilesToVideoCollection(index, files);
-                    }
-
-                    transfers.ElementAt(index).IsActive = false;
-                    manager.SetTaskbar(transfers);
-                    service.Update(UpdateType.UpdateSidePanel);
-                    service.Update(UpdateType.UpdateVideoCollection);
-                    TransferCleanup();
+                    var collectActions = new WrapActions<string>(WrapActions<string>.NoAction, UpdateUI);
+                    var loadActions = new WrapActions<string>(LoadVideo, UpdateUI);
+                    await manager.QueueVideoCollecting(items, includeSubfolders, collectActions, loadActions);
                 });
             }
         }
 
         public async Task ImportCollectionAsync()
         {
+            InitLoadingManager();
             StorageFile? file = await SingleFileOpener("Import");
 
             if (file != null)
             {
-                await Task.Run(() =>
+                await Task.Run(async () =>
                 {
-                    var index = transfers.Count;
-                    var transfer = new Transfer();
-                    transfers.Enqueue(transfer);
-                    manager.SetTaskbar(transfers);
-                    service.Update(UpdateType.UpdateSidePanel);
-                    service.Update(UpdateType.UpdateVideoCollection);
-
-                    transfers.ElementAt(index).IsCollecting = true;
-
-                    var rawContent = File.ReadLines(file.Path);
-                    var files = rawContent.Select(p =>
+                    await Task.Run(async () =>
                     {
-                        var awaiter = StorageFile.GetFileFromPathAsync(p);
-                        awaiter.Wait();
-                        return awaiter.GetResults();
+                        var lines = await FileIO.ReadLinesAsync(file);
+                        var files = lines.Where(l => Path.Exists(l) && Video.ExtensionTypes.Contains(Path.GetExtension(l)));
+                        var loadActions = new WrapActions<string>(LoadVideo, UpdateUI);
+                        await manager.QueueVideoLoading(files, loadActions);
                     });
 
-                    transfer.TotalCount = files.Count();
-                    transfers.Enqueue(transfer);
-                    manager.SetTaskbar(transfers);
-                    service.Update(UpdateType.UpdateSidePanel);
-                    service.Update(UpdateType.UpdateVideoCollection);
-
-                    AddFilesToVideoCollection(index, files);
-
-                    transfers.ElementAt(index).IsActive = false;
-                    manager.SetTaskbar(transfers);
-                    service.Update(UpdateType.UpdateSidePanel);
-                    service.Update(UpdateType.UpdateVideoCollection);
-                    TransferCleanup();
                 });
             }
         }
         public async Task ExportCollectionAsync()
         {
+            InitLoadingManager();
             StorageFile? file = await FileSaver("Export");
 
             if (file != null)
@@ -252,66 +176,44 @@ namespace VidHub.Services.Logics
             return files.Where(f => fileTypeFilters.Contains(f.FileType, StringComparer.OrdinalIgnoreCase));
         }
 
-        private void AddFilesToVideoCollection(int index, IEnumerable<StorageFile> files)
+
+        private Action<string> LoadVideo => file =>
         {
-            transfers.ElementAt(index).IsLoading = true;
+            var video = new Video(file);
+            if (settings.PreviewImageCustomization.RelativePosition) video.Load(settings.Organizer.Global.EnableCacheLoading, settings.PreviewImageCustomization.FramePercentage);
+            else video.Load(settings.Organizer.Global.EnableConcurrentLoading, settings.PreviewImageCustomization.FrameTime);
+            video.Title = settings.TitleCustomization.CustomizeTitle(video.Title);
 
-            if (settings.Organizer.Global.EnableConcurrentLoading)
-            {
-                Parallel.ForEach(files, file =>
-                {
-                    var video = new Video(file.Path);
-                    if (settings.PreviewImageCustomization.RelativePosition)
-                        video.Load(settings.Organizer.Global.EnableCacheLoading, settings.PreviewImageCustomization.FramePercentage);
+            service.Add(video);
+            IDCollection.Add(video.ID);
+        };
 
-                    else
-                        video.Load(settings.Organizer.Global.EnableConcurrentLoading, settings.PreviewImageCustomization.FrameTime);
-
-                    settings.TitleCustomization.ChangeTitle(video);
-                    service.Add(video);
-                    transfers.ElementAt(index).LoadedCount++;
-                    manager.SetTaskbar(transfers);
-                    IDCollection.Add(video.ID);
-                });
-            }
-            else
-            {
-                foreach (var file in files)
-                {
-                    var video = new Video(file.Path);
-                    if (settings.PreviewImageCustomization.RelativePosition)
-                        video.Load(settings.Organizer.Global.EnableCacheLoading, settings.PreviewImageCustomization.FramePercentage);
-
-                    else
-                        video.Load(settings.Organizer.Global.EnableConcurrentLoading, settings.PreviewImageCustomization.FrameTime);
-
-                    settings.TitleCustomization.ChangeTitle(video);
-                    service.Add(video);
-                    transfers.ElementAt(index).LoadedCount++;
-                    manager.SetTaskbar(transfers);
-                    IDCollection.Add(video.ID);
-                }
-            }
-
-            transfers.ElementAt(index).IsLoading = false;
-            manager.SetTaskbar(transfers);
+        private Action<string> UpdateUI => _ =>
+        {
+            system.SetTaskbar(manager);
             service.Update(UpdateType.UpdateSidePanel);
             service.Update(UpdateType.UpdateVideoCollection);
-        }
+        };
 
 
-        private void TransferCleanup()
+        private bool initializedLoadingManager = false;
+
+        private void InitLoadingManager()
         {
-            if (transfers.All(t => !t.IsActive))
+            if (!initializedLoadingManager)
             {
-                if (!settings.TitleCustomization.DontShowTitleCustomizationAgain)
-                    Context.Window.TryEnqueue(() => Context.Window.ShowDialogAsync(ModalType.CustomizeTitleFormat, "Customize video title", "Confirm", new Tuple<bool, IEnumerable<int>>(false, IDCollection)));
+                initializedLoadingManager = true;
+                manager.LoadingFinished += () =>
+                {
+                    if (!settings.TitleCustomization.DontShowTitleCustomizationAgain)
+                        Context.Window.TryEnqueue(() => Context.Window.ShowDialogAsync(ModalType.CustomizeTitleFormat, "Customize video title", "Confirm", new Tuple<bool, IEnumerable<int>>(false, IDCollection)));
 
-                manager.DisplayToast("Video loading finished!", $"{LoadedFileCount} videos were loaded successfully.");
-                while (transfers.TryDequeue(out _)) ;
-                service.Update(UpdateType.UpdateSidePanel);
-                service.Update(UpdateType.UpdateVideoCollection);
-                IDCollection.Clear();
+                    system.DisplayToast("Video loading finished!", $"{IDCollection.Count} videos were loaded successfully.");
+                    service.Update(UpdateType.UpdateSidePanel);
+                    service.Update(UpdateType.UpdateVideoCollection);
+                    IDCollection.Clear();
+                };
+                service.SubscribeToUpdateEvent(_ => manager.ConcurrentLoading = settings.Organizer.Global.EnableConcurrentLoading);
             }
         }
     }

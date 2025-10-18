@@ -1,5 +1,5 @@
 ﻿using Microsoft.Toolkit.Uwp.Notifications;
-using VidHub.Core.Models;
+using VidHub.Core.Manager;
 using VidHub.Platform;
 using VidHub.Platform.Windows;
 using VidHub.Platform.Windows.Taskbar.Enums;
@@ -52,15 +52,15 @@ namespace VidHub.Services.System
             taskbar.ClearProgress(Context.Window.HWND);
         }
 
-        public void SetTaskbar(IEnumerable<Transfer> transfers)
+        public void SetTaskbar(LoadingManager manager)
         {
-            if (transfers.Where(t => t.IsActive).Any(t => t.IsCollecting))
+            if (manager.IsCollecting)
                 SetIndeterminateProgressbar();
 
-            else if (transfers.Where(t => t.IsActive).All(t => !t.IsCollecting))
-                SetProgressbar(transfers.Sum(t => t.LoadedCount), transfers.Sum(t => t.TotalCount));
+            else if (!manager.IsCollecting && manager.IsLoading)
+                SetProgressbar(manager.LoadedFileCount, manager.TotalFileCount);
 
-            if (!transfers.Any(t => t.IsActive))
+            if (!manager.IsActive)
             {
                 ClearProgressbar();
                 FlashWindow();

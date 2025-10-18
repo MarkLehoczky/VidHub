@@ -1,4 +1,4 @@
-﻿using VidHub.Core.Models;
+﻿using VidHub.Core.Manager;
 
 namespace VidHub.Services.System.Interfaces
 {
@@ -9,6 +9,6 @@ namespace VidHub.Services.System.Interfaces
         void FlashWindow();
         void SetIndeterminateProgressbar();
         void SetProgressbar(int completed, int total);
-        void SetTaskbar(IEnumerable<Transfer> transfers);
+        void SetTaskbar(LoadingManager manager);
     }
 }
