@@ -39,8 +39,9 @@ namespace VidHub.Services.Logics
             {
                 await Task.Run(async () =>
                 {
+                    WrapActions<string> collectActions = new(WrapActions<string>.NoAction, UpdateUI);
                     WrapActions<string> loadActions = new(LoadVideo, UpdateUI);
-                    await manager.QueueVideoLoading(files.Select(f => f.Path), loadActions);
+                    await manager.QueueVideoCollecting(files, false, collectActions, loadActions);
                 });
             }
         }
