@@ -20,7 +20,12 @@
     </UserControl.DataContext>
 
     <Grid AllowDrop="True" DragOver="DragOverItems" Drop="DropItems">
-        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Grid.Row="0">
             <ItemsControl x:Name="videocollection" ItemsSource="{Binding Videos}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -63,7 +68,7 @@
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
                                     <MenuFlyoutItem Text="Copy Thumbnail" Command="{Binding ElementName=videocollection, Path=DataContext.CopyPreviewImageCommand}" CommandParameter="{Binding}">
-                                        <MenuFlyoutItem.Icon> 
+                                        <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xe91b;" FontFamily="Segoe Fluent Icons" />
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
@@ -94,6 +99,19 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
+
+        <StackPanel Grid.Row="1">
+            <InfoBar IsOpen="True" Title="Large Cache Data Size" Message="{Binding LargeCacheDataMessage}" Severity="Warning" IsClosable="True">
+                <InfoBar.ActionButton>
+                    <Button Content="Clear Cache" ToolTipService.ToolTip="Clears cached files to recover disk space. With cache loading enabled, all previously cached videos has to be extracted again." Command="{Binding ClearCacheCommand}"/>
+                </InfoBar.ActionButton>
+            </InfoBar>
+            <InfoBar IsOpen="True" Title="FFmpeg Not Detected" Message="FFmpeg is required for generating video thumbnails and rendering previews. It was not found in the system PATH." Severity="Error" IsClosable="True">
+                <InfoBar.ActionButton>
+                    <Button Content="Install FFmpeg" ToolTipService.ToolTip="Installs FFmpeg using Winget" Command="{Binding InstallFFmpegCommand}" />
+                </InfoBar.ActionButton>
+            </InfoBar>
+        </StackPanel>
     </Grid>
 
 </UserControl>
