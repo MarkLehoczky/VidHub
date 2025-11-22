@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using VidHub.Core;
 using VidHub.Core.Enums;
 using VidHub.Core.Models;
@@ -21,9 +20,6 @@ namespace VidHub.ViewModels
         public bool ShowDurations => connector.DisplayDurations;
         public double PreviewWidth => connector.PreviewImageWidth;
         public double PreviewHeight => connector.PreviewImageHeight;
-        public bool LargeCacheDataSize => connector.LargeCacheDataSize;
-        public string LargeCacheDataMessage => connector.LargeCacheDataMessage;
-        public bool FFmpegNotInstalled => connector.FFmpegNotInstalled;
         public ObservableCollection<Notification> Notifications => connector.Notifications;
 
 
@@ -70,19 +66,6 @@ namespace VidHub.ViewModels
         }
 
 
-        [RelayCommand]
-        private async Task ClearCacheAsync()
-        {
-            await connector.ClearCacheAsync();
-        }
-
-        [RelayCommand]
-        private async Task InstallFFmpegAsync()
-        {
-            await connector.InstallFFmpegAsync();
-        }
-
-
         public override void Update(UpdateType type)
         {
             if (type is UpdateType.UpdateVideoCollection or UpdateType.ForceUpdateVideoCollection)
@@ -93,9 +76,7 @@ namespace VidHub.ViewModels
                 OnPropertyChanged(nameof(ShowDurations));
                 OnPropertyChanged(nameof(PreviewWidth));
                 OnPropertyChanged(nameof(PreviewHeight));
-                OnPropertyChanged(nameof(LargeCacheDataSize));
-                OnPropertyChanged(nameof(LargeCacheDataMessage));
-                OnPropertyChanged(nameof(FFmpegNotInstalled));
+                OnPropertyChanged(nameof(Notifications));
             }
         }
     }

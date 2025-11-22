@@ -11,9 +11,6 @@ namespace VidHub.Services.Connectors.Base.Interfaces
         bool DisplayDurations { get; }
         bool DisplayTitles { get; }
         ObservableCollection<Video> DisplayedVideos { get; }
-        string LargeCacheDataMessage { get; }
-        bool LargeCacheDataSize { get; }
-        bool FFmpegNotInstalled { get; }
         ObservableCollection<Notification> Notifications { get; }
         double PreviewImageWidth { get; }
         double PreviewImageHeight { get; }
@@ -24,7 +21,5 @@ namespace VidHub.Services.Connectors.Base.Interfaces
         Task CopyFilePathAsync(Video video);
         Task CopyPreviewImageAsync(Video video);
         Task RemoveVideoAsync(Video video);
-        Task ClearCacheAsync();
-        Task InstallFFmpegAsync();
     }
 }

@@ -18,24 +18,6 @@ namespace VidHub.Services.Connectors.Base
 {
     public class VideoCollectionConnector(IVideoService vs, ISettingsService settings, IVideoCollectionService service) : IVideoCollectionConnector
     {
-        private bool ffmpegInstalled = false;
-        public bool FFmpegInstallationFound()
-        {
-            ProcessStartInfo info = new()
-            {
-                FileName = "where",
-                Arguments = "ffmpeg",
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
-            using var process = Process.Start(info);
-            string output = process!.StandardOutput.ReadToEnd();
-            process.WaitForExit();
-            return !string.IsNullOrWhiteSpace(output);
-        }
-
-
         public bool DisplayDates => settings.DisplayCustomization.DisplayDates;
 
         public bool DisplayDurations => settings.DisplayCustomization.DisplayDurations;
@@ -48,26 +30,23 @@ namespace VidHub.Services.Connectors.Base
 
         public double PreviewImageHeight => settings.DisplayCustomization.PreviewImageHeight;
 
-        public string LargeCacheDataMessage => FormattedCacheDataSize();
-
-        public bool LargeCacheDataSize => CacheDataSize() > Math.Pow(1024, 3);
-
-        public bool FFmpegNotInstalled => !ffmpegInstalled && !FFmpegInstallationFound();
-
         public ObservableCollection<Notification> Notifications { get; } =
             [
-                new()
+                new SingleInteractionNotification()
                 {
-                    IsOpen = false,
-                    Title = "Large Cache Data Size",
+                    OpenCondition = () => {
+                        DirectoryInfo info = new(Path.Combine(Path.GetTempPath(), "VidHub"));
+                        return info.EnumerateFiles("*", SearchOption.AllDirectories).Sum(file => file.Length) > Math.Pow(1024, 3);
+                    },
+                    Title = "Large Cache Size",
                     Message = FormattedCacheDataSize(),
                     Severity = NotificationSeverity.Warning,
-                    Closable = true,
-                    Button = new()
+                    IsClosable = true,
+                    Button = new AsyncNotificationButton()
                     {
-                        Text = "Clear Cache",
-                        Tooltip = "Clear the application's cache data to free up space. After clearing the cache, the cache loading will not be available.",
-                        Command = new AsyncRelayCommand(async () =>
+                        Content = "Clear Cache",
+                        Tooltip = "Clears cached files to recover disk space. With cache loading enabled, all previously cached videos has to be extracted again.",
+                        Action = async () =>
                         {
                             await Task.Run(() =>
                             {
@@ -76,30 +55,52 @@ namespace VidHub.Services.Connectors.Base
                                     File.Delete(item);
                                 }
                             });
-                        })
+                        }
                     }
                 },
-                new()
+                new SingleInteractionNotification()
                 {
-                    IsOpen = false,
-                    Title = "Large Cache Data Size",
-                    Message = FormattedCacheDataSize(),
-                    Severity = NotificationSeverity.Warning,
-                    Closable = true,
-                    Button = new()
+                    OpenCondition = () => {
+                        ProcessStartInfo info = new()
+                        {
+                            FileName = "where",
+                            Arguments = "ffmpeg",
+                            RedirectStandardOutput = true,
+                            UseShellExecute = false,
+                            CreateNoWindow = true
+                        };
+                        using var process = Process.Start(info);
+                        string output = process!.StandardOutput.ReadToEnd();
+                        process.WaitForExit();
+                        return string.IsNullOrWhiteSpace(output);
+                    },
+                    Title = "FFmpeg Not Detected",
+                    Message = "FFmpeg is required for generating video thumbnails and rendering previews. It was not found in the system PATH.",
+                    Severity = NotificationSeverity.Error,
+                    IsClosable = true,
+                    Button = new AsyncNotificationButton()
                     {
-                        Text = "Clear Cache",
-                        Tooltip = "Clear the application's cache data to free up space. After clearing the cache, the cache loading will not be available.",
-                        Command = new AsyncRelayCommand(async () =>
+                        Content = "Install FFmpeg",
+                        Tooltip = "Installs FFmpeg using Winget",
+                        Action = async () =>
                         {
                             await Task.Run(() =>
                             {
-                                foreach (var item in Directory.GetFiles(Path.Combine(Path.GetTempPath(), "VidHub"), "*", SearchOption.AllDirectories))
+                                try
                                 {
-                                    File.Delete(item);
+                                    ProcessStartInfo info = new()
+                                    {
+                                        FileName = "winget",
+                                        Arguments = "install ffmpeg",
+                                        UseShellExecute = true,
+                                        CreateNoWindow = true
+                                    };
+                                    using var process = Process.Start(info);
+                                    process!.WaitForExit();
                                 }
+                                catch { }
                             });
-                        })
+                        }
                     }
                 }
             ];
@@ -161,32 +162,6 @@ namespace VidHub.Services.Connectors.Base
             Clipboard.SetContent(data);
         }
 
-        public async Task InstallFFmpegAsync()
-        {
-            await Task.Run(() =>
-            {
-                try
-                {
-                    ProcessStartInfo info = new()
-                    {
-                        FileName = "winget",
-                        Arguments = "install ffmpeg",
-                        UseShellExecute = true,
-                        CreateNoWindow = true
-                    };
-                    using var process = Process.Start(info);
-                    process!.WaitForExit();
-                    if (process.ExitCode == 0)
-                    {
-                        ffmpegInstalled = true;
-                    }
-                }
-                catch { }
-
-                Update(UpdateType.UpdateVideoCollection);
-            });
-        }
-
         public async Task OpenAsync(Video video)
         {
             StorageFile file = await StorageFile.GetFileFromPathAsync(video.FilePath);
@@ -226,11 +201,6 @@ namespace VidHub.Services.Connectors.Base
         }
 
 
-        private long CacheDataSize()
-        {
-            DirectoryInfo info = new(Path.Combine(Path.GetTempPath(), "VidHub"));
-            return info.EnumerateFiles("*", SearchOption.AllDirectories).Sum(file => file.Length);
-        }
         private static string FormattedCacheDataSize()
         {
             DirectoryInfo info = new(Path.Combine(Path.GetTempPath(), "VidHub"));
