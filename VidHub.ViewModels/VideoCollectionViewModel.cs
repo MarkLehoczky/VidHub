@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using VidHub.Core;
 using VidHub.Core.Enums;
+using VidHub.Core.Models;
 using VidHub.Platform;
 using VidHub.Services.Connectors.Base.Interfaces;
 using VidHub.ViewModels.Base;
@@ -19,6 +20,7 @@ namespace VidHub.ViewModels
         public bool ShowDurations => connector.DisplayDurations;
         public double PreviewWidth => connector.PreviewImageWidth;
         public double PreviewHeight => connector.PreviewImageHeight;
+        public ObservableCollection<Notification> Notifications => connector.Notifications;
 
 
         [RelayCommand]
@@ -74,6 +76,7 @@ namespace VidHub.ViewModels
                 OnPropertyChanged(nameof(ShowDurations));
                 OnPropertyChanged(nameof(PreviewWidth));
                 OnPropertyChanged(nameof(PreviewHeight));
+                OnPropertyChanged(nameof(Notifications));
             }
         }
     }

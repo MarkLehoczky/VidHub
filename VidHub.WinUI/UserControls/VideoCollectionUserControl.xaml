@@ -13,6 +13,7 @@
     <UserControl.Resources>
         <converter:DateFormatConverter x:Key="FormatDate" />
         <converter:DurationFormatConverter x:Key="FormatDuration" />
+        <converter:SeverityTypeConverter x:Key="TransformSeverityType" />
     </UserControl.Resources>
 
     <UserControl.DataContext>
@@ -20,7 +21,12 @@
     </UserControl.DataContext>
 
     <Grid AllowDrop="True" DragOver="DragOverItems" Drop="DropItems">
-        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Grid.Row="0">
             <ItemsControl x:Name="videocollection" ItemsSource="{Binding Videos}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -63,7 +69,7 @@
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
                                     <MenuFlyoutItem Text="Copy Thumbnail" Command="{Binding ElementName=videocollection, Path=DataContext.CopyPreviewImageCommand}" CommandParameter="{Binding}">
-                                        <MenuFlyoutItem.Icon> 
+                                        <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xe91b;" FontFamily="Segoe Fluent Icons" />
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
@@ -94,6 +100,23 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
+
+        <ItemsControl ItemsSource="{Binding Notifications}" Grid.Row="1">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <ItemsStackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <InfoBar IsOpen="{Binding IsOpen}" Title="{Binding Title}" Message="{Binding Message}" Severity="{Binding Severity, Converter={StaticResource TransformSeverityType}}" IsClosable="{Binding IsClosable}">
+                        <InfoBar.ActionButton>
+                            <Button Content="{Binding Button.Content}" ToolTipService.ToolTip="{Binding Button.Tooltip}" Command="{Binding Button.Command}"/>
+                        </InfoBar.ActionButton>
+                    </InfoBar>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
     </Grid>
 
 </UserControl>

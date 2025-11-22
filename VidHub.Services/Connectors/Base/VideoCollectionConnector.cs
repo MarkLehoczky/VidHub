@@ -1,6 +1,9 @@
-﻿using System.Collections.ObjectModel;
+﻿using CommunityToolkit.Mvvm.Input;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using VidHub.Core;
 using VidHub.Core.Enums;
+using VidHub.Core.Models;
 using VidHub.Platform;
 using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Connectors.Base.Interfaces;
@@ -26,6 +29,92 @@ namespace VidHub.Services.Connectors.Base
         public double PreviewImageWidth => settings.DisplayCustomization.PreviewImageWidth;
 
         public double PreviewImageHeight => settings.DisplayCustomization.PreviewImageHeight;
+
+        public ObservableCollection<Notification> Notifications { get; } =
+            [
+                new SingleInteractionNotification()
+                {
+                    OpenCondition = () => {
+                        DirectoryInfo info = new(Path.Combine(Path.GetTempPath(), "VidHub"));
+                        return info.EnumerateFiles("*", SearchOption.AllDirectories).Sum(file => file.Length) > Math.Pow(1024, 3);
+                    },
+                    Title = "Large Cache Size",
+                    Message = FormattedCacheDataSize(),
+                    Severity = NotificationSeverity.Warning,
+                    IsClosable = true,
+                    Button = new AsyncNotificationButton()
+                    {
+                        Content = "Clear Cache",
+                        Tooltip = "Clears cached files to recover disk space. With cache loading enabled, all previously cached videos has to be extracted again.",
+                        Action = async () =>
+                        {
+                            await Task.Run(() =>
+                            {
+                                foreach (var item in Directory.GetFiles(Path.Combine(Path.GetTempPath(), "VidHub"), "*", SearchOption.AllDirectories))
+                                {
+                                    File.Delete(item);
+                                }
+                            });
+                        }
+                    }
+                },
+                new SingleInteractionNotification()
+                {
+                    OpenCondition = () => {
+                        ProcessStartInfo info = new()
+                        {
+                            FileName = "where",
+                            Arguments = "ffmpeg",
+                            RedirectStandardOutput = true,
+                            UseShellExecute = false,
+                            CreateNoWindow = true
+                        };
+                        using var process = Process.Start(info);
+                        string output = process!.StandardOutput.ReadToEnd();
+                        process.WaitForExit();
+                        return string.IsNullOrWhiteSpace(output);
+                    },
+                    Title = "FFmpeg Not Detected",
+                    Message = "FFmpeg is required for generating video thumbnails and rendering previews. It was not found in the system PATH.",
+                    Severity = NotificationSeverity.Error,
+                    IsClosable = true,
+                    Button = new AsyncNotificationButton()
+                    {
+                        Content = "Install FFmpeg",
+                        Tooltip = "Installs FFmpeg using Winget",
+                        Action = async () =>
+                        {
+                            await Task.Run(() =>
+                            {
+                                try
+                                {
+                                    ProcessStartInfo info = new()
+                                    {
+                                        FileName = "winget",
+                                        Arguments = "install ffmpeg",
+                                        UseShellExecute = true,
+                                        CreateNoWindow = true
+                                    };
+                                    using var process = Process.Start(info);
+                                    process!.WaitForExit();
+                                }
+                                catch { }
+                            });
+                        }
+                    }
+                }
+            ];
+
+        public async Task ClearCacheAsync()
+        {
+            await Task.Run(() =>
+            {
+                foreach (var item in Directory.GetFiles(Path.Combine(Path.GetTempPath(), "VidHub"), "*", SearchOption.AllDirectories))
+                {
+                    File.Delete(item);
+                }
+            });
+        }
 
         public async Task CopyFileAsync(Video video)
         {
@@ -109,6 +198,31 @@ namespace VidHub.Services.Connectors.Base
         public void Update(UpdateType type)
         {
             vs.Update(type);
+        }
+
+
+        private static string FormattedCacheDataSize()
+        {
+            DirectoryInfo info = new(Path.Combine(Path.GetTempPath(), "VidHub"));
+            long size = info.EnumerateFiles("*", SearchOption.AllDirectories).Sum(file => file.Length);
+
+            if (size > Math.Pow(1024, 4))
+            {
+                return $"The application's cache data has reached {size / Math.Pow(1024, 4):f2} TB";
+            }
+            if (size > Math.Pow(1024, 3))
+            {
+                return $"The application's cache data has reached {size / Math.Pow(1024, 3):f2} GB";
+            }
+            if (size > Math.Pow(1024, 2))
+            {
+                return $"The application's cache data has reached {size / Math.Pow(1024, 2):f2} MB";
+            }
+            if (size > Math.Pow(1024, 1))
+            {
+                return $"The application's cache data has reached {size / Math.Pow(1024, 1):f2} kB";
+            }
+            return $"The application's cache data has reached {size} B";
         }
     }
 }
