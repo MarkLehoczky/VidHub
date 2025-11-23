@@ -15,6 +15,7 @@ namespace VidHub.Services.Connectors.Modals
         public bool RelativePosition { get => settings.PreviewImageCustomization.RelativePosition; set => settings.PreviewImageCustomization.RelativePosition = value; }
         public int Seconds { get => settings.PreviewImageCustomization.Seconds; set => settings.PreviewImageCustomization.Seconds = value; }
         public bool ExtractEmbeddedImageCommand { get => settings.PreviewImageCustomization.ExtractEmbeddedImageCommand; set => settings.PreviewImageCustomization.ExtractEmbeddedImageCommand = value; }
+        public bool UseContentHash { get => settings.PreviewImageCustomization.UseContentHash; set => settings.PreviewImageCustomization.UseContentHash = value; }
 
         public async Task ExtractLoadedVideoPreviewImagesAsync()
         {

@@ -6,6 +6,7 @@ namespace VidHub.Core.Settings
     {
         public bool RelativePosition { get; set; } = true;
         public bool ExtractEmbeddedImageCommand { get; set; } = true;
+        public bool UseContentHash { get; set; } = false;
         public int Hours { get; set; } = 0;
         public int Minutes { get; set; } = 1;
         public int Seconds { get; set; } = 30;

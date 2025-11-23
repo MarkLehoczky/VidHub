@@ -58,8 +58,23 @@
 
         <Slider Header="Select relative position of thumbnail based on the duration" Value="{Binding Percentage, Mode=TwoWay}" ThumbToolTipValueConverter="{StaticResource PercentageFormatter}" Minimum="0" Maximum="100" StepFrequency="1" TickFrequency="10" TickPlacement="Outside" Visibility="{Binding RelativePosition}" Margin="0 20 0 0" />
 
-        <ToggleSwitch IsOn="{Binding RelativePosition, Mode=TwoWay}" OnContent="Relative Frame Position" OffContent="Relative Frame Position" Margin="0 10 0 0" />
-        
-        <ToggleSwitch IsOn="{Binding ExtractEmbeddedImageCommand, Mode=TwoWay}" OnContent="Use embedded thumbnail when available" OffContent="Use embedded thumbnail when available" Margin="0 10 0 0" />
+        <ToggleSwitch IsOn="{Binding RelativePosition, Mode=TwoWay}" OnContent="Relative Frame Position" OffContent="Fixed Frame Position" Margin="0 10 0 0" />
+
+        <ToggleSwitch IsOn="{Binding ExtractEmbeddedImageCommand, Mode=TwoWay}" OnContent="Use embedded thumbnail" OffContent="Use embedded thumbnail" ToolTipService.ToolTip="When embedded thumbnail is not available, it will fallback to regular frame extraction." Margin="0 10 0 0" />
+
+        <ToggleSwitch IsOn="{Binding UseContentHash, Mode=TwoWay}" ToolTipService.ToolTip="Enabling this option will use the actual file content to generate a hash code, helping identify duplicate files that may have been moved or copied. However, this can significantly increase load times due to the additional processing required to compute the hash." Margin="0 10 0 0">
+            <ToggleSwitch.OnContent>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Use file content for hash code" />
+                    <FontIcon Glyph="&#xe783;" FontFamily="Segoe Fluent Icons" Foreground="{ThemeResource SystemErrorTextColor}" Margin="5 0 0 0" />
+                </StackPanel>
+            </ToggleSwitch.OnContent>
+            <ToggleSwitch.OffContent>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Use file content for hash code" />
+                    <FontIcon Glyph="&#xe783;" FontFamily="Segoe Fluent Icons" Foreground="{ThemeResource SystemErrorTextColor}" Margin="5 0 0 0" />
+                </StackPanel>
+            </ToggleSwitch.OffContent>
+        </ToggleSwitch>
     </StackPanel>
 </UserControl>

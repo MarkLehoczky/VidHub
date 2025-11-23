@@ -201,11 +201,15 @@ namespace VidHub.Core
 
         private string GenerateHash()
         {
-            Stopwatch stopwatch = Stopwatch.StartNew();
-            string baseHash = GenerateHash(FilePath);
-            //string baseHash = GenerateHash(File.OpenRead(FilePath));
-            stopwatch.Stop();
-            Debug.WriteLine($"Initial hashing completed in {stopwatch.ElapsedMilliseconds} ms for file '{FilePath}'.");
+            string baseHash;
+            if (VidHubSettings.Instance.PreviewImageCustomization.UseContentHash)
+            {
+                baseHash = GenerateHash(File.OpenRead(FilePath));
+            }
+            else
+            {
+                baseHash = GenerateHash(FilePath);
+            }
             string currentHash = baseHash;
             int salt = 0;
 

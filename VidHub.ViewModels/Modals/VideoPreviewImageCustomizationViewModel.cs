@@ -43,6 +43,11 @@ namespace VidHub.ViewModels.Modals
             get => connector.ExtractEmbeddedImageCommand;
             set => connector.ExtractEmbeddedImageCommand = value;
         }
+        public bool UseContentHash
+        {
+            get => connector.UseContentHash;
+            set => connector.UseContentHash = value;
+        }
 
         public bool RelativePosition
         {
