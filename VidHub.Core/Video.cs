@@ -1,11 +1,16 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 using System.Collections;
+using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using VidHub.Core.Streams;
 using Windows.Storage;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using Blake3;
+using System.Diagnostics;
 
 namespace VidHub.Core
 {
@@ -64,17 +69,17 @@ namespace VidHub.Core
         public Video(string file) : this()
         {
             filePath = Path.GetFullPath(file);
-            hash = GetFileHash();
+            hash = GenerateHash();
         }
         public Video(Uri file) : this()
         {
             filePath = file.AbsolutePath;
-            hash = GetFileHash();
+            hash = GenerateHash();
         }
         public Video(StorageFile file) : this()
         {
             filePath = file.Path;
-            hash = GetFileHash();
+            hash = GenerateHash();
         }
 
 
@@ -199,10 +204,66 @@ namespace VidHub.Core
             File.WriteAllText(cachePath, JsonSerializer.Serialize(this, jsonOptions));
         }
 
-        // TODO: Handle key collision
-        private string GetFileHash()
+        private string GenerateHash()
         {
-            return BitConverter.ToString(MD5.HashData(Encoding.UTF8.GetBytes(FilePath))).TrimStart('-').ToLowerInvariant();
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            string baseHash = GenerateHash(FilePath);
+            //string baseHash = GenerateHash(File.OpenRead(FilePath));
+            stopwatch.Stop();
+            Debug.WriteLine($"Initial hashing completed in {stopwatch.ElapsedMilliseconds} ms for file '{FilePath}'.");
+            string currentHash = baseHash;
+            int salt = 0;
+
+            while (true)
+            {
+                string cacheFilePath = Path.Combine(Path.GetTempPath(), "VidHub", "Cache", $"{currentHash}.json");
+
+                if (!File.Exists(cacheFilePath))
+                    return currentHash;
+
+                if (SameContent(cacheFilePath))
+                    return currentHash;
+
+                salt++;
+                currentHash = GenerateHash($"{baseHash}:{salt}");
+            }
+        }
+        private string GenerateHash(Stream stream)
+        {            
+            var hasher = Hasher.New();
+            byte[] buffer = new byte[1024 * 1024 * 8];
+            int bytesRead;
+            while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0)
+            {
+                hasher.Update(buffer.AsSpan(0, bytesRead));
+            }
+            var generatedHash = hasher.Finalize();
+
+            return generatedHash.ToString().Replace("-", "").ToLowerInvariant();
+        }
+        private string GenerateHash(string data)
+        {
+            return Hasher.Hash(Encoding.UTF8.GetBytes(data)).ToString().Replace("-", "").ToLowerInvariant();
+        }
+
+        private bool SameContent(string cacheFilePath)
+        {
+            try
+            {
+                Video cache = JsonSerializer.Deserialize<Video>(File.ReadAllText(cacheFilePath)) ?? new Video();
+
+                if (!File.Exists(cache.FilePath))
+                    return false;
+
+                if (new FileInfo(cache.FilePath).Length != new FileInfo(FilePath).Length)
+                    return false;
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public int CompareTo(object? obj)
