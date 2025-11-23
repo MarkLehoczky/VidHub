@@ -5,6 +5,7 @@ namespace VidHub.Core.Settings
     public class PreviewImageCustomizationSettings
     {
         public bool RelativePosition { get; set; } = true;
+        public bool ExtractEmbeddedImageCommand { get; set; } = true;
         public int Hours { get; set; } = 0;
         public int Minutes { get; set; } = 1;
         public int Seconds { get; set; } = 30;

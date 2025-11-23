@@ -38,6 +38,11 @@ namespace VidHub.ViewModels.Modals
         }
 
         public bool FixedPosition => !connector.RelativePosition;
+        public bool ExtractEmbeddedImageCommand
+        {
+            get => connector.ExtractEmbeddedImageCommand;
+            set => connector.ExtractEmbeddedImageCommand = value;
+        }
 
         public bool RelativePosition
         {

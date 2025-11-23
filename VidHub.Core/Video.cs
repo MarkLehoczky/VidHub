@@ -78,14 +78,14 @@ namespace VidHub.Core
         }
 
 
-        public void Load(bool cacheLoad, TimeSpan frame)
+        public void Load(bool cacheLoad, TimeSpan frame, bool extractEmbeddedImage)
         {
             if (cacheLoad && LoadCache())
             {
                 return;
             }
 
-            foreach (Action action in LoadActions(frame))
+            foreach (Action action in LoadActions(frame, extractEmbeddedImage))
             {
                 try { action(); }
                 catch { }
@@ -93,14 +93,14 @@ namespace VidHub.Core
 
             SaveCache();
         }
-        public void Load(bool cacheLoad, double percentage)
+        public void Load(bool cacheLoad, double percentage, bool extractEmbeddedImage)
         {
             if (cacheLoad && LoadCache())
             {
                 return;
             }
 
-            foreach (Action action in LoadActions(percentage))
+            foreach (Action action in LoadActions(percentage, extractEmbeddedImage))
             {
                 try { action(); }
                 catch { }
@@ -109,14 +109,14 @@ namespace VidHub.Core
             SaveCache();
         }
 
-        public void ExtractPreviewImage(TimeSpan frame)
+        public void ExtractPreviewImage(TimeSpan frame, bool extractEmbeddedImage)
         {
-            try { PreviewImagePath = new MetadataProcessor(FilePath).ExtractPreviewImage(Hash, frame > Duration ? Duration : frame); }
+            try { PreviewImagePath = new MetadataProcessor(FilePath).ExtractPreviewImage(Hash, frame > Duration ? Duration : frame, extractEmbeddedImage); }
             catch { }
         }
 
 
-        private List<Action> LoadActions(TimeSpan frame)
+        private List<Action> LoadActions(TimeSpan frame, bool extractEmbeddedImage)
         {
             var metadataProcessor = new MetadataProcessor(FilePath);
 
@@ -125,7 +125,7 @@ namespace VidHub.Core
                 () => Date = File.GetLastWriteTime(FilePath),
                 () => Date = metadataProcessor.ExtractDate(),
                 () => Duration = metadataProcessor.ExtractDuration(),
-                () => ExtractPreviewImage(frame),
+                () => ExtractPreviewImage(frame, extractEmbeddedImage),
                 () => FormatStream = metadataProcessor.GetFormatStream(),
                 () => VideoStreams = metadataProcessor.GetVideoStreams(),
                 () => AudioStreams = metadataProcessor.GetAudioStreams(),
@@ -133,7 +133,7 @@ namespace VidHub.Core
             ];
         }
 
-        private List<Action> LoadActions(double percentage)
+        private List<Action> LoadActions(double percentage, bool extractEmbeddedImage)
         {
             var metadataProcessor = new MetadataProcessor(FilePath);
 
@@ -142,7 +142,7 @@ namespace VidHub.Core
                 () => Date = File.GetLastWriteTime(FilePath),
                 () => Date = metadataProcessor.ExtractDate(),
                 () => Duration = metadataProcessor.ExtractDuration(),
-                () => ExtractPreviewImage(Duration * percentage),
+                () => ExtractPreviewImage(Duration * percentage, extractEmbeddedImage),
                 () => FormatStream = metadataProcessor.GetFormatStream(),
                 () => VideoStreams = metadataProcessor.GetVideoStreams(),
                 () => AudioStreams = metadataProcessor.GetAudioStreams(),

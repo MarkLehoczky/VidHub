@@ -14,6 +14,7 @@ namespace VidHub.Services.Connectors.Modals
         public int Percentage { get => settings.PreviewImageCustomization.Percentage; set => settings.PreviewImageCustomization.Percentage = value; }
         public bool RelativePosition { get => settings.PreviewImageCustomization.RelativePosition; set => settings.PreviewImageCustomization.RelativePosition = value; }
         public int Seconds { get => settings.PreviewImageCustomization.Seconds; set => settings.PreviewImageCustomization.Seconds = value; }
+        public bool ExtractEmbeddedImageCommand { get => settings.PreviewImageCustomization.ExtractEmbeddedImageCommand; set => settings.PreviewImageCustomization.ExtractEmbeddedImageCommand = value; }
 
         public async Task ExtractLoadedVideoPreviewImagesAsync()
         {
@@ -35,11 +36,11 @@ namespace VidHub.Services.Connectors.Modals
                 {
                     if (RelativePosition)
                     {
-                        item.ExtractPreviewImage(item.Duration * settings.PreviewImageCustomization.FramePercentage);
+                        item.ExtractPreviewImage(item.Duration * settings.PreviewImageCustomization.FramePercentage, settings.PreviewImageCustomization.ExtractEmbeddedImageCommand);
                     }
                     else
                     {
-                        item.ExtractPreviewImage(settings.PreviewImageCustomization.FrameTime);
+                        item.ExtractPreviewImage(settings.PreviewImageCustomization.FrameTime, settings.PreviewImageCustomization.ExtractEmbeddedImageCommand);
                     }
                 }
             });

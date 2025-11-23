@@ -79,12 +79,19 @@ namespace VidHub.Core
             return TimeSpan.FromSeconds(double.Parse(duration.Trim(), CultureInfo.InvariantCulture));
         }
 
-        public string ExtractPreviewImage(string imageName, TimeSpan frame)
+        public string ExtractPreviewImage(string imageName, TimeSpan frame, bool extractEmbeddedImage)
         {
             string previewDirectory = Path.Combine(Path.GetTempPath(), "VidHub", "Previews");
             string previewPath = Path.Combine(previewDirectory, imageName + ".jpg");
 
             _ = Directory.CreateDirectory(previewDirectory);
+
+            if (extractEmbeddedImage)
+            {
+                (int exitCode, _, _) = RunProcess("ffmpeg", "-v", "error", "-y", "-i", filePath, "-map", "0:v", "-map", "-0:V", "-c", "copy", previewPath);
+                if (exitCode == 0 && File.Exists(previewPath))
+                    return previewPath;
+            }
 
             _ = RunSuccessfulProcess("ffmpeg", "-v", "error", "-y", "-ss", frame.TotalSeconds.ToString(CultureInfo.InvariantCulture), "-i", filePath, "-frames:v", "1", previewPath);
             return previewPath;

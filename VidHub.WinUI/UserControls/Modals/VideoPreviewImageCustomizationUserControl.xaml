@@ -60,6 +60,6 @@
 
         <ToggleSwitch IsOn="{Binding RelativePosition, Mode=TwoWay}" OnContent="Relative Frame Position" OffContent="Relative Frame Position" Margin="0 10 0 0" />
         
-        <ToggleSwitch OnContent="Use embedded thumbnail when available" OffContent="Use embedded thumbnail when available" IsEnabled="False" Margin="0 10 0 0" />
+        <ToggleSwitch IsOn="{Binding ExtractEmbeddedImageCommand, Mode=TwoWay}" OnContent="Use embedded thumbnail when available" OffContent="Use embedded thumbnail when available" Margin="0 10 0 0" />
     </StackPanel>
 </UserControl>
