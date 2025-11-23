@@ -21,7 +21,9 @@ namespace VidHub.Core
         private IEnumerable<IDictionary<string, string>> GetStreams(string type)
         {
             if (metadata == null || metadata.Count == 0)
+            {
                 metadata = ExtractMetadata();
+            }
 
             return metadata
                 .Where(kv => kv.Key.StartsWith("streams.stream"))
@@ -33,7 +35,9 @@ namespace VidHub.Core
         public FormatStream GetFormatStream()
         {
             if (metadata == null || metadata.Count == 0)
+            {
                 metadata = ExtractMetadata();
+            }
 
             return new FormatStream(metadata.Where(kv => kv.Key.StartsWith("format")).ToDictionary(kv => kv.Key[7..], kv => kv.Value));
         }
@@ -56,7 +60,9 @@ namespace VidHub.Core
         public IEnumerable<MediaStream> GetUnknownStreams()
         {
             if (metadata == null || metadata.Count == 0)
+            {
                 metadata = ExtractMetadata();
+            }
 
             HashSet<string> knownTypes = ["video", "audio", "subtitle"];
             return metadata
@@ -90,7 +96,9 @@ namespace VidHub.Core
             {
                 (int exitCode, _, _) = RunProcess("ffmpeg", "-v", "error", "-y", "-i", filePath, "-map", "0:v", "-map", "-0:V", "-c", "copy", previewPath);
                 if (exitCode == 0 && File.Exists(previewPath))
+                {
                     return previewPath;
+                }
             }
 
             _ = RunSuccessfulProcess("ffmpeg", "-v", "error", "-y", "-ss", frame.TotalSeconds.ToString(CultureInfo.InvariantCulture), "-i", filePath, "-frames:v", "1", previewPath);

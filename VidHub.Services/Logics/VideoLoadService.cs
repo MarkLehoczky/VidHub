@@ -1,10 +1,10 @@
 ﻿using VidHub.Core;
 using VidHub.Core.Enums;
 using VidHub.Core.Manager;
+using VidHub.Core.Settings;
 using VidHub.Platform;
 using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Logics.Interfaces;
-using VidHub.Services.Settings.Interfaces;
 using VidHub.Services.System.Interfaces;
 using Windows.Storage;
 using Windows.Storage.Pickers;

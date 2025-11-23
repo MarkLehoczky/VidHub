@@ -1,14 +1,13 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
 using VidHub.Core;
 using VidHub.Core.Enums;
 using VidHub.Core.Models;
+using VidHub.Core.Settings;
 using VidHub.Platform;
 using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Connectors.Base.Interfaces;
 using VidHub.Services.Logics.Interfaces;
-using VidHub.Services.Settings.Interfaces;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 using Windows.Storage.Streams;
@@ -50,7 +49,7 @@ namespace VidHub.Services.Connectors.Base
                         {
                             await Task.Run(() =>
                             {
-                                foreach (var item in Directory.GetFiles(Path.Combine(Path.GetTempPath(), "VidHub"), "*", SearchOption.AllDirectories))
+                                foreach (string item in Directory.GetFiles(Path.Combine(Path.GetTempPath(), "VidHub"), "*", SearchOption.AllDirectories))
                                 {
                                     File.Delete(item);
                                 }
@@ -69,7 +68,7 @@ namespace VidHub.Services.Connectors.Base
                             UseShellExecute = false,
                             CreateNoWindow = true
                         };
-                        using var process = Process.Start(info);
+                        using Process? process = Process.Start(info);
                         string output = process!.StandardOutput.ReadToEnd();
                         process.WaitForExit();
                         return string.IsNullOrWhiteSpace(output);
@@ -95,7 +94,7 @@ namespace VidHub.Services.Connectors.Base
                                         UseShellExecute = true,
                                         CreateNoWindow = true
                                     };
-                                    using var process = Process.Start(info);
+                                    using Process? process = Process.Start(info);
                                     process!.WaitForExit();
                                 }
                                 catch { }
@@ -109,7 +108,7 @@ namespace VidHub.Services.Connectors.Base
         {
             await Task.Run(() =>
             {
-                foreach (var item in Directory.GetFiles(Path.Combine(Path.GetTempPath(), "VidHub"), "*", SearchOption.AllDirectories))
+                foreach (string item in Directory.GetFiles(Path.Combine(Path.GetTempPath(), "VidHub"), "*", SearchOption.AllDirectories))
                 {
                     File.Delete(item);
                 }
@@ -210,19 +209,13 @@ namespace VidHub.Services.Connectors.Base
             {
                 return $"The application's cache data has reached {size / Math.Pow(1024, 4):f2} TB";
             }
-            if (size > Math.Pow(1024, 3))
-            {
-                return $"The application's cache data has reached {size / Math.Pow(1024, 3):f2} GB";
-            }
-            if (size > Math.Pow(1024, 2))
-            {
-                return $"The application's cache data has reached {size / Math.Pow(1024, 2):f2} MB";
-            }
-            if (size > Math.Pow(1024, 1))
-            {
-                return $"The application's cache data has reached {size / Math.Pow(1024, 1):f2} kB";
-            }
-            return $"The application's cache data has reached {size} B";
+            return size > Math.Pow(1024, 3)
+                ? $"The application's cache data has reached {size / Math.Pow(1024, 3):f2} GB"
+                : size > Math.Pow(1024, 2)
+                ? $"The application's cache data has reached {size / Math.Pow(1024, 2):f2} MB"
+                : size > Math.Pow(1024, 1)
+                ? $"The application's cache data has reached {size / Math.Pow(1024, 1):f2} kB"
+                : $"The application's cache data has reached {size} B";
         }
     }
 }

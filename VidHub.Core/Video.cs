@@ -1,16 +1,12 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System;
+﻿using Blake3;
+using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections;
-using System.IO;
-using System.Security.Cryptography;
+using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using VidHub.Core.Streams;
 using Windows.Storage;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Blake3;
-using System.Diagnostics;
 
 namespace VidHub.Core
 {
@@ -123,7 +119,7 @@ namespace VidHub.Core
 
         private List<Action> LoadActions(TimeSpan frame, bool extractEmbeddedImage)
         {
-            var metadataProcessor = new MetadataProcessor(FilePath);
+            MetadataProcessor metadataProcessor = new(FilePath);
 
             return [
                 () => Title = Path.GetFileNameWithoutExtension(FilePath),
@@ -140,7 +136,7 @@ namespace VidHub.Core
 
         private List<Action> LoadActions(double percentage, bool extractEmbeddedImage)
         {
-            var metadataProcessor = new MetadataProcessor(FilePath);
+            MetadataProcessor metadataProcessor = new(FilePath);
 
             return [
                 () => Title = Path.GetFileNameWithoutExtension(FilePath),
@@ -192,7 +188,7 @@ namespace VidHub.Core
             string cacheDirectory = Path.Combine(Path.GetTempPath(), "VidHub", "Cache");
             string cachePath = Path.Combine(cacheDirectory, Hash + ".json");
 
-            var jsonOptions = new JsonSerializerOptions
+            JsonSerializerOptions jsonOptions = new()
             {
                 NumberHandling = JsonNumberHandling.WriteAsString,
                 PropertyNameCaseInsensitive = true,
@@ -219,25 +215,29 @@ namespace VidHub.Core
                 string cacheFilePath = Path.Combine(Path.GetTempPath(), "VidHub", "Cache", $"{currentHash}.json");
 
                 if (!File.Exists(cacheFilePath))
+                {
                     return currentHash;
+                }
 
                 if (SameContent(cacheFilePath))
+                {
                     return currentHash;
+                }
 
                 salt++;
                 currentHash = GenerateHash($"{baseHash}:{salt}");
             }
         }
         private string GenerateHash(Stream stream)
-        {            
-            var hasher = Hasher.New();
+        {
+            Hasher hasher = Hasher.New();
             byte[] buffer = new byte[1024 * 1024 * 8];
             int bytesRead;
             while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0)
             {
                 hasher.Update(buffer.AsSpan(0, bytesRead));
             }
-            var generatedHash = hasher.Finalize();
+            Hash generatedHash = hasher.Finalize();
 
             return generatedHash.ToString().Replace("-", "").ToLowerInvariant();
         }
@@ -252,13 +252,7 @@ namespace VidHub.Core
             {
                 Video cache = JsonSerializer.Deserialize<Video>(File.ReadAllText(cacheFilePath)) ?? new Video();
 
-                if (!File.Exists(cache.FilePath))
-                    return false;
-
-                if (new FileInfo(cache.FilePath).Length != new FileInfo(FilePath).Length)
-                    return false;
-
-                return true;
+                return File.Exists(cache.FilePath) && new FileInfo(cache.FilePath).Length == new FileInfo(FilePath).Length;
             }
             catch
             {

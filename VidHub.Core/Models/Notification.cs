@@ -1,15 +1,15 @@
-﻿using System.ComponentModel;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System.ComponentModel;
 
 namespace VidHub.Core.Models
 {
     public class Notification : ObservableObject
     {
         public virtual bool IsOpen => OpenCondition?.Invoke() ?? false;
-        public Func<bool> OpenCondition { get; set; }
-        public string Title { get; set; }
-        public string Message { get; set; }
+        public Func<bool> OpenCondition { get; set; } = () => false;
+        public string Title { get; set; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
         public NotificationSeverity Severity { get; set; }
         public bool IsClosable { get; set; }
 
@@ -19,7 +19,11 @@ namespace VidHub.Core.Models
             get => button;
             set
             {
-                if (button == value) return;
+                if (button == value)
+                {
+                    return;
+                }
+
                 if (button is not null)
                 {
                     button.PropertyChanged -= Button_PropertyChanged;
@@ -35,7 +39,9 @@ namespace VidHub.Core.Models
         private void Button_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(NotificationButton.CommandCompleted))
+            {
                 OnPropertyChanged(nameof(IsOpen));
+            }
         }
     }
 
@@ -46,8 +52,8 @@ namespace VidHub.Core.Models
 
     public class NotificationButton : ObservableObject
     {
-        public string Content { get; set; }
-        public string Tooltip { get; set; }
+        public string Content { get; set; } = string.Empty;
+        public string Tooltip { get; set; } = string.Empty;
 
         public virtual IRelayCommand Command => new RelayCommand(() =>
         {
@@ -55,7 +61,7 @@ namespace VidHub.Core.Models
             CommandCompleted = true;
         });
 
-        public Action Action { get; set; }
+        public Action Action { get; set; } = () => { };
 
         private bool commandCompleted;
         public bool CommandCompleted

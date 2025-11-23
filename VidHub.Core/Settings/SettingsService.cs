@@ -1,8 +1,6 @@
 ﻿using System.Text.Json;
-using VidHub.Core.Settings;
-using VidHub.Services.Settings.Interfaces;
 
-namespace VidHub.Services.Settings
+namespace VidHub.Core.Settings
 {
     public class SettingsService : ISettingsService
     {

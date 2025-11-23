@@ -1,9 +1,9 @@
 ﻿using VidHub.Core.Enums;
+using VidHub.Core.Settings;
 using VidHub.Platform;
 using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Connectors.Base.Interfaces;
 using VidHub.Services.Logics.Interfaces;
-using VidHub.Services.Settings.Interfaces;
 using Windows.Storage;
 
 namespace VidHub.Services.Connectors.Base

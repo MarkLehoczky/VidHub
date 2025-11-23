@@ -1,5 +1,5 @@
 using Microsoft.UI.Xaml;
-using VidHub.Services.Settings.Interfaces;
+using VidHub.Core.Settings;
 
 namespace VidHub.WinUI
 {

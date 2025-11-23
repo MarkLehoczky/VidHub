@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using System;
+using VidHub.Core.Settings;
 using VidHub.Services.Base;
 using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Connectors.Base;
@@ -10,8 +11,6 @@ using VidHub.Services.Connectors.Modals;
 using VidHub.Services.Connectors.Modals.Interfaces;
 using VidHub.Services.Logics;
 using VidHub.Services.Logics.Interfaces;
-using VidHub.Services.Settings;
-using VidHub.Services.Settings.Interfaces;
 using VidHub.Services.System;
 using VidHub.Services.System.Interfaces;
 using VidHub.ViewModels;

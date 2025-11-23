@@ -1,8 +1,8 @@
 ﻿using VidHub.Core.Enums;
+using VidHub.Core.Settings;
 using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Connectors.Base.Interfaces;
 using VidHub.Services.Logics.Interfaces;
-using VidHub.Services.Settings.Interfaces;
 
 namespace VidHub.Services.Connectors.Base
 {
