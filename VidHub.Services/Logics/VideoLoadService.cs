@@ -12,7 +12,7 @@ using WinRT.Interop;
 
 namespace VidHub.Services.Logics
 {
-    public class VideoLoadService(IVideoService service, ISettingsService settings, ISystemManager system) : IVideoLoadService
+    public class VideoLoadService(IVideoService service, IVidHubSettings settings, ISystemManager system) : IVideoLoadService
     {
         private readonly LoadingManager manager = new();
         private readonly List<int> IDCollection = [];
@@ -188,16 +188,7 @@ namespace VidHub.Services.Logics
         private Action<string> LoadVideo => file =>
         {
             Video video = new(file);
-            if (settings.PreviewImageCustomization.RelativePosition)
-            {
-                video.Load(settings.Organizer.Global.EnableCacheLoading, settings.PreviewImageCustomization.FramePercentage, settings.PreviewImageCustomization.ExtractEmbeddedImageCommand);
-            }
-            else
-            {
-                video.Load(settings.Organizer.Global.EnableConcurrentLoading, settings.PreviewImageCustomization.FrameTime, settings.PreviewImageCustomization.ExtractEmbeddedImageCommand);
-            }
-
-            video.Title = settings.TitleCustomization.CustomizeTitle(video);
+            video.Load();
 
             service.Add(video);
             IDCollection.Add(video.ID);

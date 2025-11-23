@@ -6,7 +6,7 @@ using VidHub.Services.Logics.Interfaces;
 
 namespace VidHub.Services.Connectors.Base
 {
-    public class SidePanelConnector(IVideoService vs, ISettingsService settings, IVideoLoadService load, IVideoOrganizerService organize) : ISidePanelConnector
+    public class SidePanelConnector(IVideoService vs, IVidHubSettings settings, IVideoLoadService load, IVideoOrganizerService organize) : ISidePanelConnector
     {
         public string? CurrentSortOption { get => organize.CurrentSortOption; set => organize.CurrentSortOption = value; }
         public bool EnableLiveSearch => settings.Organizer.Global.EnableLiveSearch;

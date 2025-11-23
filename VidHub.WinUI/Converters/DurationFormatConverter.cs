@@ -14,13 +14,13 @@ namespace VidHub.WinUI.Converters
                 try
                 {
                     return duration.TotalDays >= 1
-                        ? duration.ToString(Platform.Context.Host.GetService<ISettingsService>().DisplayCustomization.DurationDayFormat)
+                        ? duration.ToString(VidHubSettings.Instance.DisplayCustomization.DurationDayFormat)
                         : duration.TotalHours >= 1
-                        ? duration.ToString(Platform.Context.Host.GetService<ISettingsService>().DisplayCustomization.DurationHourFormat)
+                        ? duration.ToString(VidHubSettings.Instance.DisplayCustomization.DurationHourFormat)
                         : duration.TotalMinutes >= 1
-                        ? duration.ToString(Platform.Context.Host.GetService<ISettingsService>().DisplayCustomization.DurationMinuteFormat)
+                        ? duration.ToString(VidHubSettings.Instance.DisplayCustomization.DurationMinuteFormat)
                         : duration >= TimeSpan.Zero
-                        ? duration.ToString(Platform.Context.Host.GetService<ISettingsService>().DisplayCustomization.DurationSecondFormat)
+                        ? duration.ToString(VidHubSettings.Instance.DisplayCustomization.DurationSecondFormat)
                         : "n/a";
                 }
                 catch

@@ -9,7 +9,7 @@ using VidHub.Services.Connectors.Modals.Interfaces;
 
 namespace VidHub.Services.Connectors.Modals
 {
-    public class VideoTitleFormatCustomizationConnector(IVideoService vs, ISettingsService settings) : IVideoTitleFormatCustomizationConnector
+    public class VideoTitleFormatCustomizationConnector(IVideoService vs, IVidHubSettings settings) : IVideoTitleFormatCustomizationConnector
     {
         public ObservableCollection<VideoTitleTemplate> Videos { get; } = [];
         public bool IsTemplateMode { get; set; }

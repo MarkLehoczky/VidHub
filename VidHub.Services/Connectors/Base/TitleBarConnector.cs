@@ -8,7 +8,7 @@ using Windows.Storage;
 
 namespace VidHub.Services.Connectors.Base
 {
-    public class TitleBarConnector(IVideoService vs, ISettingsService settings, IVideoLoadService load) : ITitleBarConnector
+    public class TitleBarConnector(IVideoService vs, IVidHubSettings settings, IVideoLoadService load) : ITitleBarConnector
     {
         public bool DisplayDates
         {

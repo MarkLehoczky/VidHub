@@ -15,7 +15,7 @@ using Windows.System;
 
 namespace VidHub.Services.Connectors.Base
 {
-    public class VideoCollectionConnector(IVideoService vs, ISettingsService settings, IVideoCollectionService service) : IVideoCollectionConnector
+    public class VideoCollectionConnector(IVideoService vs, IVidHubSettings settings, IVideoCollectionService service) : IVideoCollectionConnector
     {
         public bool DisplayDates => settings.DisplayCustomization.DisplayDates;
 

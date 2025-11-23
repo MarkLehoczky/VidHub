@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using VidHub.Core.Settings;
 using VidHub.Core.Streams;
 using Windows.Storage;
 
@@ -28,6 +29,7 @@ namespace VidHub.Core
         private IEnumerable<AudioStream> audioStreams;
         private IEnumerable<SubtitleStream> subtitleStreams;
         private IEnumerable<MediaStream> unknownStreams;
+        private FormatStream formatStream;
 
         [JsonIgnore] public int ID { get => id; set => SetProperty(ref id, value); }
         protected string Hash { get => hash; set => SetProperty(ref hash, value); }
@@ -37,7 +39,7 @@ namespace VidHub.Core
         public string PreviewImagePath { get => previewImagePath; set => SetProperty(ref previewImagePath, value); }
         public string FilePath { get => filePath; set => SetProperty(ref filePath, value); }
 
-        public FormatStream FormatStream { get; set; }
+        public FormatStream FormatStream { get => formatStream; set => SetProperty(ref formatStream, value); }
         public IEnumerable<VideoStream> VideoStreams { get => videoStreams; set => SetProperty(ref videoStreams, value); }
         public IEnumerable<AudioStream> AudioStreams { get => audioStreams; set => SetProperty(ref audioStreams, value); }
         public IEnumerable<SubtitleStream> SubtitleStreams { get => subtitleStreams; set => SetProperty(ref subtitleStreams, value); }
@@ -56,11 +58,11 @@ namespace VidHub.Core
             duration = TimeSpan.Zero;
             previewImagePath = string.Empty;
             filePath = string.Empty;
-            FormatStream = new FormatStream(new Dictionary<string, string>());
-            VideoStreams = [];
-            AudioStreams = [];
-            SubtitleStreams = [];
-            UnknownStreams = [];
+            formatStream = new FormatStream(new Dictionary<string, string>());
+            videoStreams = [];
+            audioStreams = [];
+            subtitleStreams = [];
+            unknownStreams = [];
         }
         public Video(string file) : this()
         {
@@ -79,29 +81,15 @@ namespace VidHub.Core
         }
 
 
-        public void Load(bool cacheLoad, TimeSpan frame, bool extractEmbeddedImage)
+        public void Load()
         {
-            if (cacheLoad && LoadCache())
+            if (VidHubSettings.Instance.Organizer.Global.EnableCacheLoading && LoadCache())
             {
+                Title = VidHubSettings.Instance.TitleCustomization.CustomizeTitle(this);
                 return;
             }
 
-            foreach (Action action in LoadActions(frame, extractEmbeddedImage))
-            {
-                try { action(); }
-                catch { }
-            }
-
-            SaveCache();
-        }
-        public void Load(bool cacheLoad, double percentage, bool extractEmbeddedImage)
-        {
-            if (cacheLoad && LoadCache())
-            {
-                return;
-            }
-
-            foreach (Action action in LoadActions(percentage, extractEmbeddedImage))
+            foreach (Action action in LoadActions())
             {
                 try { action(); }
                 catch { }
@@ -110,14 +98,41 @@ namespace VidHub.Core
             SaveCache();
         }
 
-        public void ExtractPreviewImage(TimeSpan frame, bool extractEmbeddedImage)
+        public void ExtractPreviewImage()
         {
-            try { PreviewImagePath = new MetadataProcessor(FilePath).ExtractPreviewImage(Hash, frame > Duration ? Duration : frame, extractEmbeddedImage); }
+            try
+            {
+                TimeSpan frame;
+                if (VidHubSettings.Instance.PreviewImageCustomization.RelativePosition)
+                {
+                    frame = DefaultVideoStream?.Duration ?? Duration;
+                    PreviewImagePath = new MetadataProcessor(FilePath).ExtractPreviewImage(Hash, frame / VidHubSettings.Instance.PreviewImageCustomization.FramePercentage);
+                }
+                else
+                {
+                    if (DefaultVideoStream?.Duration != TimeSpan.Zero)
+                    {
+                        if (DefaultVideoStream?.Duration < VidHubSettings.Instance.PreviewImageCustomization.FrameTime)
+                        {
+                            frame = DefaultVideoStream?.Duration ?? TimeSpan.Zero;
+                        }
+                        else
+                        {
+                            frame = VidHubSettings.Instance.PreviewImageCustomization.FrameTime;
+                        }
+                    }
+                    else
+                    {
+                        frame = Duration < VidHubSettings.Instance.PreviewImageCustomization.FrameTime ? Duration : VidHubSettings.Instance.PreviewImageCustomization.FrameTime;
+                    }
+                    PreviewImagePath = new MetadataProcessor(FilePath).ExtractPreviewImage(Hash, frame > duration ? duration : frame);
+                }
+            }
             catch { }
         }
 
 
-        private List<Action> LoadActions(TimeSpan frame, bool extractEmbeddedImage)
+        private List<Action> LoadActions()
         {
             MetadataProcessor metadataProcessor = new(FilePath);
 
@@ -126,28 +141,12 @@ namespace VidHub.Core
                 () => Date = File.GetLastWriteTime(FilePath),
                 () => Date = metadataProcessor.ExtractDate(),
                 () => Duration = metadataProcessor.ExtractDuration(),
-                () => ExtractPreviewImage(frame, extractEmbeddedImage),
                 () => FormatStream = metadataProcessor.GetFormatStream(),
                 () => VideoStreams = metadataProcessor.GetVideoStreams(),
                 () => AudioStreams = metadataProcessor.GetAudioStreams(),
                 () => SubtitleStreams = metadataProcessor.GetSubtitleStreams(),
-            ];
-        }
-
-        private List<Action> LoadActions(double percentage, bool extractEmbeddedImage)
-        {
-            MetadataProcessor metadataProcessor = new(FilePath);
-
-            return [
-                () => Title = Path.GetFileNameWithoutExtension(FilePath),
-                () => Date = File.GetLastWriteTime(FilePath),
-                () => Date = metadataProcessor.ExtractDate(),
-                () => Duration = metadataProcessor.ExtractDuration(),
-                () => ExtractPreviewImage(Duration * percentage, extractEmbeddedImage),
-                () => FormatStream = metadataProcessor.GetFormatStream(),
-                () => VideoStreams = metadataProcessor.GetVideoStreams(),
-                () => AudioStreams = metadataProcessor.GetAudioStreams(),
-                () => SubtitleStreams = metadataProcessor.GetSubtitleStreams(),
+                ExtractPreviewImage,
+                () => Title = VidHubSettings.Instance.TitleCustomization.CustomizeTitle(this)
             ];
         }
 

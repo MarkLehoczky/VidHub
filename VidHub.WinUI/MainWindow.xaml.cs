@@ -9,7 +9,7 @@ namespace VidHub.WinUI
         {
             InitializeComponent();
             ExtendsContentIntoTitleBar = true;
-            Platform.Context.Host.GetService<ISettingsService>().Load();
+            VidHubSettings.Instance.Load();
         }
     }
 }

@@ -9,7 +9,7 @@ using Windows.UI.Notifications;
 
 namespace VidHub.Services.System
 {
-    public class SystemManager(ISettingsService settings) : ISystemManager
+    public class SystemManager(IVidHubSettings settings) : ISystemManager
     {
         private readonly TaskbarManager taskbar = new();
 

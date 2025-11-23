@@ -1,10 +1,11 @@
 ﻿using System.Text.Json;
+using VidHub.Platform;
 
 namespace VidHub.Core.Settings
 {
-    public class SettingsService : ISettingsService
+    public class VidHubSettings : IVidHubSettings
     {
-        public static SettingsService Instance => new();
+        public static IVidHubSettings Instance => Context.Host.GetService<IVidHubSettings>();
 
 
         public DisplayCustomizationSettings DisplayCustomization { get; set; } = new DisplayCustomizationSettings();
@@ -23,7 +24,7 @@ namespace VidHub.Core.Settings
             if (File.Exists(appDataSettings))
             {
                 string json = File.ReadAllText(appDataSettings);
-                SettingsService? settings = JsonSerializer.Deserialize<SettingsService>(json);
+                VidHubSettings? settings = JsonSerializer.Deserialize<VidHubSettings>(json);
 
                 if (settings != null)
                 {

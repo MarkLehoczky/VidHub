@@ -30,7 +30,7 @@ namespace VidHub.WinUI
                 .ConfigureServices(services =>
                 {
                     _ = services.AddSingleton<IVideoService, VideoService>();
-                    _ = services.AddSingleton<ISettingsService, SettingsService>();
+                    _ = services.AddSingleton<IVidHubSettings, VidHubSettings>();
                     _ = services.AddSingleton<ISystemManager, SystemManager>();
                     _ = services.AddSingleton<IVideoLoadService, VideoLoadService>();
                     _ = services.AddSingleton<IVideoOrganizerService, VideoOrganizerService>();
@@ -58,7 +58,7 @@ namespace VidHub.WinUI
             _window.Activate();
             Platform.Context.Window = new WindowContext(_window);
             _window.Activated += (s, e) => Platform.Context.Window.IsActive = e.WindowActivationState != WindowActivationState.Deactivated;
-            AppDomain.CurrentDomain.ProcessExit += (_, _) => Platform.Context.Host.GetService<ISettingsService>().Save();
+            AppDomain.CurrentDomain.ProcessExit += (_, _) => VidHubSettings.Instance.Save();
         }
     }
 }

@@ -5,7 +5,7 @@ using VidHub.Services.Connectors.Modals.Interfaces;
 
 namespace VidHub.Services.Connectors.Modals
 {
-    public class VideoDisplayCustomizationConnector(IVideoService vs, ISettingsService settings) : IVideoDisplayCustomizationConnector
+    public class VideoDisplayCustomizationConnector(IVideoService vs, IVidHubSettings settings) : IVideoDisplayCustomizationConnector
     {
         public string DateFormat
         {

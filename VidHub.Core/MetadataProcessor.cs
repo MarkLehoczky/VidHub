@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
+using VidHub.Core.Settings;
 using VidHub.Core.Streams;
 
 namespace VidHub.Core
@@ -85,14 +86,14 @@ namespace VidHub.Core
             return TimeSpan.FromSeconds(double.Parse(duration.Trim(), CultureInfo.InvariantCulture));
         }
 
-        public string ExtractPreviewImage(string imageName, TimeSpan frame, bool extractEmbeddedImage)
+        public string ExtractPreviewImage(string imageName, TimeSpan frame)
         {
             string previewDirectory = Path.Combine(Path.GetTempPath(), "VidHub", "Previews");
             string previewPath = Path.Combine(previewDirectory, imageName + ".jpg");
 
             _ = Directory.CreateDirectory(previewDirectory);
 
-            if (extractEmbeddedImage)
+            if (VidHubSettings.Instance.PreviewImageCustomization.ExtractEmbeddedImageCommand)
             {
                 (int exitCode, _, _) = RunProcess("ffmpeg", "-v", "error", "-y", "-i", filePath, "-map", "0:v", "-map", "-0:V", "-c", "copy", previewPath);
                 if (exitCode == 0 && File.Exists(previewPath))

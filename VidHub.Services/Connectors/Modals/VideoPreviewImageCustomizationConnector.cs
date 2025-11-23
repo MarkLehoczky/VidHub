@@ -6,7 +6,7 @@ using VidHub.Services.Connectors.Modals.Interfaces;
 
 namespace VidHub.Services.Connectors.Modals
 {
-    public class VideoPreviewImageCustomizationConnector(IVideoService vs, ISettingsService settings) : IVideoPreviewImageCustomizationConnector
+    public class VideoPreviewImageCustomizationConnector(IVideoService vs, IVidHubSettings settings) : IVideoPreviewImageCustomizationConnector
     {
         public int Hours { get => settings.PreviewImageCustomization.Hours; set => settings.PreviewImageCustomization.Hours = value; }
         public int Milliseconds { get => settings.PreviewImageCustomization.Milliseconds; set => settings.PreviewImageCustomization.Milliseconds = value; }
@@ -36,11 +36,11 @@ namespace VidHub.Services.Connectors.Modals
                 {
                     if (RelativePosition)
                     {
-                        item.ExtractPreviewImage(item.Duration * settings.PreviewImageCustomization.FramePercentage, settings.PreviewImageCustomization.ExtractEmbeddedImageCommand);
+                        item.ExtractPreviewImage();
                     }
                     else
                     {
-                        item.ExtractPreviewImage(settings.PreviewImageCustomization.FrameTime, settings.PreviewImageCustomization.ExtractEmbeddedImageCommand);
+                        item.ExtractPreviewImage();
                     }
                 }
             });
