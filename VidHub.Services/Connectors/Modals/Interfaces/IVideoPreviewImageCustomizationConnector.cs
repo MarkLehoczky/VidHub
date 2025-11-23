@@ -4,6 +4,7 @@ namespace VidHub.Services.Connectors.Modals.Interfaces
 {
     public interface IVideoPreviewImageCustomizationConnector : IUpdateService
     {
+        bool ExtractEmbeddedImageCommand { get; set; }
         int Hours { get; set; }
         int Milliseconds { get; set; }
         int Minutes { get; set; }

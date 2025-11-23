@@ -13,5 +13,7 @@ namespace VidHub.Core.Models
             set => SetProperty(ref title, value);
         }
         public int ID { get; } = video.ID;
+
+        public Video Instance => video;
     }
 }

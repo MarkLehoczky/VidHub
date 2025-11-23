@@ -1,10 +1,72 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
+using VidHub.Core.Streams;
 
 namespace VidHub.Core
 {
     internal class MetadataProcessor(string filePath)
     {
+        private IDictionary<string, string> metadata = new Dictionary<string, string>();
+
+        public IDictionary<string, string> ExtractMetadata()
+        {
+            string rawData = RunSuccessfulProcess("ffprobe", "-v", "error", "-print_format", "flat", "-show_format", "-show_streams", filePath);
+            return rawData
+                .Split('\n')
+                .Select(line => line.Split('=', 2))
+                .Where(parts => parts.Length == 2)
+                .ToDictionary(parts => parts[0].Trim().ToLower(), parts => parts[1].Trim().Trim('"'));
+        }
+
+        private IEnumerable<IDictionary<string, string>> GetStreams(string type)
+        {
+            if (metadata == null || metadata.Count == 0)
+                metadata = ExtractMetadata();
+
+            return metadata
+                .Where(kv => kv.Key.StartsWith("streams.stream"))
+                .GroupBy(kv => kv.Key[15..].Split('.')[0])
+                .Select(group => group.ToDictionary(kv => kv.Key[(group.Key.Length + 16)..], kv => kv.Value))
+                .Where(dict => dict["codec_type"].Equals(type, StringComparison.OrdinalIgnoreCase));
+        }
+
+        public FormatStream GetFormatStream()
+        {
+            if (metadata == null || metadata.Count == 0)
+                metadata = ExtractMetadata();
+
+            return new FormatStream(metadata.Where(kv => kv.Key.StartsWith("format")).ToDictionary(kv => kv.Key[7..], kv => kv.Value));
+        }
+
+        public IEnumerable<VideoStream> GetVideoStreams()
+        {
+            return GetStreams("video").Select(s => new VideoStream(s));
+        }
+
+        public IEnumerable<AudioStream> GetAudioStreams()
+        {
+            return GetStreams("audio").Select(s => new AudioStream(s));
+        }
+
+        public IEnumerable<SubtitleStream> GetSubtitleStreams()
+        {
+            return GetStreams("subtitle").Select(s => new SubtitleStream(s));
+        }
+
+        public IEnumerable<MediaStream> GetUnknownStreams()
+        {
+            if (metadata == null || metadata.Count == 0)
+                metadata = ExtractMetadata();
+
+            HashSet<string> knownTypes = ["video", "audio", "subtitle"];
+            return metadata
+                .Where(kv => kv.Key.StartsWith("streams.stream"))
+                .GroupBy(kv => kv.Key[15..].Split('.')[0])
+                .Select(group => group.ToDictionary(kv => kv.Key[(group.Key.Length + 16)..], kv => kv.Value))
+                .Where(dict => !knownTypes.Contains(dict["codec_type"]))
+                .Select(s => new MediaStream(s));
+        }
+
         public DateTime ExtractDate()
         {
             string date = RunSuccessfulProcess("ffprobe", "-v", "error", "-show_entries", "format_tags=creation_time", "-of", "default=noprint_wrappers=1:nokey=1", filePath);
@@ -17,12 +79,19 @@ namespace VidHub.Core
             return TimeSpan.FromSeconds(double.Parse(duration.Trim(), CultureInfo.InvariantCulture));
         }
 
-        public string ExtractPreviewImage(string imageName, TimeSpan frame)
+        public string ExtractPreviewImage(string imageName, TimeSpan frame, bool extractEmbeddedImage)
         {
             string previewDirectory = Path.Combine(Path.GetTempPath(), "VidHub", "Previews");
             string previewPath = Path.Combine(previewDirectory, imageName + ".jpg");
 
             _ = Directory.CreateDirectory(previewDirectory);
+
+            if (extractEmbeddedImage)
+            {
+                (int exitCode, _, _) = RunProcess("ffmpeg", "-v", "error", "-y", "-i", filePath, "-map", "0:v", "-map", "-0:V", "-c", "copy", previewPath);
+                if (exitCode == 0 && File.Exists(previewPath))
+                    return previewPath;
+            }
 
             _ = RunSuccessfulProcess("ffmpeg", "-v", "error", "-y", "-ss", frame.TotalSeconds.ToString(CultureInfo.InvariantCulture), "-i", filePath, "-frames:v", "1", previewPath);
             return previewPath;

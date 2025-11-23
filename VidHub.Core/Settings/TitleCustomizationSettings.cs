@@ -17,119 +17,48 @@ namespace VidHub.Core.Settings
 
         public void ChangeTitle(Video video)
         {
-            string newTitle = CustomizeTitle(video.Title);
+            string newTitle = CustomizeTitle(video);
             video.Title = newTitle;
         }
 
-        public string CustomizeTitle(string filePath)
+        public string CustomizeTitle(Video video)
         {
-            string newTitle = "";
-            if (IncludePath)
-            {
-                newTitle += Path.GetFullPath(filePath)[..^Path.GetFileName(filePath).Length];
-            }
-
-            if (IncludeDate)
-            {
-                newTitle += File.GetCreationTime(filePath).ToString("yyyy-MM-dd");
-            }
-
-            if (IncludeFilename)
-            {
-                newTitle += IncludeDate ? $"_{Path.GetFileNameWithoutExtension(filePath)}" : Path.GetFileNameWithoutExtension(filePath);
-            }
-
-            if (IncludeMetadata)
-            {
-                newTitle += "[Metadata]";
-            }
-
-            if (IncludeExtension)
-            {
-                newTitle += Path.GetExtension(filePath);
-            }
-
-            if (EnabledRegex)
-            {
-                try
-                {
-                    Regex regex = new(RegexPattern);
-                    newTitle = regex.Replace(newTitle, RegexReplacement);
-                }
-                catch { }
-            }
-
-            return newTitle;
+            return CustomizeTitle(video, EnabledRegex);
         }
-        public string CustomizeTitle(string filePath, bool useRegex)
+        public string CustomizeTitle(Video video, bool useRegex)
         {
+            string path = Path.GetDirectoryName(video.FilePath) + Path.DirectorySeparatorChar;
+            string date = video.Date.ToString("yyyy-MM-dd");
+            string filename = Path.GetFileNameWithoutExtension(video.FilePath);
+            string metadata = $"({video.DefaultVideoStream?.Codec})_[{video.DefaultVideoStream?.Width}x{video.DefaultVideoStream?.Height}_{video.DefaultVideoStream?.Framerate.Item1 / video.DefaultVideoStream?.Framerate.Item2}fps_{video.DefaultVideoStream?.Bitrate / 1048576}Mbps_{video.DefaultAudioStream?.ChannelLayout}]";
+            string extension = Path.GetExtension(video.FilePath);
             string newTitle = "";
             if (IncludePath)
             {
-                newTitle += Path.GetFullPath(filePath)[..^Path.GetFileName(filePath).Length];
+                newTitle += path;
             }
 
             if (IncludeDate)
             {
-                newTitle += File.GetCreationTime(filePath).ToString("yyyy-MM-dd");
+                newTitle += date;
             }
 
             if (IncludeFilename)
             {
-                newTitle += IncludeDate ? $"_{Path.GetFileNameWithoutExtension(filePath)}" : Path.GetFileNameWithoutExtension(filePath);
+                newTitle += IncludeDate ? $"_{filename}" : filename;
             }
 
             if (IncludeMetadata)
             {
-                newTitle += "[Metadata]";
+                newTitle += IncludeDate || IncludeFilename ? $"_{metadata}" : metadata;
             }
 
             if (IncludeExtension)
             {
-                newTitle += Path.GetExtension(filePath);
+                newTitle += extension;
             }
 
             if (useRegex)
-            {
-                try
-                {
-                    Regex regex = new(RegexPattern);
-                    newTitle = regex.Replace(newTitle, RegexReplacement);
-                }
-                catch { }
-            }
-
-            return newTitle;
-        }
-        public string CustomizeTitle(Video Video)
-        {
-            string newTitle = "";
-            if (IncludePath)
-            {
-                newTitle += Path.GetFullPath(Video.FilePath)[..^Path.GetFileName(Video.FilePath).Length];
-            }
-
-            if (IncludeDate)
-            {
-                newTitle += File.GetCreationTime(Video.FilePath).ToString("yyyy-MM-dd");
-            }
-
-            if (IncludeFilename)
-            {
-                newTitle += IncludeDate ? $"_{Path.GetFileNameWithoutExtension(Video.FilePath)}" : Path.GetFileNameWithoutExtension(Video.FilePath);
-            }
-
-            if (IncludeMetadata)
-            {
-                newTitle += "[Metadata]";
-            }
-
-            if (IncludeExtension)
-            {
-                newTitle += Path.GetExtension(Video.FilePath);
-            }
-
-            if (EnabledRegex)
             {
                 try
                 {

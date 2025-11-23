@@ -190,14 +190,14 @@ namespace VidHub.Services.Logics
             Video video = new(file);
             if (settings.PreviewImageCustomization.RelativePosition)
             {
-                video.Load(settings.Organizer.Global.EnableCacheLoading, settings.PreviewImageCustomization.FramePercentage);
+                video.Load(settings.Organizer.Global.EnableCacheLoading, settings.PreviewImageCustomization.FramePercentage, settings.PreviewImageCustomization.ExtractEmbeddedImageCommand);
             }
             else
             {
-                video.Load(settings.Organizer.Global.EnableConcurrentLoading, settings.PreviewImageCustomization.FrameTime);
+                video.Load(settings.Organizer.Global.EnableConcurrentLoading, settings.PreviewImageCustomization.FrameTime, settings.PreviewImageCustomization.ExtractEmbeddedImageCommand);
             }
 
-            video.Title = settings.TitleCustomization.CustomizeTitle(video.Title);
+            video.Title = settings.TitleCustomization.CustomizeTitle(video);
 
             service.Add(video);
             IDCollection.Add(video.ID);
