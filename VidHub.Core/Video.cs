@@ -138,15 +138,15 @@ namespace VidHub.Core
 
             return [
                 () => Title = Path.GetFileNameWithoutExtension(FilePath),
-                () => Date = File.GetLastWriteTime(FilePath),
-                () => Date = metadataProcessor.ExtractDate(),
-                () => Duration = metadataProcessor.ExtractDuration(),
                 () => FormatStream = metadataProcessor.GetFormatStream(),
                 () => VideoStreams = metadataProcessor.GetVideoStreams(),
                 () => AudioStreams = metadataProcessor.GetAudioStreams(),
                 () => SubtitleStreams = metadataProcessor.GetSubtitleStreams(),
-                ExtractPreviewImage,
-                () => Title = VidHubSettings.Instance.TitleCustomization.CustomizeTitle(this)
+                () => UnknownStreams = metadataProcessor.GetUnknownStreams(),
+                () => Date = FormatStream.CreationTime != DateTime.MinValue ? FormatStream.CreationTime : File.GetLastWriteTime(FilePath),
+                () => Duration = DefaultVideoStream?.Duration ?? TimeSpan.Zero,
+                () => Title = VidHubSettings.Instance.TitleCustomization.CustomizeTitle(this),
+                ExtractPreviewImage
             ];
         }
 

@@ -9,6 +9,7 @@ namespace VidHub.Core
     {
         private IDictionary<string, string> metadata = new Dictionary<string, string>();
 
+
         public IDictionary<string, string> ExtractMetadata()
         {
             string rawData = RunSuccessfulProcess("ffprobe", "-v", "error", "-print_format", "flat", "-show_format", "-show_streams", filePath);
@@ -74,17 +75,6 @@ namespace VidHub.Core
                 .Select(s => new MediaStream(s));
         }
 
-        public DateTime ExtractDate()
-        {
-            string date = RunSuccessfulProcess("ffprobe", "-v", "error", "-show_entries", "format_tags=creation_time", "-of", "default=noprint_wrappers=1:nokey=1", filePath);
-            return DateTime.Parse(date.Trim(), CultureInfo.InvariantCulture);
-        }
-
-        public TimeSpan ExtractDuration()
-        {
-            string duration = RunSuccessfulProcess("ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", filePath);
-            return TimeSpan.FromSeconds(double.Parse(duration.Trim(), CultureInfo.InvariantCulture));
-        }
 
         public string ExtractPreviewImage(string imageName, TimeSpan frame)
         {
