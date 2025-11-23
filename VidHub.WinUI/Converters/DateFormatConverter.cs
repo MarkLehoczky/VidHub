@@ -1,6 +1,6 @@
 ﻿using Microsoft.UI.Xaml.Data;
 using System;
-using VidHub.Services.Settings.Interfaces;
+using VidHub.Core.Settings;
 
 namespace VidHub.WinUI.Converters
 {
@@ -13,7 +13,7 @@ namespace VidHub.WinUI.Converters
                 DateTime date = (DateTime)value;
                 try
                 {
-                    return date.ToString(Platform.Context.Host.GetService<ISettingsService>().DisplayCustomization.DateFormat);
+                    return date.ToString(VidHubSettings.Instance.DisplayCustomization.DateFormat);
                 }
                 catch
                 {

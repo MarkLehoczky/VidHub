@@ -1,12 +1,12 @@
 ﻿using VidHub.Core.Enums;
+using VidHub.Core.Settings;
 using VidHub.Platform;
 using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Connectors.Modals.Interfaces;
-using VidHub.Services.Settings.Interfaces;
 
 namespace VidHub.Services.Connectors.Modals
 {
-    public class VideoPreviewImageCustomizationConnector(IVideoService vs, ISettingsService settings) : IVideoPreviewImageCustomizationConnector
+    public class VideoPreviewImageCustomizationConnector(IVideoService vs, IVidHubSettings settings) : IVideoPreviewImageCustomizationConnector
     {
         public int Hours { get => settings.PreviewImageCustomization.Hours; set => settings.PreviewImageCustomization.Hours = value; }
         public int Milliseconds { get => settings.PreviewImageCustomization.Milliseconds; set => settings.PreviewImageCustomization.Milliseconds = value; }
@@ -15,6 +15,7 @@ namespace VidHub.Services.Connectors.Modals
         public bool RelativePosition { get => settings.PreviewImageCustomization.RelativePosition; set => settings.PreviewImageCustomization.RelativePosition = value; }
         public int Seconds { get => settings.PreviewImageCustomization.Seconds; set => settings.PreviewImageCustomization.Seconds = value; }
         public bool ExtractEmbeddedImageCommand { get => settings.PreviewImageCustomization.ExtractEmbeddedImageCommand; set => settings.PreviewImageCustomization.ExtractEmbeddedImageCommand = value; }
+        public bool UseContentHash { get => settings.PreviewImageCustomization.UseContentHash; set => settings.PreviewImageCustomization.UseContentHash = value; }
 
         public async Task ExtractLoadedVideoPreviewImagesAsync()
         {
@@ -36,11 +37,11 @@ namespace VidHub.Services.Connectors.Modals
                 {
                     if (RelativePosition)
                     {
-                        item.ExtractPreviewImage(item.Duration * settings.PreviewImageCustomization.FramePercentage, settings.PreviewImageCustomization.ExtractEmbeddedImageCommand);
+                        item.ExtractPreviewImage();
                     }
                     else
                     {
-                        item.ExtractPreviewImage(settings.PreviewImageCustomization.FrameTime, settings.PreviewImageCustomization.ExtractEmbeddedImageCommand);
+                        item.ExtractPreviewImage();
                     }
                 }
             });

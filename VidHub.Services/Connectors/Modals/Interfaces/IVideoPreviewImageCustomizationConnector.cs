@@ -11,6 +11,7 @@ namespace VidHub.Services.Connectors.Modals.Interfaces
         int Percentage { get; set; }
         bool RelativePosition { get; set; }
         int Seconds { get; set; }
+        bool UseContentHash { get; set; }
         Task ExtractLoadedVideoPreviewImagesAsync();
         Task RemoveAllPreviewImagesAsync();
     }

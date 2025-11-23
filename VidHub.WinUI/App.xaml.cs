@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using System;
+using VidHub.Core.Settings;
 using VidHub.Services.Base;
 using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Connectors.Base;
@@ -10,8 +11,6 @@ using VidHub.Services.Connectors.Modals;
 using VidHub.Services.Connectors.Modals.Interfaces;
 using VidHub.Services.Logics;
 using VidHub.Services.Logics.Interfaces;
-using VidHub.Services.Settings;
-using VidHub.Services.Settings.Interfaces;
 using VidHub.Services.System;
 using VidHub.Services.System.Interfaces;
 using VidHub.ViewModels;
@@ -31,7 +30,7 @@ namespace VidHub.WinUI
                 .ConfigureServices(services =>
                 {
                     _ = services.AddSingleton<IVideoService, VideoService>();
-                    _ = services.AddSingleton<ISettingsService, SettingsService>();
+                    _ = services.AddSingleton<IVidHubSettings, VidHubSettings>();
                     _ = services.AddSingleton<ISystemManager, SystemManager>();
                     _ = services.AddSingleton<IVideoLoadService, VideoLoadService>();
                     _ = services.AddSingleton<IVideoOrganizerService, VideoOrganizerService>();
@@ -59,7 +58,7 @@ namespace VidHub.WinUI
             _window.Activate();
             Platform.Context.Window = new WindowContext(_window);
             _window.Activated += (s, e) => Platform.Context.Window.IsActive = e.WindowActivationState != WindowActivationState.Deactivated;
-            AppDomain.CurrentDomain.ProcessExit += (_, _) => Platform.Context.Host.GetService<ISettingsService>().Save();
+            AppDomain.CurrentDomain.ProcessExit += (_, _) => VidHubSettings.Instance.Save();
         }
     }
 }

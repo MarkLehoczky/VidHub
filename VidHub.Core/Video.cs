@@ -1,9 +1,11 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using Blake3;
+using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections;
-using System.Security.Cryptography;
+using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using VidHub.Core.Settings;
 using VidHub.Core.Streams;
 using Windows.Storage;
 
@@ -27,6 +29,7 @@ namespace VidHub.Core
         private IEnumerable<AudioStream> audioStreams;
         private IEnumerable<SubtitleStream> subtitleStreams;
         private IEnumerable<MediaStream> unknownStreams;
+        private FormatStream formatStream;
 
         [JsonIgnore] public int ID { get => id; set => SetProperty(ref id, value); }
         protected string Hash { get => hash; set => SetProperty(ref hash, value); }
@@ -36,7 +39,7 @@ namespace VidHub.Core
         public string PreviewImagePath { get => previewImagePath; set => SetProperty(ref previewImagePath, value); }
         public string FilePath { get => filePath; set => SetProperty(ref filePath, value); }
 
-        public FormatStream FormatStream { get; set; }
+        public FormatStream FormatStream { get => formatStream; set => SetProperty(ref formatStream, value); }
         public IEnumerable<VideoStream> VideoStreams { get => videoStreams; set => SetProperty(ref videoStreams, value); }
         public IEnumerable<AudioStream> AudioStreams { get => audioStreams; set => SetProperty(ref audioStreams, value); }
         public IEnumerable<SubtitleStream> SubtitleStreams { get => subtitleStreams; set => SetProperty(ref subtitleStreams, value); }
@@ -55,52 +58,38 @@ namespace VidHub.Core
             duration = TimeSpan.Zero;
             previewImagePath = string.Empty;
             filePath = string.Empty;
-            FormatStream = new FormatStream(new Dictionary<string, string>());
-            VideoStreams = [];
-            AudioStreams = [];
-            SubtitleStreams = [];
-            UnknownStreams = [];
+            formatStream = new FormatStream(new Dictionary<string, string>());
+            videoStreams = [];
+            audioStreams = [];
+            subtitleStreams = [];
+            unknownStreams = [];
         }
         public Video(string file) : this()
         {
             filePath = Path.GetFullPath(file);
-            hash = GetFileHash();
+            hash = GenerateHash();
         }
         public Video(Uri file) : this()
         {
             filePath = file.AbsolutePath;
-            hash = GetFileHash();
+            hash = GenerateHash();
         }
         public Video(StorageFile file) : this()
         {
             filePath = file.Path;
-            hash = GetFileHash();
+            hash = GenerateHash();
         }
 
 
-        public void Load(bool cacheLoad, TimeSpan frame, bool extractEmbeddedImage)
+        public void Load()
         {
-            if (cacheLoad && LoadCache())
+            if (VidHubSettings.Instance.Organizer.Global.EnableCacheLoading && LoadCache())
             {
+                Title = VidHubSettings.Instance.TitleCustomization.CustomizeTitle(this);
                 return;
             }
 
-            foreach (Action action in LoadActions(frame, extractEmbeddedImage))
-            {
-                try { action(); }
-                catch { }
-            }
-
-            SaveCache();
-        }
-        public void Load(bool cacheLoad, double percentage, bool extractEmbeddedImage)
-        {
-            if (cacheLoad && LoadCache())
-            {
-                return;
-            }
-
-            foreach (Action action in LoadActions(percentage, extractEmbeddedImage))
+            foreach (Action action in LoadActions())
             {
                 try { action(); }
                 catch { }
@@ -109,44 +98,55 @@ namespace VidHub.Core
             SaveCache();
         }
 
-        public void ExtractPreviewImage(TimeSpan frame, bool extractEmbeddedImage)
+        public void ExtractPreviewImage()
         {
-            try { PreviewImagePath = new MetadataProcessor(FilePath).ExtractPreviewImage(Hash, frame > Duration ? Duration : frame, extractEmbeddedImage); }
+            try
+            {
+                TimeSpan frame;
+                if (VidHubSettings.Instance.PreviewImageCustomization.RelativePosition)
+                {
+                    frame = DefaultVideoStream?.Duration ?? Duration;
+                    PreviewImagePath = new MetadataProcessor(FilePath).ExtractPreviewImage(Hash, frame / VidHubSettings.Instance.PreviewImageCustomization.FramePercentage);
+                }
+                else
+                {
+                    if (DefaultVideoStream?.Duration != TimeSpan.Zero)
+                    {
+                        if (DefaultVideoStream?.Duration < VidHubSettings.Instance.PreviewImageCustomization.FrameTime)
+                        {
+                            frame = DefaultVideoStream?.Duration ?? TimeSpan.Zero;
+                        }
+                        else
+                        {
+                            frame = VidHubSettings.Instance.PreviewImageCustomization.FrameTime;
+                        }
+                    }
+                    else
+                    {
+                        frame = Duration < VidHubSettings.Instance.PreviewImageCustomization.FrameTime ? Duration : VidHubSettings.Instance.PreviewImageCustomization.FrameTime;
+                    }
+                    PreviewImagePath = new MetadataProcessor(FilePath).ExtractPreviewImage(Hash, frame > duration ? duration : frame);
+                }
+            }
             catch { }
         }
 
 
-        private List<Action> LoadActions(TimeSpan frame, bool extractEmbeddedImage)
+        private List<Action> LoadActions()
         {
-            var metadataProcessor = new MetadataProcessor(FilePath);
+            MetadataProcessor metadataProcessor = new(FilePath);
 
             return [
                 () => Title = Path.GetFileNameWithoutExtension(FilePath),
-                () => Date = File.GetLastWriteTime(FilePath),
-                () => Date = metadataProcessor.ExtractDate(),
-                () => Duration = metadataProcessor.ExtractDuration(),
-                () => ExtractPreviewImage(frame, extractEmbeddedImage),
                 () => FormatStream = metadataProcessor.GetFormatStream(),
                 () => VideoStreams = metadataProcessor.GetVideoStreams(),
                 () => AudioStreams = metadataProcessor.GetAudioStreams(),
                 () => SubtitleStreams = metadataProcessor.GetSubtitleStreams(),
-            ];
-        }
-
-        private List<Action> LoadActions(double percentage, bool extractEmbeddedImage)
-        {
-            var metadataProcessor = new MetadataProcessor(FilePath);
-
-            return [
-                () => Title = Path.GetFileNameWithoutExtension(FilePath),
-                () => Date = File.GetLastWriteTime(FilePath),
-                () => Date = metadataProcessor.ExtractDate(),
-                () => Duration = metadataProcessor.ExtractDuration(),
-                () => ExtractPreviewImage(Duration * percentage, extractEmbeddedImage),
-                () => FormatStream = metadataProcessor.GetFormatStream(),
-                () => VideoStreams = metadataProcessor.GetVideoStreams(),
-                () => AudioStreams = metadataProcessor.GetAudioStreams(),
-                () => SubtitleStreams = metadataProcessor.GetSubtitleStreams(),
+                () => UnknownStreams = metadataProcessor.GetUnknownStreams(),
+                () => Date = FormatStream.CreationTime != DateTime.MinValue ? FormatStream.CreationTime : File.GetLastWriteTime(FilePath),
+                () => Duration = DefaultVideoStream?.Duration != TimeSpan.Zero ? DefaultVideoStream?.Duration ?? FormatStream.Duration : FormatStream.Duration,
+                () => Title = VidHubSettings.Instance.TitleCustomization.CustomizeTitle(this),
+                ExtractPreviewImage
             ];
         }
 
@@ -187,7 +187,7 @@ namespace VidHub.Core
             string cacheDirectory = Path.Combine(Path.GetTempPath(), "VidHub", "Cache");
             string cachePath = Path.Combine(cacheDirectory, Hash + ".json");
 
-            var jsonOptions = new JsonSerializerOptions
+            JsonSerializerOptions jsonOptions = new()
             {
                 NumberHandling = JsonNumberHandling.WriteAsString,
                 PropertyNameCaseInsensitive = true,
@@ -199,10 +199,68 @@ namespace VidHub.Core
             File.WriteAllText(cachePath, JsonSerializer.Serialize(this, jsonOptions));
         }
 
-        // TODO: Handle key collision
-        private string GetFileHash()
+        private string GenerateHash()
         {
-            return BitConverter.ToString(MD5.HashData(Encoding.UTF8.GetBytes(FilePath))).TrimStart('-').ToLowerInvariant();
+            string baseHash;
+            if (VidHubSettings.Instance.PreviewImageCustomization.UseContentHash)
+            {
+                baseHash = GenerateHash(File.OpenRead(FilePath));
+            }
+            else
+            {
+                baseHash = GenerateHash(FilePath);
+            }
+            string currentHash = baseHash;
+            int salt = 0;
+
+            while (true)
+            {
+                string cacheFilePath = Path.Combine(Path.GetTempPath(), "VidHub", "Cache", $"{currentHash}.json");
+
+                if (!File.Exists(cacheFilePath))
+                {
+                    return currentHash;
+                }
+
+                if (SameContent(cacheFilePath))
+                {
+                    return currentHash;
+                }
+
+                salt++;
+                currentHash = GenerateHash($"{baseHash}:{salt}");
+            }
+        }
+        private string GenerateHash(Stream stream)
+        {
+            Hasher hasher = Hasher.New();
+            byte[] buffer = new byte[1024 * 1024 * 8];
+            int bytesRead;
+            while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0)
+            {
+                hasher.Update(buffer.AsSpan(0, bytesRead));
+            }
+            Hash generatedHash = hasher.Finalize();
+
+            return generatedHash.ToString().Replace("-", "").ToLowerInvariant();
+        }
+        private string GenerateHash(string data)
+        {
+            return Hasher.Hash(Encoding.UTF8.GetBytes(data)).ToString().Replace("-", "").ToLowerInvariant();
+        }
+
+        private bool SameContent(string cacheFilePath)
+        {
+            try
+            {
+                Video cache = JsonSerializer.Deserialize<Video>(File.ReadAllText(cacheFilePath)) ?? new Video();
+
+                return File.Exists(cache.FilePath) && new FileInfo(cache.FilePath).Length == new FileInfo(FilePath).Length;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public int CompareTo(object? obj)

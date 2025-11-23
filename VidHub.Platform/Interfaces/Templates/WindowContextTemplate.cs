@@ -1,6 +1,4 @@
-﻿using VidHub.Core.Enums;
-
-namespace VidHub.Platform.Interfaces.Templates
+﻿namespace VidHub.Platform.Interfaces.Templates
 {
     public class WindowContextTemplate : IWindowContext
     {
@@ -8,12 +6,12 @@ namespace VidHub.Platform.Interfaces.Templates
 
         public bool IsActive { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public Task ShowDialogAsync(ModalType type, string title, string closeButton)
+        public Task ShowDialogAsync(string type, string title, string closeButton)
         {
             throw new NotImplementedException();
         }
 
-        public Task ShowDialogAsync(ModalType type, string title, string closeButton, object obj)
+        public Task ShowDialogAsync(string type, string title, string closeButton, object obj)
         {
             throw new NotImplementedException();
         }

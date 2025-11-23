@@ -1,10 +1,10 @@
 ﻿using VidHub.Core;
 using VidHub.Core.Enums;
 using VidHub.Core.Manager;
+using VidHub.Core.Settings;
 using VidHub.Platform;
 using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Logics.Interfaces;
-using VidHub.Services.Settings.Interfaces;
 using VidHub.Services.System.Interfaces;
 using Windows.Storage;
 using Windows.Storage.Pickers;
@@ -12,7 +12,7 @@ using WinRT.Interop;
 
 namespace VidHub.Services.Logics
 {
-    public class VideoLoadService(IVideoService service, ISettingsService settings, ISystemManager system) : IVideoLoadService
+    public class VideoLoadService(IVideoService service, IVidHubSettings settings, ISystemManager system) : IVideoLoadService
     {
         private readonly LoadingManager manager = new();
         private readonly List<int> IDCollection = [];
@@ -188,16 +188,7 @@ namespace VidHub.Services.Logics
         private Action<string> LoadVideo => file =>
         {
             Video video = new(file);
-            if (settings.PreviewImageCustomization.RelativePosition)
-            {
-                video.Load(settings.Organizer.Global.EnableCacheLoading, settings.PreviewImageCustomization.FramePercentage, settings.PreviewImageCustomization.ExtractEmbeddedImageCommand);
-            }
-            else
-            {
-                video.Load(settings.Organizer.Global.EnableConcurrentLoading, settings.PreviewImageCustomization.FrameTime, settings.PreviewImageCustomization.ExtractEmbeddedImageCommand);
-            }
-
-            video.Title = settings.TitleCustomization.CustomizeTitle(video);
+            video.Load();
 
             service.Add(video);
             IDCollection.Add(video.ID);
@@ -222,7 +213,7 @@ namespace VidHub.Services.Logics
                 {
                     if (!settings.TitleCustomization.DontShowTitleCustomizationAgain)
                     {
-                        _ = Context.Window.TryEnqueue(() => Context.Window.ShowDialogAsync(ModalType.CustomizeTitleFormat, "Customize video title", "Confirm", new Tuple<bool, IEnumerable<int>>(false, IDCollection)));
+                        _ = Context.Window.TryEnqueue(() => Context.Window.ShowDialogAsync("CustomizeTitleFormat", "Customize video title", "Confirm", new Tuple<bool, IEnumerable<int>>(false, IDCollection)));
                     }
 
                     system.DisplayToast("Video loading finished!", $"{IDCollection.Count} videos were loaded successfully.");

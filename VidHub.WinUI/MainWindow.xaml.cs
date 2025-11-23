@@ -1,5 +1,5 @@
 using Microsoft.UI.Xaml;
-using VidHub.Services.Settings.Interfaces;
+using VidHub.Core.Settings;
 
 namespace VidHub.WinUI
 {
@@ -9,7 +9,7 @@ namespace VidHub.WinUI
         {
             InitializeComponent();
             ExtendsContentIntoTitleBar = true;
-            Platform.Context.Host.GetService<ISettingsService>().Load();
+            VidHubSettings.Instance.Load();
         }
     }
 }

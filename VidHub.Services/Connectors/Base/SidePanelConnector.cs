@@ -1,12 +1,12 @@
 ﻿using VidHub.Core.Enums;
+using VidHub.Core.Settings;
 using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Connectors.Base.Interfaces;
 using VidHub.Services.Logics.Interfaces;
-using VidHub.Services.Settings.Interfaces;
 
 namespace VidHub.Services.Connectors.Base
 {
-    public class SidePanelConnector(IVideoService vs, ISettingsService settings, IVideoLoadService load, IVideoOrganizerService organize) : ISidePanelConnector
+    public class SidePanelConnector(IVideoService vs, IVidHubSettings settings, IVideoLoadService load, IVideoOrganizerService organize) : ISidePanelConnector
     {
         public string? CurrentSortOption { get => organize.CurrentSortOption; set => organize.CurrentSortOption = value; }
         public bool EnableLiveSearch => settings.Organizer.Global.EnableLiveSearch;

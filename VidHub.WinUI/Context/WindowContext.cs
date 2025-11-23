@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VidHub.Core;
-using VidHub.Core.Enums;
 using VidHub.Platform.Interfaces;
 using VidHub.WinUI.UserControls.Modals;
 using WinRT.Interop;
@@ -22,16 +21,16 @@ namespace VidHub.WinUI.Context
             return window.DispatcherQueue.TryEnqueue(callback.Invoke);
         }
 
-        public async Task ShowDialogAsync(ModalType type, string title, string closeButton)
+        public async Task ShowDialogAsync(string type, string title, string closeButton)
         {
             object content = new();
 
             switch (type)
             {
-                case ModalType.CustomizeVideoDisplayFormat: content = new VideoDisplayCustomizationUserControl(); break;
-                case ModalType.CustomizeTitleFormat: content = new VideoTitleFormatCustomizationUserControl(new Tuple<bool, IEnumerable<int>>(true, [])); break;
-                case ModalType.CustomizePreviewImageFrame: content = new VideoPreviewImageCustomizationUserControl(); break;
-                case ModalType.ChangeVideoTitle: content = new RenameUserControl(new Video()); break;
+                case "CustomizeVideoDisplayFormat": content = new VideoDisplayCustomizationUserControl(); break;
+                case "CustomizeTitleFormat": content = new VideoTitleFormatCustomizationUserControl(new Tuple<bool, IEnumerable<int>>(true, [])); break;
+                case "CustomizePreviewImageFrame": content = new VideoPreviewImageCustomizationUserControl(); break;
+                case "ChangeVideoTitle": content = new RenameUserControl(new Video()); break;
             }
 
             ContentDialog dialog = new()
@@ -45,16 +44,16 @@ namespace VidHub.WinUI.Context
 
             _ = await dialog.ShowAsync();
         }
-        public async Task ShowDialogAsync(ModalType type, string title, string closeButton, object instance)
+        public async Task ShowDialogAsync(string type, string title, string closeButton, object instance)
         {
             object content = new();
 
             switch (type)
             {
-                case ModalType.CustomizeVideoDisplayFormat: content = new VideoDisplayCustomizationUserControl(); break;
-                case ModalType.CustomizeTitleFormat: content = new VideoTitleFormatCustomizationUserControl((Tuple<bool, IEnumerable<int>>)instance); break;
-                case ModalType.CustomizePreviewImageFrame: content = new VideoPreviewImageCustomizationUserControl(); break;
-                case ModalType.ChangeVideoTitle: content = new RenameUserControl((Video)instance); break;
+                case "CustomizeVideoDisplayFormat": content = new VideoDisplayCustomizationUserControl(); break;
+                case "CustomizeTitleFormat": content = new VideoTitleFormatCustomizationUserControl((Tuple<bool, IEnumerable<int>>)instance); break;
+                case "CustomizePreviewImageFrame": content = new VideoPreviewImageCustomizationUserControl(); break;
+                case "ChangeVideoTitle": content = new RenameUserControl((Video)instance); break;
             }
 
             ContentDialog dialog = new()

@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
+using VidHub.Core.Settings;
 using VidHub.Core.Streams;
 
 namespace VidHub.Core
@@ -7,6 +8,7 @@ namespace VidHub.Core
     internal class MetadataProcessor(string filePath)
     {
         private IDictionary<string, string> metadata = new Dictionary<string, string>();
+
 
         public IDictionary<string, string> ExtractMetadata()
         {
@@ -21,7 +23,9 @@ namespace VidHub.Core
         private IEnumerable<IDictionary<string, string>> GetStreams(string type)
         {
             if (metadata == null || metadata.Count == 0)
+            {
                 metadata = ExtractMetadata();
+            }
 
             return metadata
                 .Where(kv => kv.Key.StartsWith("streams.stream"))
@@ -33,7 +37,9 @@ namespace VidHub.Core
         public FormatStream GetFormatStream()
         {
             if (metadata == null || metadata.Count == 0)
+            {
                 metadata = ExtractMetadata();
+            }
 
             return new FormatStream(metadata.Where(kv => kv.Key.StartsWith("format")).ToDictionary(kv => kv.Key[7..], kv => kv.Value));
         }
@@ -56,7 +62,9 @@ namespace VidHub.Core
         public IEnumerable<MediaStream> GetUnknownStreams()
         {
             if (metadata == null || metadata.Count == 0)
+            {
                 metadata = ExtractMetadata();
+            }
 
             HashSet<string> knownTypes = ["video", "audio", "subtitle"];
             return metadata
@@ -67,30 +75,21 @@ namespace VidHub.Core
                 .Select(s => new MediaStream(s));
         }
 
-        public DateTime ExtractDate()
-        {
-            string date = RunSuccessfulProcess("ffprobe", "-v", "error", "-show_entries", "format_tags=creation_time", "-of", "default=noprint_wrappers=1:nokey=1", filePath);
-            return DateTime.Parse(date.Trim(), CultureInfo.InvariantCulture);
-        }
 
-        public TimeSpan ExtractDuration()
-        {
-            string duration = RunSuccessfulProcess("ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", filePath);
-            return TimeSpan.FromSeconds(double.Parse(duration.Trim(), CultureInfo.InvariantCulture));
-        }
-
-        public string ExtractPreviewImage(string imageName, TimeSpan frame, bool extractEmbeddedImage)
+        public string ExtractPreviewImage(string imageName, TimeSpan frame)
         {
             string previewDirectory = Path.Combine(Path.GetTempPath(), "VidHub", "Previews");
             string previewPath = Path.Combine(previewDirectory, imageName + ".jpg");
 
             _ = Directory.CreateDirectory(previewDirectory);
 
-            if (extractEmbeddedImage)
+            if (VidHubSettings.Instance.PreviewImageCustomization.ExtractEmbeddedImageCommand)
             {
                 (int exitCode, _, _) = RunProcess("ffmpeg", "-v", "error", "-y", "-i", filePath, "-map", "0:v", "-map", "-0:V", "-c", "copy", previewPath);
                 if (exitCode == 0 && File.Exists(previewPath))
+                {
                     return previewPath;
+                }
             }
 
             _ = RunSuccessfulProcess("ffmpeg", "-v", "error", "-y", "-ss", frame.TotalSeconds.ToString(CultureInfo.InvariantCulture), "-i", filePath, "-frames:v", "1", previewPath);

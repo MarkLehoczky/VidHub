@@ -1,8 +1,6 @@
-﻿using VidHub.Core.Settings;
-
-namespace VidHub.Services.Settings.Interfaces
+﻿namespace VidHub.Core.Settings
 {
-    public interface ISettingsService
+    public interface IVidHubSettings
     {
         DisplayCustomizationSettings DisplayCustomization { get; set; }
         OrganizerSettings Organizer { get; set; }
