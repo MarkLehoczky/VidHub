@@ -55,7 +55,7 @@
             <ToggleButton Content="Path" IsChecked="{Binding IncludePath, Mode=TwoWay}" ToolTipService.ToolTip="Include full path of the file." Margin="0 0 5 0" HorizontalAlignment="Stretch" Grid.Column="0" />
             <ToggleButton Content="Date" IsChecked="{Binding IncludeDate, Mode=TwoWay}" ToolTipService.ToolTip="Include creation date of the file." Margin="5 0 5 0" HorizontalAlignment="Stretch" Grid.Column="1" />
             <ToggleButton Content="Filename" IsChecked="{Binding IncludeFilename, Mode=TwoWay}" ToolTipService.ToolTip="Include file name." Margin="5 0 5 0" HorizontalAlignment="Stretch" Grid.Column="2" />
-            <ToggleButton Content="Metadata" IsChecked="{Binding IncludeMetadata, Mode=TwoWay}" ToolTipService.ToolTip="Include predetermined metadata about the video. Currently not implemented feature." IsEnabled="False" Margin="5 0 5 0" HorizontalAlignment="Stretch" Grid.Column="3" />
+            <ToggleButton Content="Metadata" IsChecked="{Binding IncludeMetadata, Mode=TwoWay}" ToolTipService.ToolTip="Include predetermined metadata about the video." Margin="5 0 5 0" HorizontalAlignment="Stretch" Grid.Column="3" />
             <ToggleButton Content="Extension" IsChecked="{Binding IncludeExtension, Mode=TwoWay}" ToolTipService.ToolTip="Include file extension." Margin="5 0 0 0" HorizontalAlignment="Stretch" Grid.Column="4" />
         </Grid>
 

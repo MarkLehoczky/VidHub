@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using VidHub.Core.Streams;
 using Windows.Storage;
 
 namespace VidHub.Core
@@ -22,8 +23,11 @@ namespace VidHub.Core
         private TimeSpan duration;
         private string previewImagePath;
         private string filePath;
+        private IEnumerable<VideoStream> videoStreams;
+        private IEnumerable<AudioStream> audioStreams;
+        private IEnumerable<SubtitleStream> subtitleStreams;
+        private IEnumerable<MediaStream> unknownStreams;
 
-        // TODO: Implement advanced metadata extraction
         [JsonIgnore] public int ID { get => id; set => SetProperty(ref id, value); }
         protected string Hash { get => hash; set => SetProperty(ref hash, value); }
         public string Title { get => title; set => SetProperty(ref title, value); }
@@ -31,6 +35,14 @@ namespace VidHub.Core
         public TimeSpan Duration { get => duration; set => SetProperty(ref duration, value); }
         public string PreviewImagePath { get => previewImagePath; set => SetProperty(ref previewImagePath, value); }
         public string FilePath { get => filePath; set => SetProperty(ref filePath, value); }
+
+        public FormatStream FormatStream { get; set; }
+        public IEnumerable<VideoStream> VideoStreams { get => videoStreams; set => SetProperty(ref videoStreams, value); }
+        public IEnumerable<AudioStream> AudioStreams { get => audioStreams; set => SetProperty(ref audioStreams, value); }
+        public IEnumerable<SubtitleStream> SubtitleStreams { get => subtitleStreams; set => SetProperty(ref subtitleStreams, value); }
+        public IEnumerable<MediaStream> UnknownStreams { get => unknownStreams; set => SetProperty(ref unknownStreams, value); }
+        [JsonIgnore] public VideoStream? DefaultVideoStream => VideoStreams.FirstOrDefault(s => s.IsDefault) ?? VideoStreams.FirstOrDefault();
+        [JsonIgnore] public AudioStream? DefaultAudioStream => AudioStreams.FirstOrDefault(s => s.IsDefault) ?? AudioStreams.FirstOrDefault();
 
 
         public Video()
@@ -43,6 +55,11 @@ namespace VidHub.Core
             duration = TimeSpan.Zero;
             previewImagePath = string.Empty;
             filePath = string.Empty;
+            FormatStream = new FormatStream(new Dictionary<string, string>());
+            VideoStreams = [];
+            AudioStreams = [];
+            SubtitleStreams = [];
+            UnknownStreams = [];
         }
         public Video(string file) : this()
         {
@@ -101,23 +118,35 @@ namespace VidHub.Core
 
         private List<Action> LoadActions(TimeSpan frame)
         {
+            var metadataProcessor = new MetadataProcessor(FilePath);
+
             return [
-            () => Title = Path.GetFileNameWithoutExtension(FilePath),
-            () => Date = File.GetLastWriteTime(FilePath),
-            () => Date = new MetadataProcessor(FilePath).ExtractDate(),
-            () => Duration = new MetadataProcessor(FilePath).ExtractDuration(),
-            () => ExtractPreviewImage(frame),
+                () => Title = Path.GetFileNameWithoutExtension(FilePath),
+                () => Date = File.GetLastWriteTime(FilePath),
+                () => Date = metadataProcessor.ExtractDate(),
+                () => Duration = metadataProcessor.ExtractDuration(),
+                () => ExtractPreviewImage(frame),
+                () => FormatStream = metadataProcessor.GetFormatStream(),
+                () => VideoStreams = metadataProcessor.GetVideoStreams(),
+                () => AudioStreams = metadataProcessor.GetAudioStreams(),
+                () => SubtitleStreams = metadataProcessor.GetSubtitleStreams(),
             ];
         }
 
         private List<Action> LoadActions(double percentage)
         {
+            var metadataProcessor = new MetadataProcessor(FilePath);
+
             return [
-                    () => Title = Path.GetFileNameWithoutExtension(FilePath),
-            () => Date = File.GetLastWriteTime(FilePath),
-            () => Date = new MetadataProcessor(FilePath).ExtractDate(),
-            () => Duration = new MetadataProcessor(FilePath).ExtractDuration(),
-            () => ExtractPreviewImage(Duration * percentage),
+                () => Title = Path.GetFileNameWithoutExtension(FilePath),
+                () => Date = File.GetLastWriteTime(FilePath),
+                () => Date = metadataProcessor.ExtractDate(),
+                () => Duration = metadataProcessor.ExtractDuration(),
+                () => ExtractPreviewImage(Duration * percentage),
+                () => FormatStream = metadataProcessor.GetFormatStream(),
+                () => VideoStreams = metadataProcessor.GetVideoStreams(),
+                () => AudioStreams = metadataProcessor.GetAudioStreams(),
+                () => SubtitleStreams = metadataProcessor.GetSubtitleStreams(),
             ];
         }
 
@@ -153,14 +182,21 @@ namespace VidHub.Core
             return true;
         }
 
-        // TODO: Implement single cache file
         private void SaveCache()
         {
             string cacheDirectory = Path.Combine(Path.GetTempPath(), "VidHub", "Cache");
             string cachePath = Path.Combine(cacheDirectory, Hash + ".json");
 
+            var jsonOptions = new JsonSerializerOptions
+            {
+                NumberHandling = JsonNumberHandling.WriteAsString,
+                PropertyNameCaseInsensitive = true,
+                DefaultIgnoreCondition = JsonIgnoreCondition.Never,
+                WriteIndented = true,
+            };
+
             _ = Directory.CreateDirectory(cacheDirectory);
-            File.WriteAllText(cachePath, JsonSerializer.Serialize(this));
+            File.WriteAllText(cachePath, JsonSerializer.Serialize(this, jsonOptions));
         }
 
         // TODO: Handle key collision

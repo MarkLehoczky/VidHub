@@ -126,10 +126,10 @@ namespace VidHub.Services.Connectors.Modals
 
             foreach (VideoTitleTemplate video in Videos)
             {
-                video.Title = settings.TitleCustomization.CustomizeTitle(video.FilePath, EnabledRegex && !InvalidRegex);
+                video.Title = settings.TitleCustomization.CustomizeTitle(video.Instance, EnabledRegex && !InvalidRegex);
                 if (!IsTemplateMode)
                 {
-                    vs.FirstOrDefault(v => v.ID == video.ID)!.Title = video.Title;
+                    video.Instance.Title = video.Title;
                 }
             }
         }

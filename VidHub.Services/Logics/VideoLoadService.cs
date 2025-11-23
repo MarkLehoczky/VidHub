@@ -197,7 +197,7 @@ namespace VidHub.Services.Logics
                 video.Load(settings.Organizer.Global.EnableConcurrentLoading, settings.PreviewImageCustomization.FrameTime);
             }
 
-            video.Title = settings.TitleCustomization.CustomizeTitle(video.Title);
+            video.Title = settings.TitleCustomization.CustomizeTitle(video);
 
             service.Add(video);
             IDCollection.Add(video.ID);
