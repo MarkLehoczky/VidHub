@@ -222,7 +222,7 @@ namespace VidHub.Services.Logics
                 {
                     if (!settings.TitleCustomization.DontShowTitleCustomizationAgain)
                     {
-                        _ = Context.Window.TryEnqueue(() => Context.Window.ShowDialogAsync(ModalType.CustomizeTitleFormat, "Customize video title", "Confirm", new Tuple<bool, IEnumerable<int>>(false, IDCollection)));
+                        _ = Context.Window.TryEnqueue(() => Context.Window.ShowDialogAsync("CustomizeTitleFormat", "Customize video title", "Confirm", new Tuple<bool, IEnumerable<int>>(false, IDCollection)));
                     }
 
                     system.DisplayToast("Video loading finished!", $"{IDCollection.Count} videos were loaded successfully.");

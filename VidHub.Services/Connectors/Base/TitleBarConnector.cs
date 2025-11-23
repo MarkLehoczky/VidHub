@@ -109,17 +109,17 @@ namespace VidHub.Services.Connectors.Base
 
         public async Task CustomizeVideoDisplayingAsync()
         {
-            await Context.Window.ShowDialogAsync(ModalType.CustomizeVideoDisplayFormat, "Customize video displaying", "Confirm");
+            await Context.Window.ShowDialogAsync("CustomizeVideoDisplayFormat", "Customize video displaying", "Confirm");
         }
 
         public async Task CustomizeVideoLoadingAsync()
         {
-            await Context.Window.ShowDialogAsync(ModalType.CustomizeTitleFormat, "Customize video title", "Confirm", new Tuple<bool, IEnumerable<int>>(true, vs.Select(v => v.ID)));
+            await Context.Window.ShowDialogAsync("CustomizeTitleFormat", "Customize video title", "Confirm", new Tuple<bool, IEnumerable<int>>(true, vs.Select(v => v.ID)));
         }
 
         public async Task CustomizeVideoPreviewImageAsync()
         {
-            await Context.Window.ShowDialogAsync(ModalType.CustomizePreviewImageFrame, "Customize video preview image", "Confirm");
+            await Context.Window.ShowDialogAsync("CustomizePreviewImageFrame", "Customize video preview image", "Confirm");
         }
 
         public async Task ExportCollectionAsync()

@@ -4,6 +4,9 @@ namespace VidHub.Core.Settings
 {
     public class SettingsService : ISettingsService
     {
+        public static SettingsService Instance => new();
+
+
         public DisplayCustomizationSettings DisplayCustomization { get; set; } = new DisplayCustomizationSettings();
         public OrganizerSettings Organizer { get; set; } = new OrganizerSettings();
         public PreviewImageCustomizationSettings PreviewImageCustomization { get; set; } = new PreviewImageCustomizationSettings();

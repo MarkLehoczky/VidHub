@@ -180,7 +180,7 @@ namespace VidHub.Services.Connectors.Base
 
         public async Task RenameAsync(Video video)
         {
-            await Context.Window.ShowDialogAsync(ModalType.ChangeVideoTitle, $"Rename '{video.Title}'", "Confirm", video);
+            await Context.Window.ShowDialogAsync("ChangeVideoTitle", $"Rename '{video.Title}'", "Confirm", video);
             Context.Host.GetService<IVideoService>().Update(UpdateType.ForceUpdateVideoCollection);
         }
 
