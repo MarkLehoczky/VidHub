@@ -144,7 +144,7 @@ namespace VidHub.Core
                 () => SubtitleStreams = metadataProcessor.GetSubtitleStreams(),
                 () => UnknownStreams = metadataProcessor.GetUnknownStreams(),
                 () => Date = FormatStream.CreationTime != DateTime.MinValue ? FormatStream.CreationTime : File.GetLastWriteTime(FilePath),
-                () => Duration = DefaultVideoStream?.Duration ?? FormatStream.Duration,
+                () => Duration = DefaultVideoStream?.Duration != TimeSpan.Zero ? DefaultVideoStream?.Duration ?? FormatStream.Duration : FormatStream.Duration,
                 () => Title = VidHubSettings.Instance.TitleCustomization.CustomizeTitle(this),
                 ExtractPreviewImage
             ];
