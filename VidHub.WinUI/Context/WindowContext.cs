@@ -23,26 +23,7 @@ namespace VidHub.WinUI.Context
 
         public async Task ShowDialogAsync(string type, string title, string closeButton)
         {
-            object content = new();
-
-            switch (type)
-            {
-                case "CustomizeVideoDisplayFormat": content = new VideoDisplayCustomizationUserControl(); break;
-                case "CustomizeTitleFormat": content = new VideoTitleFormatCustomizationUserControl(new Tuple<bool, IEnumerable<int>>(true, [])); break;
-                case "CustomizePreviewImageFrame": content = new VideoPreviewImageCustomizationUserControl(); break;
-                case "ChangeVideoTitle": content = new RenameUserControl(new Video()); break;
-            }
-
-            ContentDialog dialog = new()
-            {
-                Title = title,
-                CloseButtonText = closeButton,
-                DefaultButton = ContentDialogButton.Close,
-                Content = content,
-                XamlRoot = window.Content.XamlRoot
-            };
-
-            _ = await dialog.ShowAsync();
+            await ShowDialogAsync(type, title, closeButton, null!);
         }
         public async Task ShowDialogAsync(string type, string title, string closeButton, object instance)
         {
@@ -54,6 +35,8 @@ namespace VidHub.WinUI.Context
                 case "CustomizeTitleFormat": content = new VideoTitleFormatCustomizationUserControl((Tuple<bool, IEnumerable<int>>)instance); break;
                 case "CustomizePreviewImageFrame": content = new VideoPreviewImageCustomizationUserControl(); break;
                 case "ChangeVideoTitle": content = new RenameUserControl((Video)instance); break;
+                case "DisplayLicenseInformation": content = new LicensesUserControl(); break;
+                case "DisplayVersionInformation": content = new VersionsUserControl(); break;
             }
 
             ContentDialog dialog = new()

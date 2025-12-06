@@ -85,6 +85,10 @@
                     <ToggleMenuFlyoutItem Text="Title Suggestions" ToolTipService.ToolTip="Show possible title matches while typing in the filter box." IsChecked="{Binding EnableSearchSuggestions, Mode=TwoWay}" />
                 </MenuFlyoutSubItem>
             </MenuBarItem>
+            <MenuBarItem Title="About" Height="32" Margin="0">
+                <MenuFlyoutItem Text="{Binding Version}" Command="{Binding OpenVersionsModalCommand}" />
+                <MenuFlyoutItem Text="{Binding License}" Command="{Binding OpenLicensesModalCommand}" />
+            </MenuBarItem>
         </MenuBar>
     </Grid>
 

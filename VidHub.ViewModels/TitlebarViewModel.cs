@@ -79,6 +79,9 @@ namespace VidHub.ViewModels
             set => connector.DisplayDurations = value;
         }
 
+        public string Version => "VidHub 0.5.0";
+        public string License => "Copyright © Mark Lehoczky";
+
 
         [RelayCommand(AllowConcurrentExecutions = true)]
         private async Task LoadFilesAsync()
@@ -143,6 +146,18 @@ namespace VidHub.ViewModels
         private async Task CustomizeThumbnailAsync()
         {
             await connector.CustomizeVideoPreviewImageAsync();
+        }
+
+        [RelayCommand]
+        private async Task OpenVersionsModalAsync()
+        {
+            await connector.OpenVersionsModalAsync();
+        }
+
+        [RelayCommand]
+        private async Task OpenLicensesModalAsync()
+        {
+            await connector.OpenLicensesModalAsync();
         }
 
 
