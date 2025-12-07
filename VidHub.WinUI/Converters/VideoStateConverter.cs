@@ -10,9 +10,8 @@ namespace VidHub.WinUI.Converters
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            if (value is State state)
-            {
-                return state switch
+            return value is State state
+                ? state switch
                 {
                     State.NOTCHECKED => "\uf142",
                     State.INPROGRESS => "\uf143",
@@ -21,9 +20,8 @@ namespace VidHub.WinUI.Converters
                     State.UNKNOWNERROR => "\uf13c",
                     State.FILENOTFOUND => "\uf140",
                     _ => "\uf141",
-                };
-            }
-            return "\uf137";
+                }
+                : "\uf137";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
@@ -35,9 +33,8 @@ namespace VidHub.WinUI.Converters
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            if (value is State state)
-            {
-                return state switch
+            return value is State state
+                ? state switch
                 {
                     State.NOTCHECKED => new SolidColorBrush(ColorHelper.FromArgb(255, 105, 105, 105)),
                     State.INPROGRESS => new SolidColorBrush(ColorHelper.FromArgb(255, 30, 144, 255)),
@@ -46,9 +43,8 @@ namespace VidHub.WinUI.Converters
                     State.UNKNOWNERROR => new SolidColorBrush(ColorHelper.FromArgb(255, 178, 34, 34)),
                     State.FILENOTFOUND => new SolidColorBrush(ColorHelper.FromArgb(255, 139, 0, 0)),
                     _ => new SolidColorBrush(ColorHelper.FromArgb(255, 105, 105, 105)),
-                };
-            }
-            return new SolidColorBrush(ColorHelper.FromArgb(255, 105, 105, 105));
+                }
+                : new SolidColorBrush(ColorHelper.FromArgb(255, 105, 105, 105));
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

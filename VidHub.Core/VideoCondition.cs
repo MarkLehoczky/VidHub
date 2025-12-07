@@ -14,6 +14,6 @@
 
 
         public State VideoState { get; set; } = State.NOTCHECKED;
-        public string Description { get; set; } = "Condition not checked yet...";
+        public string Description { get; set; } = "Condition not checked";
     }
 }

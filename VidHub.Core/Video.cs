@@ -86,7 +86,7 @@ namespace VidHub.Core
 
         private void SetCondition(VideoCondition condition)
         {
-            Context.Window.TryEnqueue(() =>
+            _ = Context.Window.TryEnqueue(() =>
             {
                 Condition = condition;
             });
@@ -135,7 +135,7 @@ namespace VidHub.Core
 
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 SetCondition(new VideoCondition
                 {
@@ -161,6 +161,7 @@ namespace VidHub.Core
             }
 
             SaveCache();
+            CheckCondition();
         }
 
         public void ExtractPreviewImage()
@@ -175,21 +176,11 @@ namespace VidHub.Core
                 }
                 else
                 {
-                    if (DefaultVideoStream?.Duration != TimeSpan.Zero)
-                    {
-                        if (DefaultVideoStream?.Duration < VidHubSettings.Instance.PreviewImageCustomization.FrameTime)
-                        {
-                            frame = DefaultVideoStream?.Duration ?? TimeSpan.Zero;
-                        }
-                        else
-                        {
-                            frame = VidHubSettings.Instance.PreviewImageCustomization.FrameTime;
-                        }
-                    }
-                    else
-                    {
-                        frame = Duration < VidHubSettings.Instance.PreviewImageCustomization.FrameTime ? Duration : VidHubSettings.Instance.PreviewImageCustomization.FrameTime;
-                    }
+                    frame = DefaultVideoStream?.Duration != TimeSpan.Zero
+                        ? DefaultVideoStream?.Duration < VidHubSettings.Instance.PreviewImageCustomization.FrameTime
+                            ? DefaultVideoStream?.Duration ?? TimeSpan.Zero
+                            : VidHubSettings.Instance.PreviewImageCustomization.FrameTime
+                        : Duration < VidHubSettings.Instance.PreviewImageCustomization.FrameTime ? Duration : VidHubSettings.Instance.PreviewImageCustomization.FrameTime;
                     PreviewImagePath = new MetadataProcessor(FilePath).ExtractPreviewImage(Hash, frame > duration ? duration : frame);
                 }
             }
@@ -266,15 +257,9 @@ namespace VidHub.Core
 
         private string GenerateHash()
         {
-            string baseHash;
-            if (VidHubSettings.Instance.PreviewImageCustomization.UseContentHash)
-            {
-                baseHash = GenerateHash(File.OpenRead(FilePath));
-            }
-            else
-            {
-                baseHash = GenerateHash(FilePath);
-            }
+            string baseHash = VidHubSettings.Instance.PreviewImageCustomization.UseContentHash
+                ? GenerateHash(File.OpenRead(FilePath))
+                : GenerateHash(FilePath);
             string currentHash = baseHash;
             int salt = 0;
 
