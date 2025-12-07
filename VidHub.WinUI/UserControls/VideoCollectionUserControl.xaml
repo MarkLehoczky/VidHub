@@ -14,6 +14,8 @@
         <converter:DateFormatConverter x:Key="FormatDate" />
         <converter:DurationFormatConverter x:Key="FormatDuration" />
         <converter:SeverityTypeConverter x:Key="TransformSeverityType" />
+        <converter:VideoStateIconConverter x:Key="FormatStateIcon" />
+        <converter:VideoStateColorConverter x:Key="FormatStateColor" />
     </UserControl.Resources>
 
     <UserControl.DataContext>
@@ -94,7 +96,15 @@
                             </Grid>
 
                             <TextBlock Text="{Binding Title}" FontWeight="Bold" TextTrimming="CharacterEllipsis" IsTextTrimmedChanged="TextTrimmingChanged" Visibility="{Binding ElementName=videocollection, Path=DataContext.ShowTitles}" IsTextSelectionEnabled="True" Margin="10 5 10 0" Grid.Row="1" />
-                            <TextBlock Text="{Binding Date, Converter={StaticResource FormatDate}}" Visibility="{Binding ElementName=videocollection, Path=DataContext.ShowDates}" IsTextSelectionEnabled="True" FontStyle="Italic" Margin="10 5 10 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="2" />
+                            <Grid Visibility="{Binding ElementName=videocollection, Path=DataContext.ShowDates}" Grid.Row="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <FontIcon Glyph="{Binding Condition.VideoState, Converter={StaticResource FormatStateIcon}}" Foreground="{Binding Condition.VideoState, Converter={StaticResource FormatStateColor}}" ToolTipService.ToolTip="{Binding Condition.Description}" FontFamily="Segoe Fluent Icons" Margin="10 5 5 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" />
+                                <TextBlock Text="{Binding Date, Converter={StaticResource FormatDate}}" IsTextSelectionEnabled="True" FontStyle="Italic" Margin="5 5 10 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" />
+                            </Grid>
                         </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

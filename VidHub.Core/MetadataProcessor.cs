@@ -75,6 +75,11 @@ namespace VidHub.Core
                 .Select(s => new MediaStream(s));
         }
 
+        public string CheckCondition()
+        {
+            (_, _, string error) = RunProcess("ffmpeg", "-v", "error", "-i", filePath, "-frames:v", "1", "-f", "null", "-");
+            return error;
+        }
 
         public string ExtractPreviewImage(string imageName, TimeSpan frame)
         {
@@ -114,7 +119,7 @@ namespace VidHub.Core
             Task<string> outputTask = process.StandardOutput.ReadToEndAsync();
             Task<string> errorTask = process.StandardError.ReadToEndAsync();
 
-            if (!process.WaitForExit(10000))
+            if (!process.WaitForExit(1000000))
             {
                 process.Kill();
                 throw new TimeoutException($"Process `{filename} {string.Join(' ', arguments)}` timed out after {10000} ms.");

@@ -6,11 +6,12 @@ using VidHub.Services.Base.Interfaces;
 
 namespace VidHub.Services.Base
 {
-    public class VideoService : IVideoService
+    public class VideoService : IVideoService, IDisposable
     {
         private readonly object locker = new();
         private event Action<UpdateType>? UpdateEvent;
         private readonly IList<Video> Videos = [];
+        private readonly Task healthCheckTask;
 
         public Func<Video, bool> Predicate { get; set; } = _ => true;
         public Comparer<Video> Comparer { get; set; } = Comparer<Video>.Default;
@@ -19,6 +20,32 @@ namespace VidHub.Services.Base
         public bool IsReadOnly => Videos.IsReadOnly;
         public Video this[int index] { get => Videos[index]; set => Videos[index] = value; }
 
+
+
+        public VideoService()
+        {
+            healthCheckTask = StartHealthCheck();
+        }
+
+        private Task StartHealthCheck()
+        {
+            return Task.Run(async () =>
+            {
+                while (true)
+                {
+                    lock (locker)
+                    {
+                        IList<Video> snapshot = [.. Videos];
+                        foreach (Video video in snapshot)
+                        {
+                            video.CheckCondition();
+                        }
+                    }
+
+                    await Task.Delay(TimeSpan.FromSeconds(60)).ConfigureAwait(false);
+                }
+            });
+        }
 
         public IList<Video> GetDisplayVideos()
         {
@@ -131,6 +158,11 @@ namespace VidHub.Services.Base
             {
                 return ((IEnumerable)Videos).GetEnumerator();
             }
+        }
+
+        public void Dispose()
+        {
+            healthCheckTask.Dispose();
         }
     }
 }

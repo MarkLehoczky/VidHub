@@ -1,12 +1,12 @@
 ﻿using Blake3;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections;
-using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using VidHub.Core.Settings;
 using VidHub.Core.Streams;
+using VidHub.Platform;
 using Windows.Storage;
 
 namespace VidHub.Core
@@ -30,6 +30,7 @@ namespace VidHub.Core
         private IEnumerable<SubtitleStream> subtitleStreams;
         private IEnumerable<MediaStream> unknownStreams;
         private FormatStream formatStream;
+        private VideoCondition condition;
 
         [JsonIgnore] public int ID { get => id; set => SetProperty(ref id, value); }
         protected string Hash { get => hash; set => SetProperty(ref hash, value); }
@@ -47,6 +48,8 @@ namespace VidHub.Core
         [JsonIgnore] public VideoStream? DefaultVideoStream => VideoStreams.FirstOrDefault(s => s.IsDefault) ?? VideoStreams.FirstOrDefault();
         [JsonIgnore] public AudioStream? DefaultAudioStream => AudioStreams.FirstOrDefault(s => s.IsDefault) ?? AudioStreams.FirstOrDefault();
 
+        public VideoCondition Condition { get => condition; set => SetProperty(ref condition, value); }
+
 
         public Video()
         {
@@ -63,6 +66,7 @@ namespace VidHub.Core
             audioStreams = [];
             subtitleStreams = [];
             unknownStreams = [];
+            condition = new VideoCondition();
         }
         public Video(string file) : this()
         {
@@ -80,6 +84,67 @@ namespace VidHub.Core
             hash = GenerateHash();
         }
 
+        private void SetCondition(VideoCondition condition)
+        {
+            Context.Window.TryEnqueue(() =>
+            {
+                Condition = condition;
+            });
+        }
+
+        public void CheckCondition()
+        {
+            SetCondition(new VideoCondition
+            {
+                VideoState = VideoCondition.State.INPROGRESS,
+                Description = "Health check in progress..."
+            });
+
+            MetadataProcessor metadataProcessor = new(FilePath);
+
+            if (!File.Exists(FilePath))
+            {
+                SetCondition(new VideoCondition
+                {
+                    VideoState = VideoCondition.State.FILENOTFOUND,
+                    Description = $"File '{FilePath}' not found"
+                });
+                return;
+            }
+
+            try
+            {
+                string errorOutput = metadataProcessor.CheckCondition();
+                if (errorOutput.Equals(string.Empty))
+                {
+                    SetCondition(new VideoCondition
+                    {
+                        VideoState = VideoCondition.State.HEALTHY,
+                        Description = "No issues found during quick scan"
+                    });
+                    return;
+                }
+                else
+                {
+                    SetCondition(new VideoCondition
+                    {
+                        VideoState = VideoCondition.State.CORRUPTED,
+                        Description = "Video file is corrupted"
+                    });
+                    return;
+
+                }
+            }
+            catch (Exception ex)
+            {
+                SetCondition(new VideoCondition
+                {
+                    VideoState = VideoCondition.State.UNKNOWNERROR,
+                    Description = "Unknown error happened during quick scan"
+                });
+                return;
+            }
+        }
 
         public void Load()
         {
