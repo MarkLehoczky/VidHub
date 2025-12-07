@@ -119,7 +119,7 @@ namespace VidHub.Core
             Task<string> outputTask = process.StandardOutput.ReadToEndAsync();
             Task<string> errorTask = process.StandardError.ReadToEndAsync();
 
-            if (!process.WaitForExit(1000000))
+            if (!process.WaitForExit(10000))
             {
                 process.Kill();
                 throw new TimeoutException($"Process `{filename} {string.Join(' ', arguments)}` timed out after {10000} ms.");
