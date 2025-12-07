@@ -147,6 +147,16 @@ namespace VidHub.Services.Connectors.Base
             await load.LoadItems(items, includeSubfolders);
         }
 
+        public async Task OpenLicensesModalAsync()
+        {
+            await Context.Window.ShowDialogAsync("DisplayLicenseInformation", "COPYRIGHT", "Close");
+        }
+
+        public async Task OpenVersionsModalAsync()
+        {
+            await Context.Window.ShowDialogAsync("DisplayVersionInformation", "VERSION CHANGES", "Close");
+        }
+
         public void SubscribeToUpdateEvent(Action<UpdateType> action)
         {
             vs.SubscribeToUpdateEvent(action);

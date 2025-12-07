@@ -24,5 +24,7 @@ namespace VidHub.Services.Connectors.Base.Interfaces
         Task LoadItems(IEnumerable<IStorageItem> items, bool includeSubfolders);
         Task LoadFilesAsync();
         Task LoadFoldersAsync(bool includeSubfolders);
+        Task OpenVersionsModalAsync();
+        Task OpenLicensesModalAsync();
     }
 }
