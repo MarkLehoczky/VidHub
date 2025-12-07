@@ -205,11 +205,9 @@ namespace VidHub.Services.Connectors.Base
             DirectoryInfo info = new(Path.Combine(Path.GetTempPath(), "VidHub"));
             long size = info.EnumerateFiles("*", SearchOption.AllDirectories).Sum(file => file.Length);
 
-            if (size > Math.Pow(1024, 4))
-            {
-                return $"The application's cache data has reached {size / Math.Pow(1024, 4):f2} TB";
-            }
-            return size > Math.Pow(1024, 3)
+            return size > Math.Pow(1024, 4)
+                ? $"The application's cache data has reached {size / Math.Pow(1024, 4):f2} TB"
+                : size > Math.Pow(1024, 3)
                 ? $"The application's cache data has reached {size / Math.Pow(1024, 3):f2} GB"
                 : size > Math.Pow(1024, 2)
                 ? $"The application's cache data has reached {size / Math.Pow(1024, 2):f2} MB"

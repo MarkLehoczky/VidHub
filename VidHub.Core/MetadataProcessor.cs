@@ -75,6 +75,11 @@ namespace VidHub.Core
                 .Select(s => new MediaStream(s));
         }
 
+        public string CheckCondition()
+        {
+            (_, _, string error) = RunProcess("ffmpeg", "-v", "error", "-i", filePath, "-frames:v", "1", "-f", "null", "-");
+            return error;
+        }
 
         public string ExtractPreviewImage(string imageName, TimeSpan frame)
         {
