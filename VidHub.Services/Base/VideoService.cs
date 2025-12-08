@@ -34,6 +34,7 @@ namespace VidHub.Services.Base
         public VideoService()
         {
             Notifications.Add(HealthyVideosNotification());
+            Notifications.Add(NotCheckedVideosNotification());
             Notifications.Add(LargeCacheSizeNotification(1, 10, NotificationSeverity.Informational));
             Notifications.Add(LargeCacheSizeNotification(10, int.MaxValue, NotificationSeverity.Warning));
             Notifications.Add(UnhealthyVideosNotification());
@@ -116,6 +117,20 @@ namespace VidHub.Services.Base
             });
         }
 
+        private static BarNotification NotCheckedVideosNotification()
+        {
+            string title = "Not Checked Videos Found";
+            string message = "Some loaded videos' health have not been checked yet.";
+            NotificationSeverity severity = NotificationSeverity.Informational;
+            bool isClosable = true;
+            Func<bool> openCondition = () =>
+            {
+                var snapshot = Context.Host.GetService<IVideoService>().GetAllVideos();
+                return snapshot.Count > 0 && snapshot.Any(video => video.Condition.VideoState == VideoCondition.State.NOTCHECKED);
+            };
+            BarNotification notification = new(title, message, severity, isClosable, openCondition);
+            return notification;
+        }
         private static BarNotification HealthyVideosNotification()
         {
             string title = "All Videos Passed Health Check";
@@ -125,7 +140,7 @@ namespace VidHub.Services.Base
             Func<bool> openCondition = () =>
             {
                 var snapshot = Context.Host.GetService<IVideoService>().GetAllVideos();
-                return snapshot.Count > 0 && snapshot.All(video => video.Condition.VideoState == VideoCondition.State.HEALTHY);
+                return snapshot.Count > 0 && snapshot.All(video => video.Condition.VideoState == VideoCondition.State.HEALTHY || video.Condition.VideoState == VideoCondition.State.INPROGRESS);
             };
             BarNotification notification = new(title, message, severity, isClosable, openCondition);
             return notification;
