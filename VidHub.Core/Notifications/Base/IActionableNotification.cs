@@ -2,6 +2,6 @@
 {
     public interface IActionableNotification
     {
-        NotificationButton Button { get; set; }
+        NotificationButton? Button { get; set; }
     }
 }
