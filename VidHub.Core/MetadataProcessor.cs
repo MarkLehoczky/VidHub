@@ -75,9 +75,14 @@ namespace VidHub.Core
                 .Select(s => new MediaStream(s));
         }
 
-        public string CheckCondition()
+        public string QuickHealthCheck()
         {
             (_, _, string error) = RunProcess("ffmpeg", "-v", "error", "-i", filePath, "-frames:v", "1", "-f", "null", "-");
+            return error;
+        }
+        public string FullHealthCheck()
+        {
+            (_, _, string error) = RunProcess(int.MaxValue, "ffmpeg", "-v", "error", "-i", filePath, "-f", "null", "-");
             return error;
         }
 
@@ -102,7 +107,7 @@ namespace VidHub.Core
         }
 
 
-        private (int, string, string) RunProcess(string filename, params string[] arguments)
+        private (int, string, string) RunProcess(int timeout, string filename, params string[] arguments)
         {
             using Process process = new();
             process.StartInfo.FileName = filename;
@@ -119,7 +124,7 @@ namespace VidHub.Core
             Task<string> outputTask = process.StandardOutput.ReadToEndAsync();
             Task<string> errorTask = process.StandardError.ReadToEndAsync();
 
-            if (!process.WaitForExit(10000))
+            if (!process.WaitForExit(timeout))
             {
                 process.Kill();
                 throw new TimeoutException($"Process `{filename} {string.Join(' ', arguments)}` timed out after {10000} ms.");
@@ -129,6 +134,10 @@ namespace VidHub.Core
             string error = errorTask.Result;
 
             return (process.ExitCode, output, error);
+        }
+        private (int, string, string) RunProcess(string filename, params string[] arguments)
+        {
+            return RunProcess(10000, filename, arguments);
         }
 
         private string RunSuccessfulProcess(string filename, params string[] arguments)

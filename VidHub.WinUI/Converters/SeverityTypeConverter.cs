@@ -1,7 +1,7 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using System;
-using VidHub.Core.Models;
+using VidHub.Core.Notifications.Base;
 
 namespace VidHub.WinUI.Converters
 {

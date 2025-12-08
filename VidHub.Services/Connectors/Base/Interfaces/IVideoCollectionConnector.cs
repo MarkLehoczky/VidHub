@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using VidHub.Core;
-using VidHub.Core.Models;
+using VidHub.Core.Notifications.Bar;
 using VidHub.Services.Base.Interfaces;
 
 namespace VidHub.Services.Connectors.Base.Interfaces
@@ -11,7 +11,7 @@ namespace VidHub.Services.Connectors.Base.Interfaces
         bool DisplayDurations { get; }
         bool DisplayTitles { get; }
         ObservableCollection<Video> DisplayedVideos { get; }
-        ObservableCollection<Notification> Notifications { get; }
+        ObservableCollection<BarNotification> DisplayedNotifications { get; }
         double PreviewImageWidth { get; }
         double PreviewImageHeight { get; }
         Task OpenAsync(Video video);

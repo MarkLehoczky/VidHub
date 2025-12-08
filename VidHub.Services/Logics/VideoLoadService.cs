@@ -1,6 +1,8 @@
 ﻿using VidHub.Core;
 using VidHub.Core.Enums;
 using VidHub.Core.Manager;
+using VidHub.Core.Notifications.Base;
+using VidHub.Core.Notifications.System;
 using VidHub.Core.Settings;
 using VidHub.Platform;
 using VidHub.Services.Base.Interfaces;
@@ -216,7 +218,12 @@ namespace VidHub.Services.Logics
                         _ = Context.Window.TryEnqueue(() => Context.Window.ShowDialogAsync("CustomizeTitleFormat", "Customize video title", "Confirm", new Tuple<bool, IEnumerable<int>>(false, IDCollection)));
                     }
 
-                    system.DisplayToast("Video loading finished!", $"{IDCollection.Count} videos were loaded successfully.");
+                    system.DisplayToast(new SystemNotification()
+                    {
+                        Title = "Video loading finished!",
+                        Message = $"{IDCollection.Count} videos were loaded successfully.",
+                        Severity = NotificationSeverity.Success
+                    });
                     service.Update(UpdateType.UpdateSidePanel);
                     service.Update(UpdateType.UpdateVideoCollection);
                     IDCollection.Clear();

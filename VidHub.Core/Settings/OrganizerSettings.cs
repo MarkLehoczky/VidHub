@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using VidHub.Core.Enums;
 
 namespace VidHub.Core.Settings
 {
@@ -52,7 +53,15 @@ namespace VidHub.Core.Settings
     {
         public bool OpenedSidePanel { get; set; } = true;
         public bool SaveOrganizerSettings { get; set; } = true;
-        public bool EnableSystemNotification { get; set; } = true;
+        public bool DisplayInformationalSystemNotification { get; set; } = true;
+        public bool DisplaySuccessSystemNotification { get; set; } = true;
+        public bool DisplayWarningSystemNotification { get; set; } = true;
+        public bool DisplayErrorSystemNotification { get; set; } = true;
+        public bool DisplayInformationalBarNotification { get; set; } = true;
+        public bool DisplaySuccessBarNotification { get; set; } = true;
+        public bool DisplayWarningBarNotification { get; set; } = true;
+        public bool DisplayErrorBarNotification { get; set; } = true;
+        public HealthCheckLevel HealthCheck { get; set; } = HealthCheckLevel.QUICKCHECK;
         public bool EnableCacheLoading { get; set; } = true;
         public bool EnableConcurrentLoading { get; set; } = false;
         public bool EnableLiveSearch { get; set; } = true;
