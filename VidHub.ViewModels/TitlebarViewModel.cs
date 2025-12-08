@@ -54,20 +54,25 @@ namespace VidHub.ViewModels
             set => connector.DisplayErrorBarNotification = value;
         }
 
-        public bool EnableExistenceCheck
+        public bool DisabledHealthCheck
         {
-            get => connector.EnableExistenceCheck;
-            set => connector.EnableExistenceCheck = value;
+            get => connector.DisabledHealthCheck;
+            set => connector.DisabledHealthCheck = value;
         }
-        public bool EnableQuickCheck
+        public bool ExistenceHealthCheck
         {
-            get => connector.EnableQuickCheck;
-            set => connector.EnableQuickCheck = value;
+            get => connector.ExistenceHealthCheck;
+            set => connector.ExistenceHealthCheck = value;
         }
-        public bool EnableFullCheck
+        public bool QuickHealthCheck
         {
-            get => connector.EnableFullCheck;
-            set => connector.EnableFullCheck = value;
+            get => connector.QuickHealthCheck;
+            set => connector.QuickHealthCheck = value;
+        }
+        public bool FullHealthCheck
+        {
+            get => connector.FullHealthCheck;
+            set => connector.FullHealthCheck = value;
         }
 
         public bool EnableCacheLoading

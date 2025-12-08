@@ -137,20 +137,50 @@ namespace VidHub.Services.Connectors.Base
             get => settings.Organizer.Global.DisplayErrorBarNotification;
             set => settings.Organizer.Global.DisplayErrorBarNotification = value;
         }
-        public bool EnableExistenceCheck
+
+        public bool DisabledHealthCheck
         {
-            get => settings.Organizer.Global.EnableExistenceCheck;
-            set => settings.Organizer.Global.EnableExistenceCheck = value;
+            get => settings.Organizer.Global.HealthCheck == HealthCheckLevel.NONE;
+            set
+            {
+                if (value)
+                {
+                    settings.Organizer.Global.HealthCheck = HealthCheckLevel.NONE;
+                }
+            }
         }
-        public bool EnableQuickCheck
+        public bool ExistenceHealthCheck
         {
-            get => settings.Organizer.Global.EnableQuickCheck;
-            set => settings.Organizer.Global.EnableQuickCheck = value;
+            get => settings.Organizer.Global.HealthCheck == HealthCheckLevel.EXISTENCECHECK;
+            set
+            {
+                if (value)
+                {
+                    settings.Organizer.Global.HealthCheck = HealthCheckLevel.EXISTENCECHECK;
+                }
+            }
         }
-        public bool EnableFullCheck
+        public bool QuickHealthCheck
         {
-            get => settings.Organizer.Global.EnableFullCheck;
-            set => settings.Organizer.Global.EnableFullCheck = value;
+            get => settings.Organizer.Global.HealthCheck == HealthCheckLevel.QUICKCHECK;
+            set
+            {
+                if (value)
+                {
+                    settings.Organizer.Global.HealthCheck = HealthCheckLevel.QUICKCHECK;
+                }
+            }
+        }
+        public bool FullHealthCheck
+        {
+            get => settings.Organizer.Global.HealthCheck == HealthCheckLevel.FULLCHECK;
+            set
+            {
+                if (value)
+                {
+                    settings.Organizer.Global.HealthCheck = HealthCheckLevel.FULLCHECK;
+                }
+            }
         }
 
         public async Task CustomizeVideoDisplayingAsync()

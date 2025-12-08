@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using VidHub.Core.Enums;
 
 namespace VidHub.Core.Settings
 {
@@ -60,9 +61,7 @@ namespace VidHub.Core.Settings
         public bool DisplaySuccessBarNotification { get; set; } = true;
         public bool DisplayWarningBarNotification { get; set; } = true;
         public bool DisplayErrorBarNotification { get; set; } = true;
-        public bool EnableExistenceCheck { get; set; } = true;
-        public bool EnableQuickCheck { get; set; } = true;
-        public bool EnableFullCheck { get; set; } = false;
+        public HealthCheckLevel HealthCheck { get; set; } = HealthCheckLevel.QUICKCHECK;
         public bool EnableCacheLoading { get; set; } = true;
         public bool EnableConcurrentLoading { get; set; } = false;
         public bool EnableLiveSearch { get; set; } = true;

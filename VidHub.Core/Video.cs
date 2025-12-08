@@ -4,6 +4,7 @@ using System.Collections;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using VidHub.Core.Enums;
 using VidHub.Core.Settings;
 using VidHub.Core.Streams;
 using VidHub.Platform;
@@ -94,56 +95,92 @@ namespace VidHub.Core
 
         public void CheckCondition()
         {
+            if (VidHubSettings.Instance.Organizer.Global.HealthCheck == HealthCheckLevel.NONE)
+            {
+                return;
+            }
+
             SetCondition(new VideoCondition
             {
                 VideoState = VideoCondition.State.INPROGRESS,
                 Description = "Health check in progress..."
             });
 
-            MetadataProcessor metadataProcessor = new(FilePath);
-
-            if (!File.Exists(FilePath))
+            if (VidHubSettings.Instance.Organizer.Global.HealthCheck == HealthCheckLevel.EXISTENCECHECK
+                || VidHubSettings.Instance.Organizer.Global.HealthCheck == HealthCheckLevel.QUICKCHECK
+                || VidHubSettings.Instance.Organizer.Global.HealthCheck == HealthCheckLevel.FULLCHECK)
             {
-                SetCondition(new VideoCondition
-                {
-                    VideoState = VideoCondition.State.FILENOTFOUND,
-                    Description = $"File '{FilePath}' not found"
-                });
-                return;
-            }
-
-            try
-            {
-                string errorOutput = metadataProcessor.CheckCondition();
-                if (errorOutput.Equals(string.Empty))
+                if (!File.Exists(FilePath))
                 {
                     SetCondition(new VideoCondition
                     {
-                        VideoState = VideoCondition.State.HEALTHY,
-                        Description = "No issues found during quick scan"
+                        VideoState = VideoCondition.State.FILENOTFOUND,
+                        Description = $"Video file not found"
                     });
                     return;
                 }
-                else
+            }
+
+            if (VidHubSettings.Instance.Organizer.Global.HealthCheck == HealthCheckLevel.QUICKCHECK)
+            {
+                try
+                {
+                    MetadataProcessor metadataProcessor = new(FilePath);
+                    string errorOutput = metadataProcessor.QuickHealthCheck();
+                    if (!errorOutput.Equals(string.Empty))
+                    {
+                        SetCondition(new VideoCondition
+                        {
+                            VideoState = VideoCondition.State.CORRUPTED,
+                            Description = "Video file is corruption detected during quick health check"
+                        });
+                        return;
+                    }
+                }
+                catch (Exception)
                 {
                     SetCondition(new VideoCondition
                     {
-                        VideoState = VideoCondition.State.CORRUPTED,
-                        Description = "Video file is corrupted"
+                        VideoState = VideoCondition.State.UNKNOWNERROR,
+                        Description = "Unknown error happened during quick health check"
                     });
                     return;
-
                 }
             }
-            catch (Exception)
+
+            if (VidHubSettings.Instance.Organizer.Global.HealthCheck == HealthCheckLevel.FULLCHECK)
             {
-                SetCondition(new VideoCondition
+                try
                 {
-                    VideoState = VideoCondition.State.UNKNOWNERROR,
-                    Description = "Unknown error happened during quick scan"
-                });
-                return;
+                    MetadataProcessor metadataProcessor = new(FilePath);
+                    string errorOutput = metadataProcessor.FullHealthCheck();
+                    if (!errorOutput.Equals(string.Empty))
+                    {
+                        SetCondition(new VideoCondition
+                        {
+                            VideoState = VideoCondition.State.CORRUPTED,
+                            Description = "Video file is corruption detected during full health check"
+                        });
+                        return;
+                    }
+                }
+                catch (Exception)
+                {
+                    SetCondition(new VideoCondition
+                    {
+                        VideoState = VideoCondition.State.UNKNOWNERROR,
+                        Description = "Unknown error happened during full health check"
+                    });
+                    return;
+                }
             }
+
+            SetCondition(new VideoCondition
+            {
+                VideoState = VideoCondition.State.HEALTHY,
+                Description = "No issues found during quick scan"
+            });
+            return;
         }
 
         public void Load()
@@ -161,7 +198,6 @@ namespace VidHub.Core
             }
 
             SaveCache();
-            CheckCondition();
         }
 
         public void ExtractPreviewImage()

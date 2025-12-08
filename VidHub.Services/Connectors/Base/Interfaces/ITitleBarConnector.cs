@@ -18,9 +18,11 @@ namespace VidHub.Services.Connectors.Base.Interfaces
         bool DisplayWarningBarNotification { get; set; }
         bool DisplayErrorBarNotification { get; set; }
 
-        bool EnableExistenceCheck { get; set; }
-        bool EnableQuickCheck { get; set; }
-        bool EnableFullCheck { get; set; }
+        bool DisabledHealthCheck { get; set; }
+        bool ExistenceHealthCheck { get; set; }
+        bool QuickHealthCheck { get; set; }
+        bool FullHealthCheck { get; set; }
+
         bool EnableCacheLoading { get; set; }
         bool EnableCaseSensitiveSearch { get; set; }
         bool EnableConcurrentLoading { get; set; }

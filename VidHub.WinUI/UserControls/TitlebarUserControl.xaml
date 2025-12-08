@@ -62,9 +62,10 @@
                     <MenuFlyoutSubItem.Icon>
                         <FontIcon Glyph="&#xe95e;" FontFamily="Segoe Fluent Icons" />
                     </MenuFlyoutSubItem.Icon>
-                    <ToggleMenuFlyoutItem Text="Existence Check" ToolTipService.ToolTip="Periodically checks whether the video files are playable by checking the file exists." IsChecked="{Binding EnableExistenceCheck, Mode=TwoWay}" />
-                    <ToggleMenuFlyoutItem Text="Quick Check" ToolTipService.ToolTip="Periodically checks whether the video files are playable by checking their header and first frame." IsChecked="{Binding EnableQuickCheck, Mode=TwoWay}" />
-                    <ToggleMenuFlyoutItem Text="Full Check" ToolTipService.ToolTip="Periodically checks whether the video files are playable by checking their header and entire content." IsChecked="{Binding EnableFullCheck, Mode=TwoWay}" />
+                    <RadioMenuFlyoutItem Text="No Check" ToolTipService.ToolTip="Does not check whether the video files are playable." IsChecked="{Binding DisabledHealthCheck, Mode=TwoWay}" GroupName="HealthCheckOption" />
+                    <RadioMenuFlyoutItem Text="Existence Check" ToolTipService.ToolTip="Periodically checks whether the video files are playable by checking the file exists." IsChecked="{Binding ExistenceHealthCheck, Mode=TwoWay}" GroupName="HealthCheckOption" />
+                    <RadioMenuFlyoutItem Text="Quick Check" ToolTipService.ToolTip="Periodically checks whether the video files are playable by checking their header and first frame." IsChecked="{Binding QuickHealthCheck, Mode=TwoWay}" GroupName="HealthCheckOption" />
+                    <RadioMenuFlyoutItem Text="Full Check" ToolTipService.ToolTip="Periodically checks whether the video files are playable by checking their header and entire content." IsChecked="{Binding FullHealthCheck, Mode=TwoWay}" GroupName="HealthCheckOption" />
                 </MenuFlyoutSubItem>
 
                 <MenuFlyoutSubItem Text="Performance">
