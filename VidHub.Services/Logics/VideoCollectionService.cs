@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using VidHub.Core;
 using VidHub.Core.Enums;
+using VidHub.Core.Notifications.Bar;
 using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Logics.Interfaces;
 
@@ -10,17 +11,20 @@ namespace VidHub.Services.Logics
     {
         private readonly IVideoService service;
         public ObservableCollection<Video> DisplayedVideos { get; } = [];
+        public ObservableCollection<BarNotification> DisplayedNotifications { get; } = [];
 
 
         public VideoCollectionService(IVideoService service)
         {
             this.service = service;
             service.SubscribeToUpdateEvent(UpdateDisplayedVideos);
+            service.SubscribeToUpdateEvent(UpdateDisplayedNotifications);
         }
 
         ~VideoCollectionService()
         {
             service.UnsubscribeFromUpdateEvent(UpdateDisplayedVideos);
+            service.UnsubscribeFromUpdateEvent(UpdateDisplayedNotifications);
         }
 
 
@@ -57,6 +61,15 @@ namespace VidHub.Services.Logics
                 {
                     DisplayedVideos.Add(nextDisplayVideos[i]);
                 }
+            }
+        }
+
+        private void UpdateDisplayedNotifications(UpdateType type)
+        {
+            DisplayedNotifications.Clear();
+            foreach (var notification in service.GetDisplayNotifications())
+            {
+                DisplayedNotifications.Add(notification);
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Toolkit.Uwp.Notifications;
 using VidHub.Core.Manager;
+using VidHub.Core.Notifications.System;
 using VidHub.Core.Settings;
 using VidHub.Platform;
 using VidHub.Platform.Windows;
@@ -14,18 +15,16 @@ namespace VidHub.Services.System
         private readonly TaskbarManager taskbar = new();
 
 
-        public void DisplayToast(params string[] texts)
+        public void DisplayToast(SystemNotification notification)
         {
-            if (!settings.Organizer.Global.EnableSystemNotification)
+            if (!settings.DisplaySystemNotification(notification))
             {
                 return;
             }
 
             ToastContentBuilder content = new();
-            foreach (string text in texts)
-            {
-                content = content.AddText(text);
-            }
+            content.AddText(notification.Title);
+            content.AddText(notification.Message);
             _ = content.GetToastContent();
 
             ToastNotification toast = new(content.GetXml());

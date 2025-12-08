@@ -44,16 +44,28 @@
                     <MenuFlyoutSubItem.Icon>
                         <FontIcon Glyph="&#xea8f;" FontFamily="Segoe Fluent Icons" />
                     </MenuFlyoutSubItem.Icon>
-                    <ToggleMenuFlyoutItem Text="System Notifications" ToolTipService.ToolTip="Show system notifications when important video events occur." IsChecked="{Binding EnableSystemNotification, Mode=TwoWay}" />
+                    <MenuFlyoutSubItem Text="System Notifications">
+                        <ToggleMenuFlyoutItem Text="Informational" ToolTipService.ToolTip="Display informational system notifications" IsChecked="{Binding DisplayInformationalSystemNotification, Mode=TwoWay}" />
+                        <ToggleMenuFlyoutItem Text="Success" ToolTipService.ToolTip="Display success system notifications" IsChecked="{Binding DisplaySuccessSystemNotification, Mode=TwoWay}" />
+                        <ToggleMenuFlyoutItem Text="Warning" ToolTipService.ToolTip="Display warning system notifications" IsChecked="{Binding DisplayWarningSystemNotification, Mode=TwoWay}" />
+                        <ToggleMenuFlyoutItem Text="Error" ToolTipService.ToolTip="Display error system notifications" IsChecked="{Binding DisplayErrorSystemNotification, Mode=TwoWay}" />
+                    </MenuFlyoutSubItem>
+                    <MenuFlyoutSubItem Text="Bar Notifications">
+                        <ToggleMenuFlyoutItem Text="Informational" ToolTipService.ToolTip="Display informational bar notifications" IsChecked="{Binding DisplayInformationalBarNotification, Mode=TwoWay}" />
+                        <ToggleMenuFlyoutItem Text="Success" ToolTipService.ToolTip="Display success bar notifications" IsChecked="{Binding DisplaySuccessBarNotification, Mode=TwoWay}" />
+                        <ToggleMenuFlyoutItem Text="Warning" ToolTipService.ToolTip="Display warning bar notifications" IsChecked="{Binding DisplayWarningBarNotification, Mode=TwoWay}" />
+                        <ToggleMenuFlyoutItem Text="Error" ToolTipService.ToolTip="Display error bar notifications" IsChecked="{Binding DisplayErrorBarNotification, Mode=TwoWay}" />
+                    </MenuFlyoutSubItem>
                 </MenuFlyoutSubItem>
-                
-                <!--MenuFlyoutSubItem Text="Video Checking">
+
+                <MenuFlyoutSubItem Text="Video Health Check">
                     <MenuFlyoutSubItem.Icon>
                         <FontIcon Glyph="&#xe95e;" FontFamily="Segoe Fluent Icons" />
                     </MenuFlyoutSubItem.Icon>
-                    <ToggleMenuFlyoutItem Text="Existence Check" ToolTipService.ToolTip="Periodically verify that the video files still exist at their paths." IsChecked="False" />
-                    <ToggleMenuFlyoutItem Text="Health Check" ToolTipService.ToolTip="Periodically validate that the video files are playable by checking their internal format." IsChecked="False" />
-                </MenuFlyoutSubItem-->
+                    <ToggleMenuFlyoutItem Text="Existence Check" ToolTipService.ToolTip="Periodically checks whether the video files are playable by checking the file exists." IsChecked="{Binding EnableExistenceCheck, Mode=TwoWay}" />
+                    <ToggleMenuFlyoutItem Text="Quick Check" ToolTipService.ToolTip="Periodically checks whether the video files are playable by checking their header and first frame." IsChecked="{Binding EnableQuickCheck, Mode=TwoWay}" />
+                    <ToggleMenuFlyoutItem Text="Full Check" ToolTipService.ToolTip="Periodically checks whether the video files are playable by checking their header and entire content." IsChecked="{Binding EnableFullCheck, Mode=TwoWay}" />
+                </MenuFlyoutSubItem>
 
                 <MenuFlyoutSubItem Text="Performance">
                     <MenuFlyoutSubItem.Icon>

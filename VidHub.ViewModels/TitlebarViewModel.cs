@@ -11,20 +11,63 @@ namespace VidHub.ViewModels
         public TitleBarViewModel() : this(Context.Host.GetService<ITitleBarConnector>()) { }
 
 
-        private bool CanOpenSidePanel()
+
+        public bool DisplayInformationalSystemNotification
         {
-            return !connector.OpenedSidePanel;
+            get => connector.DisplayInformationalSystemNotification;
+            set => connector.DisplayInformationalSystemNotification = value;
+        }
+        public bool DisplaySuccessSystemNotification
+        {
+            get => connector.DisplaySuccessSystemNotification;
+            set => connector.DisplaySuccessSystemNotification = value;
+        }
+        public bool DisplayWarningSystemNotification
+        {
+            get => connector.DisplayWarningSystemNotification;
+            set => connector.DisplayWarningSystemNotification = value;
+        }
+        public bool DisplayErrorSystemNotification
+        {
+            get => connector.DisplayErrorSystemNotification;
+            set => connector.DisplayErrorSystemNotification = value;
         }
 
-        private bool CanCloseSidePanel()
+        public bool DisplayInformationalBarNotification
         {
-            return connector.OpenedSidePanel;
+            get => connector.DisplayInformationalBarNotification;
+            set => connector.DisplayInformationalBarNotification = value;
+        }
+        public bool DisplaySuccessBarNotification
+        {
+            get => connector.DisplaySuccessBarNotification;
+            set => connector.DisplaySuccessBarNotification = value;
+        }
+        public bool DisplayWarningBarNotification
+        {
+            get => connector.DisplayWarningBarNotification;
+            set => connector.DisplayWarningBarNotification = value;
+        }
+        public bool DisplayErrorBarNotification
+        {
+            get => connector.DisplayErrorBarNotification;
+            set => connector.DisplayErrorBarNotification = value;
         }
 
-        public bool EnableSystemNotification
+        public bool EnableExistenceCheck
         {
-            get => connector.EnableSystemNotification;
-            set => connector.EnableSystemNotification = value;
+            get => connector.EnableExistenceCheck;
+            set => connector.EnableExistenceCheck = value;
+        }
+        public bool EnableQuickCheck
+        {
+            get => connector.EnableQuickCheck;
+            set => connector.EnableQuickCheck = value;
+        }
+        public bool EnableFullCheck
+        {
+            get => connector.EnableFullCheck;
+            set => connector.EnableFullCheck = value;
         }
 
         public bool EnableCacheLoading
@@ -32,35 +75,10 @@ namespace VidHub.ViewModels
             get => connector.EnableCacheLoading;
             set => connector.EnableCacheLoading = value;
         }
-
         public bool EnableConcurrentLoading
         {
             get => connector.EnableConcurrentLoading;
             set => connector.EnableConcurrentLoading = value;
-        }
-
-        public bool SaveOrganizerSettings
-        {
-            get => connector.SaveOrganizerSettings;
-            set => connector.SaveOrganizerSettings = value;
-        }
-
-        public bool EnableLiveSearch
-        {
-            get => connector.EnableLiveSearch;
-            set => connector.EnableLiveSearch = value;
-        }
-
-        public bool EnableCaseSensitiveSearch
-        {
-            get => connector.EnableCaseSensitiveSearch;
-            set => connector.EnableCaseSensitiveSearch = value;
-        }
-
-        public bool EnableSearchSuggestions
-        {
-            get => connector.EnableSearchSuggestions;
-            set => connector.EnableSearchSuggestions = value;
         }
 
         public bool DisplayTitles
@@ -79,9 +97,42 @@ namespace VidHub.ViewModels
             set => connector.DisplayDurations = value;
         }
 
+        public bool SaveOrganizerSettings
+        {
+            get => connector.SaveOrganizerSettings;
+            set => connector.SaveOrganizerSettings = value;
+        }
+        public bool EnableLiveSearch
+        {
+            get => connector.EnableLiveSearch;
+            set => connector.EnableLiveSearch = value;
+        }
+        public bool EnableCaseSensitiveSearch
+        {
+            get => connector.EnableCaseSensitiveSearch;
+            set => connector.EnableCaseSensitiveSearch = value;
+        }
+        public bool EnableSearchSuggestions
+        {
+            get => connector.EnableSearchSuggestions;
+            set => connector.EnableSearchSuggestions = value;
+        }
+
+
         public string Version => "VidHub 0.5.0";
         public string License => "Copyright © Mark Lehoczky";
 
+
+
+        private bool CanOpenSidePanel()
+        {
+            return !connector.OpenedSidePanel;
+        }
+
+        private bool CanCloseSidePanel()
+        {
+            return connector.OpenedSidePanel;
+        }
 
         [RelayCommand(AllowConcurrentExecutions = true)]
         private async Task LoadFilesAsync()

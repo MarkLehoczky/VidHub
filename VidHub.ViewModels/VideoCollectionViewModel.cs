@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 using VidHub.Core;
 using VidHub.Core.Enums;
-using VidHub.Core.Models;
+using VidHub.Core.Notifications.Bar;
 using VidHub.Platform;
 using VidHub.Services.Connectors.Base.Interfaces;
 using VidHub.ViewModels.Base;
@@ -20,7 +20,7 @@ namespace VidHub.ViewModels
         public bool ShowDurations => connector.DisplayDurations;
         public double PreviewWidth => connector.PreviewImageWidth;
         public double PreviewHeight => connector.PreviewImageHeight;
-        public ObservableCollection<Notification> Notifications => connector.Notifications;
+        public ObservableCollection<BarNotification> Notifications => connector.DisplayedNotifications;
 
 
         [RelayCommand]

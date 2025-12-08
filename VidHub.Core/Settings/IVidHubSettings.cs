@@ -1,4 +1,7 @@
-﻿namespace VidHub.Core.Settings
+﻿using VidHub.Core.Notifications.Bar;
+using VidHub.Core.Notifications.System;
+
+namespace VidHub.Core.Settings
 {
     public interface IVidHubSettings
     {
@@ -8,5 +11,7 @@
         TitleCustomizationSettings TitleCustomization { get; set; }
         void Load();
         void Save();
+        bool DisplaySystemNotification(SystemNotification notification);
+        bool DisplayBarNotification(BarNotification notification);
     }
 }

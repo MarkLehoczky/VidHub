@@ -83,15 +83,6 @@ namespace VidHub.Services.Connectors.Base
                 vs.Update(UpdateType.UpdateVideoCollection);
             }
         }
-        public bool EnableSystemNotification
-        {
-            get => settings.Organizer.Global.EnableSystemNotification;
-            set
-            {
-                settings.Organizer.Global.EnableSystemNotification = value;
-                vs.Update(UpdateType.UpdateVideoCollection);
-            }
-        }
         public bool OpenedSidePanel
         {
             get => settings.Organizer.Global.OpenedSidePanel;
@@ -105,6 +96,61 @@ namespace VidHub.Services.Connectors.Base
         {
             get => settings.Organizer.Global.SaveOrganizerSettings;
             set => settings.Organizer.Global.SaveOrganizerSettings = value;
+        }
+        public bool DisplayInformationalSystemNotification
+        {
+            get => settings.Organizer.Global.DisplayInformationalSystemNotification;
+            set => settings.Organizer.Global.DisplayInformationalSystemNotification = value;
+        }
+        public bool DisplaySuccessSystemNotification
+        {
+            get => settings.Organizer.Global.DisplaySuccessSystemNotification;
+            set => settings.Organizer.Global.DisplaySuccessSystemNotification = value;
+        }
+        public bool DisplayWarningSystemNotification
+        {
+            get => settings.Organizer.Global.DisplayWarningSystemNotification;
+            set => settings.Organizer.Global.DisplayWarningSystemNotification = value;
+        }
+        public bool DisplayErrorSystemNotification
+        {
+            get => settings.Organizer.Global.DisplayErrorSystemNotification;
+            set => settings.Organizer.Global.DisplayErrorSystemNotification = value;
+        }
+        public bool DisplayInformationalBarNotification
+        {
+            get => settings.Organizer.Global.DisplayInformationalBarNotification;
+            set => settings.Organizer.Global.DisplayInformationalBarNotification = value;
+        }
+        public bool DisplaySuccessBarNotification
+        {
+            get => settings.Organizer.Global.DisplaySuccessBarNotification;
+            set => settings.Organizer.Global.DisplaySuccessBarNotification = value;
+        }
+        public bool DisplayWarningBarNotification
+        {
+            get => settings.Organizer.Global.DisplayWarningBarNotification;
+            set => settings.Organizer.Global.DisplayWarningBarNotification = value;
+        }
+        public bool DisplayErrorBarNotification
+        {
+            get => settings.Organizer.Global.DisplayErrorBarNotification;
+            set => settings.Organizer.Global.DisplayErrorBarNotification = value;
+        }
+        public bool EnableExistenceCheck
+        {
+            get => settings.Organizer.Global.EnableExistenceCheck;
+            set => settings.Organizer.Global.EnableExistenceCheck = value;
+        }
+        public bool EnableQuickCheck
+        {
+            get => settings.Organizer.Global.EnableQuickCheck;
+            set => settings.Organizer.Global.EnableQuickCheck = value;
+        }
+        public bool EnableFullCheck
+        {
+            get => settings.Organizer.Global.EnableFullCheck;
+            set => settings.Organizer.Global.EnableFullCheck = value;
         }
 
         public async Task CustomizeVideoDisplayingAsync()
