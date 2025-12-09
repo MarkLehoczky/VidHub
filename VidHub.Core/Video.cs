@@ -106,9 +106,9 @@ namespace VidHub.Core
                 Description = "Health check in progress..."
             });
 
-            if (VidHubSettings.Instance.Organizer.Global.HealthCheck == HealthCheckLevel.EXISTENCECHECK
-                || VidHubSettings.Instance.Organizer.Global.HealthCheck == HealthCheckLevel.QUICKCHECK
-                || VidHubSettings.Instance.Organizer.Global.HealthCheck == HealthCheckLevel.FULLCHECK)
+            if (VidHubSettings.Instance.Organizer.Global.HealthCheck is HealthCheckLevel.EXISTENCECHECK
+                or HealthCheckLevel.QUICKCHECK
+                or HealthCheckLevel.FULLCHECK)
             {
                 if (!File.Exists(FilePath))
                 {

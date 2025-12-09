@@ -2,7 +2,7 @@
 
 namespace VidHub.Core.Notifications.System
 {
-    public class SystemNotification: BaseNotification, ISystemNotification
+    public class SystemNotification : BaseNotification, ISystemNotification
     {
     }
 }

@@ -67,7 +67,7 @@ namespace VidHub.Services.Logics
         private void UpdateDisplayedNotifications(UpdateType type)
         {
             DisplayedNotifications.Clear();
-            foreach (var notification in service.GetDisplayNotifications())
+            foreach (BarNotification notification in service.GetDisplayNotifications())
             {
                 DisplayedNotifications.Add(notification);
             }

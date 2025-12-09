@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using VidHub.Core;
 using VidHub.Core.Enums;
 using VidHub.Core.Notifications.Bar;
@@ -104,8 +103,8 @@ namespace VidHub.Services.Base
                         {
                             foreach (BarNotification notif in snapshot)
                             {
-                                var before = notif.DisplayNotification;
-                                var after = notif.OpenCondition?.Invoke() ?? true;
+                                bool before = notif.DisplayNotification;
+                                bool after = notif.OpenCondition?.Invoke() ?? true;
                                 notif.DisplayNotification = after;
                             }
                         }
@@ -123,11 +122,11 @@ namespace VidHub.Services.Base
             string message = "Some loaded videos' health have not been checked yet.";
             NotificationSeverity severity = NotificationSeverity.Informational;
             bool isClosable = true;
-            Func<bool> openCondition = () =>
+            static bool openCondition()
             {
-                var snapshot = Context.Host.GetService<IVideoService>().GetAllVideos();
+                IList<Video> snapshot = Context.Host.GetService<IVideoService>().GetAllVideos();
                 return snapshot.Count > 0 && snapshot.Any(video => video.Condition.VideoState == VideoCondition.State.NOTCHECKED);
-            };
+            }
             BarNotification notification = new(title, message, severity, isClosable, openCondition);
             return notification;
         }
@@ -137,11 +136,11 @@ namespace VidHub.Services.Base
             string message = "All loaded videos are healthy based on the set health level.";
             NotificationSeverity severity = NotificationSeverity.Success;
             bool isClosable = true;
-            Func<bool> openCondition = () =>
+            static bool openCondition()
             {
-                var snapshot = Context.Host.GetService<IVideoService>().GetAllVideos();
-                return snapshot.Count > 0 && snapshot.All(video => video.Condition.VideoState == VideoCondition.State.HEALTHY || video.Condition.VideoState == VideoCondition.State.INPROGRESS);
-            };
+                IList<Video> snapshot = Context.Host.GetService<IVideoService>().GetAllVideos();
+                return snapshot.Count > 0 && snapshot.All(video => video.Condition.VideoState is VideoCondition.State.HEALTHY or VideoCondition.State.INPROGRESS);
+            }
             BarNotification notification = new(title, message, severity, isClosable, openCondition);
             return notification;
         }
@@ -149,7 +148,7 @@ namespace VidHub.Services.Base
         {
             string buttonText = "Clear Cache";
             string buttonDescription = "Clears cached files to recover disk space. With cache loading enabled, all previously cached videos has to be extracted again.";
-            Action buttonAction = async () =>
+            async void buttonAction()
             {
                 await Task.Run(() =>
                 {
@@ -158,19 +157,19 @@ namespace VidHub.Services.Base
                         File.Delete(item);
                     }
                 });
-            };
+            }
 
             string title = "Large Cache Size";
             string message = $"The application's cache data has reached more than {minSize} GB";
             bool isClosable = true;
-            Func<bool> openCondition = () =>
+            bool openCondition()
             {
                 DirectoryInfo info = new(Path.Combine(Path.GetTempPath(), "VidHub"));
                 ulong size = (ulong)info.EnumerateFiles("*", SearchOption.AllDirectories).Sum(file => file.Length);
                 bool aboveMinSize = size >= Math.Pow(1024, 3) * minSize;
                 bool belowMaxSize = size < Math.Pow(1024, 3) * maxSize;
                 return aboveMinSize && belowMaxSize;
-            };
+            }
             ActionNotificationButton button = new(buttonText, buttonAction, buttonDescription);
 
             BarNotification notification = new(title, message, severity, isClosable, openCondition, button);
@@ -180,7 +179,7 @@ namespace VidHub.Services.Base
         {
             string buttonText = "Install FFmpeg";
             string buttonDescription = "Installs FFmpeg using Winget";
-            Action buttonAction = async () =>
+            static async void buttonAction()
             {
                 await Task.Run(() =>
                 {
@@ -198,13 +197,13 @@ namespace VidHub.Services.Base
                     }
                     catch { }
                 });
-            };
+            }
 
             string title = "FFmpeg Not Detected";
             string message = "FFmpeg is required for generating video thumbnails and rendering previews. It was not found in the system PATH.";
             bool isClosable = false;
             NotificationSeverity severity = NotificationSeverity.Error;
-            Func<bool> openCondition = () =>
+            static bool openCondition()
             {
                 ProcessStartInfo info = new()
                 {
@@ -218,7 +217,7 @@ namespace VidHub.Services.Base
                 string output = process!.StandardOutput.ReadToEnd();
                 process.WaitForExit();
                 return !output.Contains("FFmpeg");
-            };
+            }
             ActionNotificationButton button = new(buttonText, buttonAction, buttonDescription);
 
             BarNotification notification = new(title, message, severity, isClosable, openCondition, button);
@@ -230,14 +229,14 @@ namespace VidHub.Services.Base
             string message = "Some loaded videos are not healthy based on the set health level.";
             NotificationSeverity severity = NotificationSeverity.Warning;
             bool isClosable = true;
-            Func<bool> openCondition = () =>
+            static bool openCondition()
             {
-                var snapshot = Context.Host.GetService<IVideoService>().GetAllVideos();
+                IList<Video> snapshot = Context.Host.GetService<IVideoService>().GetAllVideos();
                 return snapshot.Count > 0 && snapshot.Any(video =>
-                video.Condition.VideoState == VideoCondition.State.FILENOTFOUND
-                || video.Condition.VideoState == VideoCondition.State.CORRUPTED
-                || video.Condition.VideoState == VideoCondition.State.UNKNOWNERROR);
-            };
+                video.Condition.VideoState is VideoCondition.State.FILENOTFOUND
+                or VideoCondition.State.CORRUPTED
+                or VideoCondition.State.UNKNOWNERROR);
+            }
             BarNotification notification = new(title, message, severity, isClosable, openCondition);
             return notification;
         }

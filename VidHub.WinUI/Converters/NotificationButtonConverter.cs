@@ -7,11 +7,11 @@ namespace VidHub.WinUI.Converters
 {
     public partial class NotificationButtonConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, string language)
+        public object? Convert(object value, Type targetType, object parameter, string language)
         {
             if (value is ActionNotificationButton actionButton && actionButton != null)
             {
-                var actualButton = new Button
+                Button actualButton = new()
                 {
                     Content = actionButton.Text,
                     Command = actionButton.Command
@@ -21,7 +21,7 @@ namespace VidHub.WinUI.Converters
             }
             else if (value is LinkNotificationButton linkButton && linkButton != null)
             {
-                var actualButton = new HyperlinkButton
+                HyperlinkButton actualButton = new()
                 {
                     Content = linkButton.Text,
                     NavigateUri = new Uri(linkButton.Link)

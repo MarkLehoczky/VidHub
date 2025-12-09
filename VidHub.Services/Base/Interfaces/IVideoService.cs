@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using VidHub.Core;
+﻿using VidHub.Core;
 using VidHub.Core.Notifications.Bar;
 
 namespace VidHub.Services.Base.Interfaces

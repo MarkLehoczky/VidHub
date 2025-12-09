@@ -1,9 +1,7 @@
 ﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
 using VidHub.Core;
 using VidHub.Core.Enums;
 using VidHub.Core.Notifications.Bar;
-using VidHub.Core.Notifications.Base;
 using VidHub.Core.Settings;
 using VidHub.Platform;
 using VidHub.Services.Base.Interfaces;

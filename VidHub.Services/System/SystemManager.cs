@@ -23,8 +23,8 @@ namespace VidHub.Services.System
             }
 
             ToastContentBuilder content = new();
-            content.AddText(notification.Title);
-            content.AddText(notification.Message);
+            _ = content.AddText(notification.Title);
+            _ = content.AddText(notification.Message);
             _ = content.GetToastContent();
 
             ToastNotification toast = new(content.GetXml());
