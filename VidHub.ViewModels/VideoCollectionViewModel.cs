@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 using VidHub.Core;
 using VidHub.Core.Enums;
-using VidHub.Core.Notifications.Bar;
+using VidHub.Core.Models.Notifications;
 using VidHub.Platform;
 using VidHub.Services.Connectors.Base.Interfaces;
 using VidHub.ViewModels.Base;
@@ -68,7 +68,7 @@ namespace VidHub.ViewModels
 
         public override void Update(UpdateType type)
         {
-            if (type is UpdateType.UpdateVideoCollection or UpdateType.ForceUpdateVideoCollection)
+            if (type is UpdateType.UPDATEVIDEOCOLLECTION or UpdateType.FORCEUPDATEVIDEOCOLLECTION)
             {
                 OnPropertyChanged(nameof(Videos));
                 OnPropertyChanged(nameof(ShowTitles));

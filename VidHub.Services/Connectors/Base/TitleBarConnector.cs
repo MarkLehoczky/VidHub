@@ -16,7 +16,7 @@ namespace VidHub.Services.Connectors.Base
             set
             {
                 settings.DisplayCustomization.DisplayDates = value;
-                vs.Update(UpdateType.UpdateVideoCollection);
+                vs.Update(UpdateType.UPDATEVIDEOCOLLECTION);
             }
         }
         public bool DisplayDurations
@@ -25,7 +25,7 @@ namespace VidHub.Services.Connectors.Base
             set
             {
                 settings.DisplayCustomization.DisplayDurations = value;
-                vs.Update(UpdateType.UpdateVideoCollection);
+                vs.Update(UpdateType.UPDATEVIDEOCOLLECTION);
             }
         }
         public bool DisplayTitles
@@ -34,7 +34,7 @@ namespace VidHub.Services.Connectors.Base
             set
             {
                 settings.DisplayCustomization.DisplayTitles = value;
-                vs.Update(UpdateType.UpdateVideoCollection);
+                vs.Update(UpdateType.UPDATEVIDEOCOLLECTION);
             }
         }
         public bool EnableCacheLoading
@@ -43,7 +43,7 @@ namespace VidHub.Services.Connectors.Base
             set
             {
                 settings.Organizer.Global.EnableCacheLoading = value;
-                vs.Update(UpdateType.UpdateVideoCollection);
+                vs.Update(UpdateType.UPDATEVIDEOCOLLECTION);
             }
         }
         public bool EnableCaseSensitiveSearch
@@ -52,7 +52,7 @@ namespace VidHub.Services.Connectors.Base
             set
             {
                 settings.Organizer.Global.EnableCaseSensitiveSearch = value;
-                vs.Update(UpdateType.UpdateVideoCollection);
+                vs.Update(UpdateType.UPDATEVIDEOCOLLECTION);
             }
         }
         public bool EnableConcurrentLoading
@@ -61,7 +61,7 @@ namespace VidHub.Services.Connectors.Base
             set
             {
                 settings.Organizer.Global.EnableConcurrentLoading = value;
-                vs.Update(UpdateType.UpdateVideoCollection);
+                vs.Update(UpdateType.UPDATEVIDEOCOLLECTION);
             }
         }
         public bool EnableLiveSearch
@@ -70,8 +70,8 @@ namespace VidHub.Services.Connectors.Base
             set
             {
                 settings.Organizer.Global.EnableLiveSearch = value;
-                vs.Update(UpdateType.UpdateSidePanel);
-                vs.Update(UpdateType.UpdateVideoCollection);
+                vs.Update(UpdateType.UPDATESIDEPANEL);
+                vs.Update(UpdateType.UPDATEVIDEOCOLLECTION);
             }
         }
         public bool EnableSearchSuggestions
@@ -80,7 +80,7 @@ namespace VidHub.Services.Connectors.Base
             set
             {
                 settings.Organizer.Global.EnableSearchSuggestions = value;
-                vs.Update(UpdateType.UpdateVideoCollection);
+                vs.Update(UpdateType.UPDATEVIDEOCOLLECTION);
             }
         }
         public bool OpenedSidePanel
@@ -89,7 +89,7 @@ namespace VidHub.Services.Connectors.Base
             set
             {
                 settings.Organizer.Global.OpenedSidePanel = value;
-                vs.Update(UpdateType.UpdateSidePanel);
+                vs.Update(UpdateType.UPDATESIDEPANEL);
             }
         }
         public bool SaveOrganizerSettings

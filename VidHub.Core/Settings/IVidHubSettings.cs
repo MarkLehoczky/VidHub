@@ -1,5 +1,4 @@
-﻿using VidHub.Core.Notifications.Bar;
-using VidHub.Core.Notifications.System;
+﻿using VidHub.Core.Models.Notifications;
 
 namespace VidHub.Core.Settings
 {

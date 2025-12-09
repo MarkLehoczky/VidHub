@@ -26,7 +26,7 @@ namespace VidHub.Services.Connectors.Modals
                     Directory.Delete(Path.Combine(Path.GetTempPath(), "VidHub", "Previews"), true);
                 }
             });
-            vs.Update(UpdateType.ForceUpdateVideoCollection);
+            vs.Update(UpdateType.FORCEUPDATEVIDEOCOLLECTION);
         }
 
         public async Task RemoveAllPreviewImagesAsync()
@@ -45,7 +45,7 @@ namespace VidHub.Services.Connectors.Modals
                     }
                 }
             });
-            vs.Update(UpdateType.ForceUpdateVideoCollection);
+            vs.Update(UpdateType.FORCEUPDATEVIDEOCOLLECTION);
         }
 
         public void SubscribeToUpdateEvent(Action<UpdateType> action)

@@ -1,8 +1,7 @@
 ﻿using VidHub.Core;
 using VidHub.Core.Enums;
 using VidHub.Core.Manager;
-using VidHub.Core.Notifications.Base;
-using VidHub.Core.Notifications.System;
+using VidHub.Core.Models.Notifications;
 using VidHub.Core.Settings;
 using VidHub.Platform;
 using VidHub.Services.Base.Interfaces;
@@ -199,8 +198,8 @@ namespace VidHub.Services.Logics
         private Action<string> UpdateUI => _ =>
         {
             system.SetTaskbar(manager);
-            service.Update(UpdateType.UpdateSidePanel);
-            service.Update(UpdateType.UpdateVideoCollection);
+            service.Update(UpdateType.UPDATESIDEPANEL);
+            service.Update(UpdateType.UPDATEVIDEOCOLLECTION);
         };
 
 
@@ -221,11 +220,11 @@ namespace VidHub.Services.Logics
                     system.DisplayToast(new SystemNotification()
                     {
                         Title = "Video loading finished!",
-                        Message = $"{IDCollection.Count} videos were loaded successfully.",
-                        Severity = NotificationSeverity.Success
+                        Details = $"{IDCollection.Count} videos were loaded successfully.",
+                        Severity = NotificationSeverity.SUCCESS
                     });
-                    service.Update(UpdateType.UpdateSidePanel);
-                    service.Update(UpdateType.UpdateVideoCollection);
+                    service.Update(UpdateType.UPDATESIDEPANEL);
+                    service.Update(UpdateType.UPDATEVIDEOCOLLECTION);
                     IDCollection.Clear();
                 };
                 service.SubscribeToUpdateEvent(_ => manager.ConcurrentLoading = settings.Organizer.Global.EnableConcurrentLoading);

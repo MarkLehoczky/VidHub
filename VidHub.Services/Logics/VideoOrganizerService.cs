@@ -119,7 +119,7 @@ namespace VidHub.Services.Logics
         {
             service.Predicate = settings.Organizer.ValidVideo;
             service.Comparer = sortOptions.GetValueOrDefault(settings.Organizer.Display.CurrentSortOption ?? string.Empty, Comparer<Video>.Default);
-            service.Update(UpdateType.UpdateVideoCollection);
+            service.Update(UpdateType.UPDATEVIDEOCOLLECTION);
         }
 
         public IEnumerable<string> Suggestions()

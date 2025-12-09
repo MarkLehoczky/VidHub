@@ -2,9 +2,9 @@
 {
     public enum UpdateType
     {
-        UpdateSidePanel,
-        UpdateVideoCollection,
-        ForceUpdateSidePanel,
-        ForceUpdateVideoCollection,
+        UPDATESIDEPANEL,
+        UPDATEVIDEOCOLLECTION,
+        FORCEUPDATESIDEPANEL,
+        FORCEUPDATEVIDEOCOLLECTION,
     }
 }

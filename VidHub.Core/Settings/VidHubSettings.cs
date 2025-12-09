@@ -1,7 +1,5 @@
 ﻿using System.Text.Json;
-using VidHub.Core.Notifications.Bar;
-using VidHub.Core.Notifications.Base;
-using VidHub.Core.Notifications.System;
+using VidHub.Core.Models.Notifications;
 using VidHub.Platform;
 
 namespace VidHub.Core.Settings
@@ -20,10 +18,10 @@ namespace VidHub.Core.Settings
         {
             return notification.Severity switch
             {
-                NotificationSeverity.Informational => Organizer.Global.DisplayInformationalSystemNotification,
-                NotificationSeverity.Success => Organizer.Global.DisplaySuccessSystemNotification,
-                NotificationSeverity.Warning => Organizer.Global.DisplayWarningSystemNotification,
-                NotificationSeverity.Error => Organizer.Global.DisplayErrorSystemNotification,
+                NotificationSeverity.INFORMATIONAL => Organizer.Global.DisplayInformationalSystemNotification,
+                NotificationSeverity.SUCCESS => Organizer.Global.DisplaySuccessSystemNotification,
+                NotificationSeverity.WARNING => Organizer.Global.DisplayWarningSystemNotification,
+                NotificationSeverity.ERROR => Organizer.Global.DisplayErrorSystemNotification,
                 _ => false,
             };
         }
@@ -31,10 +29,10 @@ namespace VidHub.Core.Settings
         {
             return notification.Severity switch
             {
-                NotificationSeverity.Informational => Organizer.Global.DisplayInformationalBarNotification,
-                NotificationSeverity.Success => Organizer.Global.DisplaySuccessBarNotification,
-                NotificationSeverity.Warning => Organizer.Global.DisplayWarningBarNotification,
-                NotificationSeverity.Error => Organizer.Global.DisplayErrorBarNotification,
+                NotificationSeverity.INFORMATIONAL => Organizer.Global.DisplayInformationalBarNotification,
+                NotificationSeverity.SUCCESS => Organizer.Global.DisplaySuccessBarNotification,
+                NotificationSeverity.WARNING => Organizer.Global.DisplayWarningBarNotification,
+                NotificationSeverity.ERROR => Organizer.Global.DisplayErrorBarNotification,
                 _ => false,
             };
         }

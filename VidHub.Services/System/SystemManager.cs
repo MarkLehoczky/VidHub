@@ -1,6 +1,6 @@
 ﻿using Microsoft.Toolkit.Uwp.Notifications;
 using VidHub.Core.Manager;
-using VidHub.Core.Notifications.System;
+using VidHub.Core.Models.Notifications;
 using VidHub.Core.Settings;
 using VidHub.Platform;
 using VidHub.Platform.Windows;
@@ -24,7 +24,7 @@ namespace VidHub.Services.System
 
             ToastContentBuilder content = new();
             _ = content.AddText(notification.Title);
-            _ = content.AddText(notification.Message);
+            _ = content.AddText(notification.Details);
             _ = content.GetToastContent();
 
             ToastNotification toast = new(content.GetXml());

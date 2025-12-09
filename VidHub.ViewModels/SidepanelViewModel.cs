@@ -78,7 +78,7 @@ namespace VidHub.ViewModels
 
         public override void Update(UpdateType type)
         {
-            if (type is UpdateType.UpdateSidePanel or UpdateType.ForceUpdateSidePanel)
+            if (type is UpdateType.UPDATESIDEPANEL or UpdateType.FORCEUPDATESIDEPANEL)
             {
                 OnPropertyChanged(nameof(OpenPanel));
                 OnPropertyChanged(nameof(EnableLiveSearch));

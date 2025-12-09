@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using VidHub.Core;
 using VidHub.Core.Enums;
-using VidHub.Core.Notifications.Bar;
+using VidHub.Core.Models.Notifications;
 using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Logics.Interfaces;
 
@@ -33,7 +33,7 @@ namespace VidHub.Services.Logics
         {
             IList<Video> nextDisplayVideos = service.GetDisplayVideos();
 
-            if (type == UpdateType.UpdateVideoCollection)
+            if (type == UpdateType.UPDATEVIDEOCOLLECTION)
             {
                 for (int i = 0; i < Math.Min(DisplayedVideos.Count, nextDisplayVideos.Count); i++)
                 {
@@ -53,7 +53,7 @@ namespace VidHub.Services.Logics
                     DisplayedVideos.Add(nextDisplayVideos[i]);
                 }
             }
-            else if (type == UpdateType.ForceUpdateVideoCollection)
+            else if (type == UpdateType.FORCEUPDATEVIDEOCOLLECTION)
             {
                 DisplayedVideos.Clear();
 

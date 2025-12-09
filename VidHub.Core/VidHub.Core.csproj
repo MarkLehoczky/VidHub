@@ -15,4 +15,8 @@
 	  <ProjectReference Include="..\VidHub.Platform\VidHub.Platform.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Models\Settings\" />
+	</ItemGroup>
+
 </Project>

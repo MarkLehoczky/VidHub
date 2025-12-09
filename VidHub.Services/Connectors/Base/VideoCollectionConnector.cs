@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using VidHub.Core;
 using VidHub.Core.Enums;
-using VidHub.Core.Notifications.Bar;
+using VidHub.Core.Models.Notifications;
 using VidHub.Core.Settings;
 using VidHub.Platform;
 using VidHub.Services.Base.Interfaces;
@@ -107,7 +107,7 @@ namespace VidHub.Services.Connectors.Base
         public async Task RenameAsync(Video video)
         {
             await Context.Window.ShowDialogAsync("ChangeVideoTitle", $"Rename '{video.Title}'", "Confirm", video);
-            Context.Host.GetService<IVideoService>().Update(UpdateType.ForceUpdateVideoCollection);
+            Context.Host.GetService<IVideoService>().Update(UpdateType.FORCEUPDATEVIDEOCOLLECTION);
         }
 
         public void SubscribeToUpdateEvent(Action<UpdateType> action)

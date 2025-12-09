@@ -1,7 +1,7 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using System;
-using VidHub.Core.Notifications.Base;
+using VidHub.Core.Models.Notifications;
 
 namespace VidHub.WinUI.Converters
 {
@@ -12,10 +12,10 @@ namespace VidHub.WinUI.Converters
             return value is NotificationSeverity severity
                 ? severity switch
                 {
-                    NotificationSeverity.Success => InfoBarSeverity.Success,
-                    NotificationSeverity.Informational => InfoBarSeverity.Informational,
-                    NotificationSeverity.Warning => InfoBarSeverity.Warning,
-                    NotificationSeverity.Error => InfoBarSeverity.Error,
+                    NotificationSeverity.SUCCESS => InfoBarSeverity.Success,
+                    NotificationSeverity.INFORMATIONAL => InfoBarSeverity.Informational,
+                    NotificationSeverity.WARNING => InfoBarSeverity.Warning,
+                    NotificationSeverity.ERROR => InfoBarSeverity.Error,
                     _ => InfoBarSeverity.Informational,
                 }
                 : InfoBarSeverity.Informational;
