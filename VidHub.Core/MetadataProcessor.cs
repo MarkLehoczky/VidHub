@@ -93,7 +93,7 @@ namespace VidHub.Core
 
             _ = Directory.CreateDirectory(previewDirectory);
 
-            if (VidHubSettings.Instance.PreviewImageCustomization.ExtractEmbeddedImageCommand)
+            if (VidHubSettings.Instance.Modals.PreviewImageFormat.ExtractEmbeddedImage)
             {
                 (int exitCode, _, _) = RunProcess("ffmpeg", "-v", "error", "-y", "-i", filePath, "-map", "0:v", "-map", "-0:V", "-c", "copy", previewPath);
                 if (exitCode == 0 && File.Exists(previewPath))

@@ -95,7 +95,7 @@ namespace VidHub.Core
 
         public void CheckCondition()
         {
-            if (VidHubSettings.Instance.Organizer.Global.HealthCheck == HealthCheckLevel.NONE)
+            if (VidHubSettings.Instance.VideoHealth.Level == HealthCheckLevel.NONE)
             {
                 return;
             }
@@ -106,7 +106,7 @@ namespace VidHub.Core
                 Description = "Health check in progress..."
             });
 
-            if (VidHubSettings.Instance.Organizer.Global.HealthCheck is HealthCheckLevel.EXISTENCECHECK
+            if (VidHubSettings.Instance.VideoHealth.Level is HealthCheckLevel.EXISTENCECHECK
                 or HealthCheckLevel.QUICKCHECK
                 or HealthCheckLevel.FULLCHECK)
             {
@@ -121,7 +121,7 @@ namespace VidHub.Core
                 }
             }
 
-            if (VidHubSettings.Instance.Organizer.Global.HealthCheck == HealthCheckLevel.QUICKCHECK)
+            if (VidHubSettings.Instance.VideoHealth.Level == HealthCheckLevel.QUICKCHECK)
             {
                 try
                 {
@@ -148,7 +148,7 @@ namespace VidHub.Core
                 }
             }
 
-            if (VidHubSettings.Instance.Organizer.Global.HealthCheck == HealthCheckLevel.FULLCHECK)
+            if (VidHubSettings.Instance.VideoHealth.Level == HealthCheckLevel.FULLCHECK)
             {
                 try
                 {
@@ -185,9 +185,9 @@ namespace VidHub.Core
 
         public void Load()
         {
-            if (VidHubSettings.Instance.Organizer.Global.EnableCacheLoading && LoadCache())
+            if (VidHubSettings.Instance.Performance.UseCacheLoading && LoadCache())
             {
-                Title = VidHubSettings.Instance.TitleCustomization.CustomizeTitle(this);
+                Title = VidHubSettings.Instance.GetCustomizedVideoTitle(this);
                 return;
             }
 
@@ -204,21 +204,7 @@ namespace VidHub.Core
         {
             try
             {
-                TimeSpan frame;
-                if (VidHubSettings.Instance.PreviewImageCustomization.RelativePosition)
-                {
-                    frame = DefaultVideoStream?.Duration ?? Duration;
-                    PreviewImagePath = new MetadataProcessor(FilePath).ExtractPreviewImage(Hash, frame / VidHubSettings.Instance.PreviewImageCustomization.FramePercentage);
-                }
-                else
-                {
-                    frame = DefaultVideoStream?.Duration != TimeSpan.Zero
-                        ? DefaultVideoStream?.Duration < VidHubSettings.Instance.PreviewImageCustomization.FrameTime
-                            ? DefaultVideoStream?.Duration ?? TimeSpan.Zero
-                            : VidHubSettings.Instance.PreviewImageCustomization.FrameTime
-                        : Duration < VidHubSettings.Instance.PreviewImageCustomization.FrameTime ? Duration : VidHubSettings.Instance.PreviewImageCustomization.FrameTime;
-                    PreviewImagePath = new MetadataProcessor(FilePath).ExtractPreviewImage(Hash, frame > duration ? duration : frame);
-                }
+                new MetadataProcessor(FilePath).ExtractPreviewImage(Hash, VidHubSettings.Instance.GetPreviewImageTime(this));
             }
             catch { }
         }
@@ -237,7 +223,7 @@ namespace VidHub.Core
                 () => UnknownStreams = metadataProcessor.GetUnknownStreams(),
                 () => Date = FormatStream.CreationTime != DateTime.MinValue ? FormatStream.CreationTime : File.GetLastWriteTime(FilePath),
                 () => Duration = DefaultVideoStream?.Duration != TimeSpan.Zero ? DefaultVideoStream?.Duration ?? FormatStream.Duration : FormatStream.Duration,
-                () => Title = VidHubSettings.Instance.TitleCustomization.CustomizeTitle(this),
+                () => Title = VidHubSettings.Instance.GetCustomizedVideoTitle(this),
                 ExtractPreviewImage
             ];
         }
@@ -293,7 +279,7 @@ namespace VidHub.Core
 
         private string GenerateHash()
         {
-            string baseHash = VidHubSettings.Instance.PreviewImageCustomization.UseContentHash
+            string baseHash = VidHubSettings.Instance.General.UseFileContentHash
                 ? GenerateHash(File.OpenRead(FilePath))
                 : GenerateHash(FilePath);
             string currentHash = baseHash;

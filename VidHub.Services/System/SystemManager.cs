@@ -17,7 +17,7 @@ namespace VidHub.Services.System
 
         public void DisplayToast(SystemNotification notification)
         {
-            if (!settings.DisplaySystemNotification(notification))
+            if (!settings.DisplayNotification(notification))
             {
                 return;
             }

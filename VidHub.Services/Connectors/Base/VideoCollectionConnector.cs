@@ -16,17 +16,17 @@ namespace VidHub.Services.Connectors.Base
 {
     public class VideoCollectionConnector(IVideoService vs, IVidHubSettings settings, IVideoCollectionService service) : IVideoCollectionConnector
     {
-        public bool DisplayDates => settings.DisplayCustomization.DisplayDates;
+        public bool DisplayDates => settings.Display.DisplayDates;
 
-        public bool DisplayDurations => settings.DisplayCustomization.DisplayDurations;
+        public bool DisplayDurations => settings.Display.DisplayDurations;
 
-        public bool DisplayTitles => settings.DisplayCustomization.DisplayTitles;
+        public bool DisplayTitles => settings.Display.DisplayTitles;
 
         public ObservableCollection<Video> DisplayedVideos => service.DisplayedVideos;
 
-        public double PreviewImageWidth => settings.DisplayCustomization.PreviewImageWidth;
+        public double PreviewImageWidth => settings.Modals.DisplayFormat.PreviewImageWidth;
 
-        public double PreviewImageHeight => settings.DisplayCustomization.PreviewImageHeight;
+        public double PreviewImageHeight => settings.Modals.DisplayFormat.PreviewImageHeight;
 
         public ObservableCollection<BarNotification> DisplayedNotifications => service.DisplayedNotifications;
 

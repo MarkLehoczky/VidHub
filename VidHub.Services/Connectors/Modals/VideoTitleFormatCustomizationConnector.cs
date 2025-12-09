@@ -16,65 +16,65 @@ namespace VidHub.Services.Connectors.Modals
 
         public bool IncludePath
         {
-            get => settings.TitleCustomization.IncludePath;
+            get => settings.Modals.TitleFormat.IncludePath;
             set
             {
-                settings.TitleCustomization.IncludePath = value;
+                settings.Modals.TitleFormat.IncludePath = value;
                 UpdateFormats();
             }
         }
         public bool IncludeDate
         {
-            get => settings.TitleCustomization.IncludeDate;
+            get => settings.Modals.TitleFormat.IncludeDate;
             set
             {
-                settings.TitleCustomization.IncludeDate = value;
+                settings.Modals.TitleFormat.IncludeDate = value;
                 UpdateFormats();
             }
         }
         public bool IncludeFilename
         {
-            get => settings.TitleCustomization.IncludeFilename;
+            get => settings.Modals.TitleFormat.IncludeFilename;
             set
             {
-                settings.TitleCustomization.IncludeFilename = value;
+                settings.Modals.TitleFormat.IncludeFilename = value;
                 UpdateFormats();
             }
         }
         public bool IncludeMetadata
         {
-            get => settings.TitleCustomization.IncludeMetadata;
+            get => settings.Modals.TitleFormat.IncludeMetadata;
             set
             {
-                settings.TitleCustomization.IncludeMetadata = value;
+                settings.Modals.TitleFormat.IncludeMetadata = value;
                 UpdateFormats();
             }
         }
         public bool IncludeExtension
         {
-            get => settings.TitleCustomization.IncludeExtension;
+            get => settings.Modals.TitleFormat.IncludeExtension;
             set
             {
-                settings.TitleCustomization.IncludeExtension = value;
+                settings.Modals.TitleFormat.IncludeExtension = value;
                 UpdateFormats();
             }
         }
 
         public string RegexPattern
         {
-            get => settings.TitleCustomization.RegexPattern;
+            get => settings.Modals.TitleFormat.RegexPattern;
             set
             {
-                settings.TitleCustomization.RegexPattern = value;
+                settings.Modals.TitleFormat.RegexPattern = value;
                 UpdateFormats();
             }
         }
         public string RegexReplacement
         {
-            get => settings.TitleCustomization.RegexReplacement;
+            get => settings.Modals.TitleFormat.RegexReplacement;
             set
             {
-                settings.TitleCustomization.RegexReplacement = value;
+                settings.Modals.TitleFormat.RegexReplacement = value;
                 UpdateFormats();
             }
         }
@@ -82,17 +82,17 @@ namespace VidHub.Services.Connectors.Modals
 
         public bool EnabledRegex
         {
-            get => settings.TitleCustomization.EnabledRegex;
+            get => settings.Modals.TitleFormat.UseRegex;
             set
             {
-                settings.TitleCustomization.EnabledRegex = value;
+                settings.Modals.TitleFormat.UseRegex = value;
                 UpdateFormats();
             }
         }
         public bool DontShowTitleCustomizationAgain
         {
-            get => settings.TitleCustomization.DontShowTitleCustomizationAgain;
-            set => settings.TitleCustomization.DontShowTitleCustomizationAgain = value;
+            get => settings.Modals.TitleFormat.HideTitleCustomization;
+            set => settings.Modals.TitleFormat.HideTitleCustomization = value;
         }
 
 
@@ -126,7 +126,7 @@ namespace VidHub.Services.Connectors.Modals
 
             foreach (VideoTitleTemplate video in Videos)
             {
-                video.Title = settings.TitleCustomization.CustomizeTitle(video.Instance, EnabledRegex && !InvalidRegex);
+                video.Title = settings.GetCustomizedVideoTitle(video.Instance, EnabledRegex && !InvalidRegex);
                 if (!IsTemplateMode)
                 {
                     video.Instance.Title = video.Title;

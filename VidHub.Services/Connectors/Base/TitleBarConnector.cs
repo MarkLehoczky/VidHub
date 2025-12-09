@@ -12,173 +12,173 @@ namespace VidHub.Services.Connectors.Base
     {
         public bool DisplayDates
         {
-            get => settings.DisplayCustomization.DisplayDates;
+            get => settings.Display.DisplayDates;
             set
             {
-                settings.DisplayCustomization.DisplayDates = value;
+                settings.Display.DisplayDates = value;
                 vs.Update(UpdateType.UPDATEVIDEOCOLLECTION);
             }
         }
         public bool DisplayDurations
         {
-            get => settings.DisplayCustomization.DisplayDurations;
+            get => settings.Display.DisplayDurations;
             set
             {
-                settings.DisplayCustomization.DisplayDurations = value;
+                settings.Display.DisplayDurations = value;
                 vs.Update(UpdateType.UPDATEVIDEOCOLLECTION);
             }
         }
         public bool DisplayTitles
         {
-            get => settings.DisplayCustomization.DisplayTitles;
+            get => settings.Display.DisplayTitles;
             set
             {
-                settings.DisplayCustomization.DisplayTitles = value;
+                settings.Display.DisplayTitles = value;
                 vs.Update(UpdateType.UPDATEVIDEOCOLLECTION);
             }
         }
         public bool EnableCacheLoading
         {
-            get => settings.Organizer.Global.EnableCacheLoading;
+            get => settings.Performance.UseCacheLoading;
             set
             {
-                settings.Organizer.Global.EnableCacheLoading = value;
+                settings.Performance.UseCacheLoading = value;
                 vs.Update(UpdateType.UPDATEVIDEOCOLLECTION);
             }
         }
         public bool EnableCaseSensitiveSearch
         {
-            get => settings.Organizer.Global.EnableCaseSensitiveSearch;
+            get => settings.SidePanel.UseCaseSensitiveSearch;
             set
             {
-                settings.Organizer.Global.EnableCaseSensitiveSearch = value;
+                settings.SidePanel.UseCaseSensitiveSearch = value;
                 vs.Update(UpdateType.UPDATEVIDEOCOLLECTION);
             }
         }
         public bool EnableConcurrentLoading
         {
-            get => settings.Organizer.Global.EnableConcurrentLoading;
+            get => settings.Performance.UseConcurrentLoading;
             set
             {
-                settings.Organizer.Global.EnableConcurrentLoading = value;
+                settings.Performance.UseConcurrentLoading = value;
                 vs.Update(UpdateType.UPDATEVIDEOCOLLECTION);
             }
         }
         public bool EnableLiveSearch
         {
-            get => settings.Organizer.Global.EnableLiveSearch;
+            get => settings.SidePanel.UseRealTimeSearch;
             set
             {
-                settings.Organizer.Global.EnableLiveSearch = value;
+                settings.SidePanel.UseRealTimeSearch = value;
                 vs.Update(UpdateType.UPDATESIDEPANEL);
                 vs.Update(UpdateType.UPDATEVIDEOCOLLECTION);
             }
         }
         public bool EnableSearchSuggestions
         {
-            get => settings.Organizer.Global.EnableSearchSuggestions;
+            get => settings.SidePanel.UseSearchSuggestions;
             set
             {
-                settings.Organizer.Global.EnableSearchSuggestions = value;
+                settings.SidePanel.UseSearchSuggestions = value;
                 vs.Update(UpdateType.UPDATEVIDEOCOLLECTION);
             }
         }
         public bool OpenedSidePanel
         {
-            get => settings.Organizer.Global.OpenedSidePanel;
+            get => settings.General.OpenedSidePanel;
             set
             {
-                settings.Organizer.Global.OpenedSidePanel = value;
+                settings.General.OpenedSidePanel = value;
                 vs.Update(UpdateType.UPDATESIDEPANEL);
             }
         }
         public bool SaveOrganizerSettings
         {
-            get => settings.Organizer.Global.SaveOrganizerSettings;
-            set => settings.Organizer.Global.SaveOrganizerSettings = value;
+            get => settings.General.KeepSidePanelSettings;
+            set => settings.General.KeepSidePanelSettings = value;
         }
         public bool DisplayInformationalSystemNotification
         {
-            get => settings.Organizer.Global.DisplayInformationalSystemNotification;
-            set => settings.Organizer.Global.DisplayInformationalSystemNotification = value;
+            get => settings.Notifications.DisplayInformationalSystemNotification;
+            set => settings.Notifications.DisplayInformationalSystemNotification = value;
         }
         public bool DisplaySuccessSystemNotification
         {
-            get => settings.Organizer.Global.DisplaySuccessSystemNotification;
-            set => settings.Organizer.Global.DisplaySuccessSystemNotification = value;
+            get => settings.Notifications.DisplaySuccessSystemNotification;
+            set => settings.Notifications.DisplaySuccessSystemNotification = value;
         }
         public bool DisplayWarningSystemNotification
         {
-            get => settings.Organizer.Global.DisplayWarningSystemNotification;
-            set => settings.Organizer.Global.DisplayWarningSystemNotification = value;
+            get => settings.Notifications.DisplayWarningSystemNotification;
+            set => settings.Notifications.DisplayWarningSystemNotification = value;
         }
         public bool DisplayErrorSystemNotification
         {
-            get => settings.Organizer.Global.DisplayErrorSystemNotification;
-            set => settings.Organizer.Global.DisplayErrorSystemNotification = value;
+            get => settings.Notifications.DisplayErrorSystemNotification;
+            set => settings.Notifications.DisplayErrorSystemNotification = value;
         }
         public bool DisplayInformationalBarNotification
         {
-            get => settings.Organizer.Global.DisplayInformationalBarNotification;
-            set => settings.Organizer.Global.DisplayInformationalBarNotification = value;
+            get => settings.Notifications.DisplayInformationalBarNotification;
+            set => settings.Notifications.DisplayInformationalBarNotification = value;
         }
         public bool DisplaySuccessBarNotification
         {
-            get => settings.Organizer.Global.DisplaySuccessBarNotification;
-            set => settings.Organizer.Global.DisplaySuccessBarNotification = value;
+            get => settings.Notifications.DisplaySuccessBarNotification;
+            set => settings.Notifications.DisplaySuccessBarNotification = value;
         }
         public bool DisplayWarningBarNotification
         {
-            get => settings.Organizer.Global.DisplayWarningBarNotification;
-            set => settings.Organizer.Global.DisplayWarningBarNotification = value;
+            get => settings.Notifications.DisplayWarningBarNotification;
+            set => settings.Notifications.DisplayWarningBarNotification = value;
         }
         public bool DisplayErrorBarNotification
         {
-            get => settings.Organizer.Global.DisplayErrorBarNotification;
-            set => settings.Organizer.Global.DisplayErrorBarNotification = value;
+            get => settings.Notifications.DisplayErrorBarNotification;
+            set => settings.Notifications.DisplayErrorBarNotification = value;
         }
 
         public bool DisabledHealthCheck
         {
-            get => settings.Organizer.Global.HealthCheck == HealthCheckLevel.NONE;
+            get => settings.VideoHealth.Level == HealthCheckLevel.NONE;
             set
             {
                 if (value)
                 {
-                    settings.Organizer.Global.HealthCheck = HealthCheckLevel.NONE;
+                    settings.VideoHealth.Level = HealthCheckLevel.NONE;
                 }
             }
         }
         public bool ExistenceHealthCheck
         {
-            get => settings.Organizer.Global.HealthCheck == HealthCheckLevel.EXISTENCECHECK;
+            get => settings.VideoHealth.Level == HealthCheckLevel.EXISTENCECHECK;
             set
             {
                 if (value)
                 {
-                    settings.Organizer.Global.HealthCheck = HealthCheckLevel.EXISTENCECHECK;
+                    settings.VideoHealth.Level = HealthCheckLevel.EXISTENCECHECK;
                 }
             }
         }
         public bool QuickHealthCheck
         {
-            get => settings.Organizer.Global.HealthCheck == HealthCheckLevel.QUICKCHECK;
+            get => settings.VideoHealth.Level == HealthCheckLevel.QUICKCHECK;
             set
             {
                 if (value)
                 {
-                    settings.Organizer.Global.HealthCheck = HealthCheckLevel.QUICKCHECK;
+                    settings.VideoHealth.Level = HealthCheckLevel.QUICKCHECK;
                 }
             }
         }
         public bool FullHealthCheck
         {
-            get => settings.Organizer.Global.HealthCheck == HealthCheckLevel.FULLCHECK;
+            get => settings.VideoHealth.Level == HealthCheckLevel.FULLCHECK;
             set
             {
                 if (value)
                 {
-                    settings.Organizer.Global.HealthCheck = HealthCheckLevel.FULLCHECK;
+                    settings.VideoHealth.Level = HealthCheckLevel.FULLCHECK;
                 }
             }
         }

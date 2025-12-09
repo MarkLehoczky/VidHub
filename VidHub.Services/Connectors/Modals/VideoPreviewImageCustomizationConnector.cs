@@ -8,14 +8,14 @@ namespace VidHub.Services.Connectors.Modals
 {
     public class VideoPreviewImageCustomizationConnector(IVideoService vs, IVidHubSettings settings) : IVideoPreviewImageCustomizationConnector
     {
-        public int Hours { get => settings.PreviewImageCustomization.Hours; set => settings.PreviewImageCustomization.Hours = value; }
-        public int Milliseconds { get => settings.PreviewImageCustomization.Milliseconds; set => settings.PreviewImageCustomization.Milliseconds = value; }
-        public int Minutes { get => settings.PreviewImageCustomization.Minutes; set => settings.PreviewImageCustomization.Minutes = value; }
-        public int Percentage { get => settings.PreviewImageCustomization.Percentage; set => settings.PreviewImageCustomization.Percentage = value; }
-        public bool RelativePosition { get => settings.PreviewImageCustomization.RelativePosition; set => settings.PreviewImageCustomization.RelativePosition = value; }
-        public int Seconds { get => settings.PreviewImageCustomization.Seconds; set => settings.PreviewImageCustomization.Seconds = value; }
-        public bool ExtractEmbeddedImageCommand { get => settings.PreviewImageCustomization.ExtractEmbeddedImageCommand; set => settings.PreviewImageCustomization.ExtractEmbeddedImageCommand = value; }
-        public bool UseContentHash { get => settings.PreviewImageCustomization.UseContentHash; set => settings.PreviewImageCustomization.UseContentHash = value; }
+        public int Hours { get => settings.Modals.PreviewImageFormat.FixedHours; set => settings.Modals.PreviewImageFormat.FixedHours = value; }
+        public int Milliseconds { get => settings.Modals.PreviewImageFormat.FixedMilliseconds; set => settings.Modals.PreviewImageFormat.FixedMilliseconds = value; }
+        public int Minutes { get => settings.Modals.PreviewImageFormat.FixedMinutes; set => settings.Modals.PreviewImageFormat.FixedMinutes = value; }
+        public int Percentage { get => settings.Modals.PreviewImageFormat.RelativePercentage; set => settings.Modals.PreviewImageFormat.RelativePercentage = value; }
+        public bool RelativePosition { get => settings.Modals.PreviewImageFormat.RelativePosition; set => settings.Modals.PreviewImageFormat.RelativePosition = value; }
+        public int Seconds { get => settings.Modals.PreviewImageFormat.FixedSeconds; set => settings.Modals.PreviewImageFormat.FixedSeconds = value; }
+        public bool ExtractEmbeddedImageCommand { get => settings.Modals.PreviewImageFormat.ExtractEmbeddedImage; set => settings.Modals.PreviewImageFormat.ExtractEmbeddedImage = value; }
+        public bool UseContentHash { get => settings.General.UseFileContentHash; set => settings.General.UseFileContentHash = value; }
 
         public async Task ExtractLoadedVideoPreviewImagesAsync()
         {

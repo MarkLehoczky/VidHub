@@ -9,7 +9,7 @@ namespace VidHub.Services.Connectors.Base
     public class SidePanelConnector(IVideoService vs, IVidHubSettings settings, IVideoLoadService load, IVideoOrganizerService organize) : ISidePanelConnector
     {
         public string? CurrentSortOption { get => organize.CurrentSortOption; set => organize.CurrentSortOption = value; }
-        public bool EnableLiveSearch => settings.Organizer.Global.EnableLiveSearch;
+        public bool EnableLiveSearch => settings.SidePanel.UseRealTimeSearch;
         public DateTimeOffset? EndDate { get => organize.EndDate; set => organize.EndDate = value; }
         public string SearchText { get => organize.SearchText; set => organize.SearchText = value; }
         public bool FilterDate { get => organize.FilterDate; set => organize.FilterDate = value; }
@@ -18,7 +18,7 @@ namespace VidHub.Services.Connectors.Base
         public int LoadedFileCount => load.LoadedFileCount;
         public TimeSpan? MaxDuration { get => organize.MaxDuration; set => organize.MaxDuration = value; }
         public TimeSpan? MinDuration { get => organize.MinDuration; set => organize.MinDuration = value; }
-        public bool OpenedSidePanel => settings.Organizer.Global.OpenedSidePanel;
+        public bool OpenedSidePanel => settings.General.OpenedSidePanel;
         public DateTimeOffset? StartDate { get => organize.StartDate; set => organize.StartDate = value; }
         public int TotalFileCount => load.TotalFileCount;
         public string TransferDescription => load.TransferDescription;

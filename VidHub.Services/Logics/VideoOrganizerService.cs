@@ -23,22 +23,22 @@ namespace VidHub.Services.Logics
 
         public string? CurrentSortOption
         {
-            get => settings.Organizer.Display.CurrentSortOption;
+            get => settings.SidePanel.SortBy;
             set
             {
-                settings.Organizer.Display.CurrentSortOption = value;
+                settings.SidePanel.SortBy = value;
                 UpdateOrganizers();
             }
         }
 
         public string SearchText
         {
-            get => settings.Organizer.Display.SearchText;
+            get => settings.SidePanel.SearchText;
             set
             {
-                if (settings.Organizer.Global.EnableLiveSearch)
+                if (settings.SidePanel.UseRealTimeSearch)
                 {
-                    settings.Organizer.Display.SearchText = value;
+                    settings.SidePanel.SearchText = value;
                 }
 
                 localSearchText = value;
@@ -48,56 +48,56 @@ namespace VidHub.Services.Logics
 
         public bool FilterDate
         {
-            get => settings.Organizer.Display.FilterDate;
+            get => settings.SidePanel.FilterDate;
             set
             {
-                settings.Organizer.Display.FilterDate = value;
+                settings.SidePanel.FilterDate = value;
                 UpdateOrganizers();
             }
         }
         public DateTimeOffset? StartDate
         {
-            get => settings.Organizer.Display.StartDate;
+            get => settings.SidePanel.StartDate;
             set
             {
-                settings.Organizer.Display.StartDate = value;
+                settings.SidePanel.StartDate = value;
                 UpdateOrganizers();
             }
         }
         public DateTimeOffset? EndDate
         {
-            get => settings.Organizer.Display.EndDate;
+            get => settings.SidePanel.EndDate;
             set
             {
-                settings.Organizer.Display.EndDate = value;
+                settings.SidePanel.EndDate = value;
                 UpdateOrganizers();
             }
         }
 
         public bool FilterDuration
         {
-            get => settings.Organizer.Display.FilterDuration;
+            get => settings.SidePanel.FilterDuration;
             set
             {
-                settings.Organizer.Display.FilterDuration = value;
+                settings.SidePanel.FilterDuration = value;
                 UpdateOrganizers();
             }
         }
         public TimeSpan? MinDuration
         {
-            get => settings.Organizer.Display.MinDuration;
+            get => settings.SidePanel.MinDuration;
             set
             {
-                settings.Organizer.Display.MinDuration = value;
+                settings.SidePanel.MinDuration = value;
                 UpdateOrganizers();
             }
         }
         public TimeSpan? MaxDuration
         {
-            get => settings.Organizer.Display.MaxDuration;
+            get => settings.SidePanel.MaxDuration;
             set
             {
-                settings.Organizer.Display.MaxDuration = value;
+                settings.SidePanel.MaxDuration = value;
                 UpdateOrganizers();
             }
         }
@@ -110,24 +110,24 @@ namespace VidHub.Services.Logics
 
         public void UpdateSearchText()
         {
-            settings.Organizer.Display.SearchText = localSearchText;
+            settings.SidePanel.SearchText = localSearchText;
             UpdateOrganizers();
         }
 
 
         private void UpdateOrganizers()
         {
-            service.Predicate = settings.Organizer.ValidVideo;
-            service.Comparer = sortOptions.GetValueOrDefault(settings.Organizer.Display.CurrentSortOption ?? string.Empty, Comparer<Video>.Default);
+            service.Predicate = settings.ValidVideo;
+            service.Comparer = sortOptions.GetValueOrDefault(settings.SidePanel.SortBy ?? string.Empty, Comparer<Video>.Default);
             service.Update(UpdateType.UPDATEVIDEOCOLLECTION);
         }
 
         public IEnumerable<string> Suggestions()
         {
-            if (settings.Organizer.Global.EnableSearchSuggestions)
+            if (settings.SidePanel.UseSearchSuggestions)
             {
-                IEnumerable<string> startsWith = service.Select(v => v.Title).Where(v => v.StartsWith(SearchText, settings.Organizer.SearchComparison));
-                IEnumerable<string> contains = service.Select(v => v.Title).Except(startsWith).Where(v => v.Contains(SearchText, settings.Organizer.SearchComparison));
+                IEnumerable<string> startsWith = service.Select(v => v.Title).Where(v => v.StartsWith(SearchText, settings.SearchComparison()));
+                IEnumerable<string> contains = service.Select(v => v.Title).Except(startsWith).Where(v => v.Contains(SearchText, settings.SearchComparison()));
                 return startsWith.Union(contains);
             }
 

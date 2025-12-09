@@ -416,7 +416,7 @@ namespace VidHub.Services.Base
         {
             lock (locker)
             {
-                return [.. Notifications.Where(n => n.Display && VidHubSettings.Instance.DisplayBarNotification(n))];
+                return [.. Notifications.Where(n => n.Display && VidHubSettings.Instance.DisplayNotification(n))];
             }
         }
 

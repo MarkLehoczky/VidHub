@@ -212,7 +212,7 @@ namespace VidHub.Services.Logics
                 initializedLoadingManager = true;
                 manager.LoadingFinished += () =>
                 {
-                    if (!settings.TitleCustomization.DontShowTitleCustomizationAgain)
+                    if (!settings.Modals.TitleFormat.HideTitleCustomization)
                     {
                         _ = Context.Window.TryEnqueue(() => Context.Window.ShowDialogAsync("CustomizeTitleFormat", "Customize video title", "Confirm", new Tuple<bool, IEnumerable<int>>(false, IDCollection)));
                     }
@@ -227,7 +227,7 @@ namespace VidHub.Services.Logics
                     service.Update(UpdateType.UPDATEVIDEOCOLLECTION);
                     IDCollection.Clear();
                 };
-                service.SubscribeToUpdateEvent(_ => manager.ConcurrentLoading = settings.Organizer.Global.EnableConcurrentLoading);
+                service.SubscribeToUpdateEvent(_ => manager.ConcurrentLoading = settings.Performance.UseConcurrentLoading);
             }
         }
     }

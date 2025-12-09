@@ -9,64 +9,64 @@ namespace VidHub.Services.Connectors.Modals
     {
         public string DateFormat
         {
-            get => settings.DisplayCustomization.DateFormat;
+            get => settings.Modals.DisplayFormat.DateFormat;
             set
             {
-                settings.DisplayCustomization.DateFormat = value;
+                settings.Modals.DisplayFormat.DateFormat = value;
                 vs.Update(UpdateType.FORCEUPDATEVIDEOCOLLECTION);
             }
         }
         public string DurationDayFormat
         {
-            get => settings.DisplayCustomization.DurationDayFormat;
+            get => settings.Modals.DisplayFormat.DurationDayFormat;
             set
             {
-                settings.DisplayCustomization.DurationDayFormat = value;
+                settings.Modals.DisplayFormat.DurationDayFormat = value;
                 vs.Update(UpdateType.FORCEUPDATEVIDEOCOLLECTION);
             }
         }
         public string DurationHourFormat
         {
-            get => settings.DisplayCustomization.DurationHourFormat;
+            get => settings.Modals.DisplayFormat.DurationHourFormat;
             set
             {
-                settings.DisplayCustomization.DurationHourFormat = value;
+                settings.Modals.DisplayFormat.DurationHourFormat = value;
                 vs.Update(UpdateType.FORCEUPDATEVIDEOCOLLECTION);
             }
         }
         public string DurationMinuteFormat
         {
-            get => settings.DisplayCustomization.DurationMinuteFormat;
+            get => settings.Modals.DisplayFormat.DurationMinuteFormat;
             set
             {
-                settings.DisplayCustomization.DurationMinuteFormat = value;
+                settings.Modals.DisplayFormat.DurationMinuteFormat = value;
                 vs.Update(UpdateType.FORCEUPDATEVIDEOCOLLECTION);
             }
         }
         public string DurationSecondFormat
         {
-            get => settings.DisplayCustomization.DurationSecondFormat;
+            get => settings.Modals.DisplayFormat.DurationSecondFormat;
             set
             {
-                settings.DisplayCustomization.DurationSecondFormat = value;
+                settings.Modals.DisplayFormat.DurationSecondFormat = value;
                 vs.Update(UpdateType.FORCEUPDATEVIDEOCOLLECTION);
             }
         }
         public double PreviewImageWidth
         {
-            get => settings.DisplayCustomization.PreviewImageWidth;
+            get => settings.Modals.DisplayFormat.PreviewImageWidth;
             set
             {
-                settings.DisplayCustomization.PreviewImageWidth = value;
+                settings.Modals.DisplayFormat.PreviewImageWidth = value;
                 vs.Update(UpdateType.FORCEUPDATEVIDEOCOLLECTION);
             }
         }
         public double PreviewImageHeight
         {
-            get => settings.DisplayCustomization.PreviewImageHeight;
+            get => settings.Modals.DisplayFormat.PreviewImageHeight;
             set
             {
-                settings.DisplayCustomization.PreviewImageHeight = value;
+                settings.Modals.DisplayFormat.PreviewImageHeight = value;
                 vs.Update(UpdateType.FORCEUPDATEVIDEOCOLLECTION);
             }
         }
