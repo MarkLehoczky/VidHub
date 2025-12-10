@@ -66,9 +66,9 @@ namespace VidHub.ViewModels
         }
 
 
-        public override void Update(UpdateType type)
+        public override void Update(IEnumerable<UpdateSection> sections)
         {
-            if (type is UpdateType.UPDATEVIDEOCOLLECTION or UpdateType.FORCEUPDATEVIDEOCOLLECTION)
+            if (sections.Contains(UpdateSection.VIDEOCOLLECTION))
             {
                 OnPropertyChanged(nameof(Videos));
                 OnPropertyChanged(nameof(ShowTitles));

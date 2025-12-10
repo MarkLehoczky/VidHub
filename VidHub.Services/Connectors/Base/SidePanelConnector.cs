@@ -28,7 +28,7 @@ namespace VidHub.Services.Connectors.Base
             return organize.GetSortOptions();
         }
 
-        public void SubscribeToUpdateEvent(Action<UpdateType> action)
+        public void SubscribeToUpdateEvent(Action<IEnumerable<UpdateSection>> action)
         {
             vs.SubscribeToUpdateEvent(action);
         }
@@ -38,14 +38,19 @@ namespace VidHub.Services.Connectors.Base
             return organize.Suggestions();
         }
 
-        public void UnsubscribeFromUpdateEvent(Action<UpdateType> action)
+        public void UnsubscribeFromUpdateEvent(Action<IEnumerable<UpdateSection>> action)
         {
             vs.UnsubscribeFromUpdateEvent(action);
         }
 
-        public void Update(UpdateType type)
+        public void Update(IEnumerable<UpdateSection> sections)
         {
-            vs.Update(type);
+            vs.Update(sections);
+        }
+
+        public void Update(params UpdateSection[] sections)
+        {
+            vs.Update(sections);
         }
 
         public void UpdateSearchText()

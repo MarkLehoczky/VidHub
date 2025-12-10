@@ -29,11 +29,11 @@ namespace VidHub.Services.Logics
 
 
         // TODO: Optimize update logic
-        private void UpdateDisplayedVideos(UpdateType type)
+        private void UpdateDisplayedVideos(IEnumerable<UpdateSection> sections)
         {
             IList<Video> nextDisplayVideos = service.GetDisplayVideos();
 
-            if (type == UpdateType.UPDATEVIDEOCOLLECTION)
+            if (sections.Contains(UpdateSection.VIDEOCOLLECTION))
             {
                 for (int i = 0; i < Math.Min(DisplayedVideos.Count, nextDisplayVideos.Count); i++)
                 {
@@ -53,23 +53,17 @@ namespace VidHub.Services.Logics
                     DisplayedVideos.Add(nextDisplayVideos[i]);
                 }
             }
-            else if (type == UpdateType.FORCEUPDATEVIDEOCOLLECTION)
-            {
-                DisplayedVideos.Clear();
-
-                for (int i = DisplayedVideos.Count; i < nextDisplayVideos.Count; i++)
-                {
-                    DisplayedVideos.Add(nextDisplayVideos[i]);
-                }
-            }
         }
 
-        private void UpdateDisplayedNotifications(UpdateType type)
+        private void UpdateDisplayedNotifications(IEnumerable<UpdateSection> sections)
         {
-            DisplayedNotifications.Clear();
-            foreach (BarNotification notification in service.GetDisplayNotifications())
+            if (sections.Contains(UpdateSection.NOTIFICATIONS))
             {
-                DisplayedNotifications.Add(notification);
+                DisplayedNotifications.Clear();
+                foreach (BarNotification notification in service.GetDisplayNotifications())
+                {
+                    DisplayedNotifications.Add(notification);
+                }
             }
         }
     }

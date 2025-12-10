@@ -107,22 +107,26 @@ namespace VidHub.Services.Connectors.Base
         public async Task RenameAsync(Video video)
         {
             await Context.Window.ShowDialogAsync("ChangeVideoTitle", $"Rename '{video.Title}'", "Confirm", video);
-            Context.Host.GetService<IVideoService>().Update(UpdateType.FORCEUPDATEVIDEOCOLLECTION);
+            Context.Host.GetService<IVideoService>().Update(UpdateSection.VIDEOCOLLECTION);
         }
 
-        public void SubscribeToUpdateEvent(Action<UpdateType> action)
+        public void SubscribeToUpdateEvent(Action<IEnumerable<UpdateSection>> action)
         {
             vs.SubscribeToUpdateEvent(action);
         }
 
-        public void UnsubscribeFromUpdateEvent(Action<UpdateType> action)
+        public void UnsubscribeFromUpdateEvent(Action<IEnumerable<UpdateSection>> action)
         {
             vs.UnsubscribeFromUpdateEvent(action);
         }
 
-        public void Update(UpdateType type)
+        public void Update(IEnumerable<UpdateSection> sections)
         {
-            vs.Update(type);
+            vs.Update(sections);
+        }
+        public void Update(params UpdateSection[] sections)
+        {
+            vs.Update(sections);
         }
     }
 }

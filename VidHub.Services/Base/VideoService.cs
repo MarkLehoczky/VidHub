@@ -13,7 +13,7 @@ namespace VidHub.Services.Base
     public class VideoService : IVideoService, IDisposable
     {
         private readonly object locker = new();
-        private event Action<UpdateType>? UpdateEvent;
+        private event Action<IEnumerable<UpdateSection>>? UpdateEvent;
         private readonly IList<Video> Videos = [];
         public ObservableCollection<BarNotification> Notifications { get; } = [];
         private readonly Task healthCheckTask;
@@ -54,7 +54,7 @@ namespace VidHub.Services.Base
                     {
                         try
                         {
-                            Update(UpdateType.UPDATEVIDEOCOLLECTION);
+                            Update(UpdateSection.VIDEOCOLLECTION);
                         }
                         catch { }
                     });
@@ -302,7 +302,7 @@ namespace VidHub.Services.Base
         }
 
 
-        public void SubscribeToUpdateEvent(Action<UpdateType> action)
+        public void SubscribeToUpdateEvent(Action<IEnumerable<UpdateSection>> action)
         {
             lock (locker)
             {
@@ -310,7 +310,7 @@ namespace VidHub.Services.Base
             }
         }
 
-        public void UnsubscribeFromUpdateEvent(Action<UpdateType> action)
+        public void UnsubscribeFromUpdateEvent(Action<IEnumerable<UpdateSection>> action)
         {
             lock (locker)
             {
@@ -318,12 +318,16 @@ namespace VidHub.Services.Base
             }
         }
 
-        public void Update(UpdateType type)
+        public void Update(IEnumerable<UpdateSection> sections)
         {
             lock (locker)
             {
-                _ = Context.Window.TryEnqueue(() => UpdateEvent?.Invoke(type));
+                _ = Context.Window.TryEnqueue(() => UpdateEvent?.Invoke(sections));
             }
+        }
+        public void Update(params UpdateSection[] sections)
+        {
+            Update(sections.AsEnumerable());
         }
 
         public int IndexOf(Video item)
@@ -433,7 +437,7 @@ namespace VidHub.Services.Base
             lock (locker)
             {
                 Notifications.Add(notification);
-                Update(UpdateType.UPDATEVIDEOCOLLECTION);
+                Update(UpdateSection.NOTIFICATIONS);
             }
         }
     }

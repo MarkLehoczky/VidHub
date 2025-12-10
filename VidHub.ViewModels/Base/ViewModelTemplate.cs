@@ -20,6 +20,10 @@ namespace VidHub.ViewModels.Base
             GC.SuppressFinalize(this);
         }
 
-        public abstract void Update(UpdateType type);
+        public abstract void Update(IEnumerable<UpdateSection> sections);
+        public virtual void Update(params UpdateSection[] sections)
+        {
+            Update(sections.AsEnumerable());
+        }
     }
 }

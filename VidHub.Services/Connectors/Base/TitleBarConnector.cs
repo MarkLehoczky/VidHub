@@ -16,7 +16,7 @@ namespace VidHub.Services.Connectors.Base
             set
             {
                 settings.Display.DisplayDates = value;
-                vs.Update(UpdateType.UPDATEVIDEOCOLLECTION);
+                vs.Update(UpdateSection.VIDEOCOLLECTION);
             }
         }
         public bool DisplayDurations
@@ -25,7 +25,7 @@ namespace VidHub.Services.Connectors.Base
             set
             {
                 settings.Display.DisplayDurations = value;
-                vs.Update(UpdateType.UPDATEVIDEOCOLLECTION);
+                vs.Update(UpdateSection.VIDEOCOLLECTION);
             }
         }
         public bool DisplayTitles
@@ -34,7 +34,7 @@ namespace VidHub.Services.Connectors.Base
             set
             {
                 settings.Display.DisplayTitles = value;
-                vs.Update(UpdateType.UPDATEVIDEOCOLLECTION);
+                vs.Update(UpdateSection.VIDEOCOLLECTION);
             }
         }
         public bool EnableCacheLoading
@@ -43,7 +43,7 @@ namespace VidHub.Services.Connectors.Base
             set
             {
                 settings.Performance.UseCacheLoading = value;
-                vs.Update(UpdateType.UPDATEVIDEOCOLLECTION);
+                vs.Update(UpdateSection.VIDEOCOLLECTION);
             }
         }
         public bool EnableCaseSensitiveSearch
@@ -52,7 +52,7 @@ namespace VidHub.Services.Connectors.Base
             set
             {
                 settings.SidePanel.UseCaseSensitiveSearch = value;
-                vs.Update(UpdateType.UPDATEVIDEOCOLLECTION);
+                vs.Update(UpdateSection.VIDEOCOLLECTION);
             }
         }
         public bool EnableConcurrentLoading
@@ -61,7 +61,7 @@ namespace VidHub.Services.Connectors.Base
             set
             {
                 settings.Performance.UseConcurrentLoading = value;
-                vs.Update(UpdateType.UPDATEVIDEOCOLLECTION);
+                vs.Update(UpdateSection.VIDEOCOLLECTION);
             }
         }
         public bool EnableLiveSearch
@@ -70,8 +70,8 @@ namespace VidHub.Services.Connectors.Base
             set
             {
                 settings.SidePanel.UseRealTimeSearch = value;
-                vs.Update(UpdateType.UPDATESIDEPANEL);
-                vs.Update(UpdateType.UPDATEVIDEOCOLLECTION);
+                vs.Update(UpdateSections.SIDEPANEL);
+                vs.Update(UpdateSection.VIDEOCOLLECTION);
             }
         }
         public bool EnableSearchSuggestions
@@ -80,7 +80,7 @@ namespace VidHub.Services.Connectors.Base
             set
             {
                 settings.SidePanel.UseSearchSuggestions = value;
-                vs.Update(UpdateType.UPDATEVIDEOCOLLECTION);
+                vs.Update(UpdateSection.VIDEOCOLLECTION);
             }
         }
         public bool OpenedSidePanel
@@ -89,7 +89,7 @@ namespace VidHub.Services.Connectors.Base
             set
             {
                 settings.General.OpenedSidePanel = value;
-                vs.Update(UpdateType.UPDATESIDEPANEL);
+                vs.Update(UpdateSections.SIDEPANEL);
             }
         }
         public bool SaveOrganizerSettings
@@ -233,19 +233,24 @@ namespace VidHub.Services.Connectors.Base
             await Context.Window.ShowDialogAsync("DisplayVersionInformation", "VERSION CHANGES", "Close");
         }
 
-        public void SubscribeToUpdateEvent(Action<UpdateType> action)
+        public void SubscribeToUpdateEvent(Action<IEnumerable<UpdateSection>> action)
         {
             vs.SubscribeToUpdateEvent(action);
         }
 
-        public void UnsubscribeFromUpdateEvent(Action<UpdateType> action)
+        public void UnsubscribeFromUpdateEvent(Action<IEnumerable<UpdateSection>> action)
         {
             vs.UnsubscribeFromUpdateEvent(action);
         }
 
-        public void Update(UpdateType type)
+        public void Update(IEnumerable<UpdateSection> sections)
         {
-            vs.Update(type);
+            vs.Update(sections);
+        }
+
+        public void Update(params UpdateSection[] sections)
+        {
+            vs.Update(sections);
         }
     }
 }

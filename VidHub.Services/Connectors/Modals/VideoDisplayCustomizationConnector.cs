@@ -13,7 +13,7 @@ namespace VidHub.Services.Connectors.Modals
             set
             {
                 settings.Modals.DisplayFormat.DateFormat = value;
-                vs.Update(UpdateType.FORCEUPDATEVIDEOCOLLECTION);
+                vs.Update(UpdateSection.VIDEOCOLLECTION);
             }
         }
         public string DurationDayFormat
@@ -22,7 +22,7 @@ namespace VidHub.Services.Connectors.Modals
             set
             {
                 settings.Modals.DisplayFormat.DurationDayFormat = value;
-                vs.Update(UpdateType.FORCEUPDATEVIDEOCOLLECTION);
+                vs.Update(UpdateSection.VIDEOCOLLECTION);
             }
         }
         public string DurationHourFormat
@@ -31,7 +31,7 @@ namespace VidHub.Services.Connectors.Modals
             set
             {
                 settings.Modals.DisplayFormat.DurationHourFormat = value;
-                vs.Update(UpdateType.FORCEUPDATEVIDEOCOLLECTION);
+                vs.Update(UpdateSection.VIDEOCOLLECTION);
             }
         }
         public string DurationMinuteFormat
@@ -40,7 +40,7 @@ namespace VidHub.Services.Connectors.Modals
             set
             {
                 settings.Modals.DisplayFormat.DurationMinuteFormat = value;
-                vs.Update(UpdateType.FORCEUPDATEVIDEOCOLLECTION);
+                vs.Update(UpdateSection.VIDEOCOLLECTION);
             }
         }
         public string DurationSecondFormat
@@ -49,7 +49,7 @@ namespace VidHub.Services.Connectors.Modals
             set
             {
                 settings.Modals.DisplayFormat.DurationSecondFormat = value;
-                vs.Update(UpdateType.FORCEUPDATEVIDEOCOLLECTION);
+                vs.Update(UpdateSection.VIDEOCOLLECTION);
             }
         }
         public double PreviewImageWidth
@@ -58,7 +58,7 @@ namespace VidHub.Services.Connectors.Modals
             set
             {
                 settings.Modals.DisplayFormat.PreviewImageWidth = value;
-                vs.Update(UpdateType.FORCEUPDATEVIDEOCOLLECTION);
+                vs.Update(UpdateSection.VIDEOCOLLECTION);
             }
         }
         public double PreviewImageHeight
@@ -67,23 +67,27 @@ namespace VidHub.Services.Connectors.Modals
             set
             {
                 settings.Modals.DisplayFormat.PreviewImageHeight = value;
-                vs.Update(UpdateType.FORCEUPDATEVIDEOCOLLECTION);
+                vs.Update(UpdateSection.VIDEOCOLLECTION);
             }
         }
 
-        public void SubscribeToUpdateEvent(Action<UpdateType> action)
+        public void SubscribeToUpdateEvent(Action<IEnumerable<UpdateSection>> action)
         {
             vs.SubscribeToUpdateEvent(action);
         }
 
-        public void UnsubscribeFromUpdateEvent(Action<UpdateType> action)
+        public void UnsubscribeFromUpdateEvent(Action<IEnumerable<UpdateSection>> action)
         {
             vs.UnsubscribeFromUpdateEvent(action);
         }
 
-        public void Update(UpdateType type)
+        public void Update(IEnumerable<UpdateSection> sections)
         {
-            vs.Update(type);
+            vs.Update(sections);
+        }
+        public void Update(params UpdateSection[] sections)
+        {
+            vs.Update(sections);
         }
     }
 }

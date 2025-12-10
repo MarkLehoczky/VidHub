@@ -76,12 +76,16 @@ namespace VidHub.ViewModels
         }
 
 
-        public override void Update(UpdateType type)
+        public override void Update(IEnumerable<UpdateSection> sections)
         {
-            if (type is UpdateType.UPDATESIDEPANEL or UpdateType.FORCEUPDATESIDEPANEL)
+            if (sections.Contains(UpdateSection.FILTERPANEL))
             {
                 OnPropertyChanged(nameof(OpenPanel));
                 OnPropertyChanged(nameof(EnableLiveSearch));
+            }
+            if (sections.Contains(UpdateSection.LOADPANEL))
+            {
+                OnPropertyChanged(nameof(OpenPanel));
                 OnPropertyChanged(nameof(TransferDescription));
                 OnPropertyChanged(nameof(HasActiveTransfer));
                 OnPropertyChanged(nameof(LoadedCount));

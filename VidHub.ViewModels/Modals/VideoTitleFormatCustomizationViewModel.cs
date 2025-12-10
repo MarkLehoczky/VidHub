@@ -83,6 +83,6 @@ namespace VidHub.ViewModels.Modals
         }
 
 
-        public override void Update(UpdateType type) { }
+        public override void Update(IEnumerable<UpdateSection> sections) { }
     }
 }

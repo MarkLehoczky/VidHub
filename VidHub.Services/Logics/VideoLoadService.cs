@@ -198,8 +198,8 @@ namespace VidHub.Services.Logics
         private Action<string> UpdateUI => _ =>
         {
             system.SetTaskbar(manager);
-            service.Update(UpdateType.UPDATESIDEPANEL);
-            service.Update(UpdateType.UPDATEVIDEOCOLLECTION);
+            service.Update(UpdateSections.SIDEPANEL);
+            service.Update(UpdateSection.VIDEOCOLLECTION);
         };
 
 
@@ -223,8 +223,8 @@ namespace VidHub.Services.Logics
                         Details = $"{IDCollection.Count} videos were loaded successfully.",
                         Severity = NotificationSeverity.SUCCESS
                     });
-                    service.Update(UpdateType.UPDATESIDEPANEL);
-                    service.Update(UpdateType.UPDATEVIDEOCOLLECTION);
+                    service.Update(UpdateSections.SIDEPANEL);
+                    service.Update(UpdateSection.VIDEOCOLLECTION);
                     IDCollection.Clear();
                 };
                 service.SubscribeToUpdateEvent(_ => manager.ConcurrentLoading = settings.Performance.UseConcurrentLoading);

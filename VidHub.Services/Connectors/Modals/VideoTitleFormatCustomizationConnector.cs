@@ -134,19 +134,23 @@ namespace VidHub.Services.Connectors.Modals
             }
         }
 
-        public void SubscribeToUpdateEvent(Action<UpdateType> action)
+        public void SubscribeToUpdateEvent(Action<IEnumerable<UpdateSection>> action)
         {
             vs.SubscribeToUpdateEvent(action);
         }
 
-        public void UnsubscribeFromUpdateEvent(Action<UpdateType> action)
+        public void UnsubscribeFromUpdateEvent(Action<IEnumerable<UpdateSection>> action)
         {
             vs.UnsubscribeFromUpdateEvent(action);
         }
 
-        public void Update(UpdateType type)
+        public void Update(IEnumerable<UpdateSection> sections)
         {
-            vs.Update(type);
+            vs.Update(sections);
+        }
+        public void Update(params UpdateSection[] sections)
+        {
+            vs.Update(sections);
         }
     }
 }
