@@ -1,7 +1,7 @@
 ﻿using Microsoft.Toolkit.Uwp.Notifications;
-using VidHub.Core.Manager;
-using VidHub.Core.Models.Notifications;
+using VidHub.Core.Notifications;
 using VidHub.Core.Settings;
+using VidHub.Core.Utilities;
 using VidHub.Platform;
 using VidHub.Platform.Windows;
 using VidHub.Platform.Windows.Taskbar.Enums;

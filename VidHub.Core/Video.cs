@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using VidHub.Core.Enums;
 using VidHub.Core.Models;
 using VidHub.Core.Settings;
 using VidHub.Core.Streams;
+using VidHub.Core.Utilities;
+using VidHub.Core.Utilities.Helper;
 using Windows.Storage;
 
 namespace VidHub.Core
@@ -31,7 +32,7 @@ namespace VidHub.Core
         private DetailedVideoState healthState;
 
         [JsonIgnore] public int ID { get => id; set => SetFocusedProperty(ref id, value); }
-        public string Hash { get => hash; init => SetFocusedProperty(ref hash, value); }
+        public string Hash { get => hash; set => SetFocusedProperty(ref hash, value); }
         public string Title { get => title; set => SetFocusedProperty(ref title, value); }
         public DateTime Date { get => date; set => SetFocusedProperty(ref date, value); }
         public TimeSpan Duration { get => duration; set => SetFocusedProperty(ref duration, value); }

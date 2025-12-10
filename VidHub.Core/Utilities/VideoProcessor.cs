@@ -1,20 +1,12 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
-using VidHub.Core.Enums;
 using VidHub.Core.Settings;
 using VidHub.Core.Streams;
+using VidHub.Core.Utilities.Helper;
+using VidHub.Core.Utilities.Internal;
 
-namespace VidHub.Core
+namespace VidHub.Core.Utilities
 {
-    internal class ProcessResult(int exitCode, string standardOutput, string standardError)
-    {
-        public int ExitCode { get; } = exitCode;
-        public string StandardOutput { get; } = standardOutput;
-        public string StandardError { get; } = standardError;
-        public bool Successful => exitCode == 0 && string.IsNullOrEmpty(standardError);
-        public bool Failure => exitCode != 0 || !string.IsNullOrEmpty(standardError);
-    }
-
     internal class VideoProcessor(Video video)
     {
         // TODO: Implement actual executable path finding

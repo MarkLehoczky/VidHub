@@ -1,8 +1,8 @@
 ﻿using VidHub.Core;
-using VidHub.Core.Enums;
-using VidHub.Core.Manager;
-using VidHub.Core.Models.Notifications;
+using VidHub.Core.Notifications;
 using VidHub.Core.Settings;
+using VidHub.Core.Utilities;
+using VidHub.Core.Utilities.Helper;
 using VidHub.Platform;
 using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Logics.Interfaces;

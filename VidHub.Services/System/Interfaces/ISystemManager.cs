@@ -1,5 +1,5 @@
-﻿using VidHub.Core.Manager;
-using VidHub.Core.Models.Notifications;
+﻿using VidHub.Core.Notifications;
+using VidHub.Core.Utilities;
 
 namespace VidHub.Services.System.Interfaces
 {

@@ -1,4 +1,4 @@
-﻿namespace VidHub.Core.Models.Notifications
+﻿namespace VidHub.Core.Notifications
 {
     public class SystemNotification : BaseNotification { }
 }

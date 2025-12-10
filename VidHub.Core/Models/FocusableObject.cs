@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using VidHub.Platform;
 
-namespace VidHub.Core
+namespace VidHub.Core.Models
 {
     public class FocusableObject : ObservableObject
     {

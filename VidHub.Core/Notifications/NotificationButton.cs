@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
-namespace VidHub.Core.Models.Notifications
+namespace VidHub.Core.Notifications
 {
     public class NotificationButton : ObservableObject
     {

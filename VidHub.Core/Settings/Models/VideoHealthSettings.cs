@@ -1,4 +1,4 @@
-﻿using VidHub.Core.Enums;
+﻿using VidHub.Core.Utilities.Helper;
 
 namespace VidHub.Core.Settings.Models
 {

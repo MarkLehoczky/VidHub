@@ -3,7 +3,7 @@ using System.Text;
 using System.Text.Json;
 using VidHub.Core.Settings;
 
-namespace VidHub.Core
+namespace VidHub.Core.Utilities
 {
     internal class VideoHasher(Video video)
     {

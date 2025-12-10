@@ -1,4 +1,4 @@
-﻿namespace VidHub.Core.Manager
+﻿namespace VidHub.Core.Utilities.Helper
 {
     public class WrapActions<T>(Action<T> preAction, Action<T> postAction) where T : class
     {

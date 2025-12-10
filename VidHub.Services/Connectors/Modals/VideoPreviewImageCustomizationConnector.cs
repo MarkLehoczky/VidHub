@@ -1,5 +1,5 @@
-﻿using VidHub.Core.Enums;
-using VidHub.Core.Settings;
+﻿using VidHub.Core.Settings;
+using VidHub.Core.Utilities.Helper;
 using VidHub.Platform;
 using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Connectors.Modals.Interfaces;
@@ -37,11 +37,11 @@ namespace VidHub.Services.Connectors.Modals
                 {
                     if (RelativePosition)
                     {
-                        item.ExtractPreviewImage();
+                        item.ProcessPreviewImage();
                     }
                     else
                     {
-                        item.ExtractPreviewImage();
+                        item.ProcessPreviewImage();
                     }
                 }
             });

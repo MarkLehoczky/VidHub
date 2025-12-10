@@ -1,4 +1,4 @@
-﻿namespace VidHub.Core.Enums
+﻿namespace VidHub.Core.Utilities.Helper
 {
     public enum VideoHealthCheckType
     {

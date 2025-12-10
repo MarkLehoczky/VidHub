@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 using System.Text.RegularExpressions;
-using VidHub.Core.Models.Notifications;
+using VidHub.Core.Notifications;
 using VidHub.Core.Settings.Models;
 using VidHub.Platform;
 

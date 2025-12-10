@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using VidHub.Core;
-using VidHub.Core.Models.Notifications;
+using VidHub.Core.Notifications;
 using VidHub.Services.Base.Interfaces;
 
 namespace VidHub.Services.Connectors.Base.Interfaces

@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace VidHub.Core.Models.Notifications
+namespace VidHub.Core.Notifications
 {
     public class BaseNotification : ObservableObject
     {

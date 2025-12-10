@@ -2,7 +2,7 @@
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media;
 using System;
-using VidHub.Core.Enums;
+using VidHub.Core.Utilities.Helper;
 
 namespace VidHub.WinUI.Converters
 {

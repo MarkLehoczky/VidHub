@@ -1,8 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using VidHub.Core;
-using VidHub.Core.Enums;
-using VidHub.Core.Models.Notifications;
+using VidHub.Core.Notifications;
+using VidHub.Core.Utilities.Helper;
 using VidHub.Platform;
 using VidHub.Services.Connectors.Base.Interfaces;
 using VidHub.ViewModels.Base;

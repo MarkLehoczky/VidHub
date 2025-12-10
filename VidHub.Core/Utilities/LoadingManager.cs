@@ -1,35 +1,13 @@
 ﻿using System.Collections.Concurrent;
 using System.Data;
+using VidHub.Core.Utilities.Helper;
+using VidHub.Core.Utilities.Internal;
 using Windows.Storage;
 
-namespace VidHub.Core.Manager
+namespace VidHub.Core.Utilities
 {
     public class LoadingManager
     {
-        internal class QueueCollectItem(IEnumerable<string> items, bool includeSubfolders, WrapActions<string> collectActions, WrapActions<string> loadActions)
-        {
-            public IEnumerable<string> Items { get; } = items;
-            public bool IncludeSubfolders { get; } = includeSubfolders;
-            public WrapActions<string> CollectActions { get; } = collectActions;
-            public WrapActions<string> LoadActions { get; } = loadActions;
-        }
-
-        internal class QueueLoadItem(string file, WrapActions<string> loadActions)
-        {
-            public string File { get; } = file;
-            public WrapActions<string> LoadActions { get; } = loadActions;
-
-            public void PreActionInvoke()
-            {
-                LoadActions.PreAction(File);
-            }
-            public void PostActionInvoke()
-            {
-                LoadActions.PostAction(File);
-            }
-        }
-
-
         private readonly ConcurrentQueue<QueueCollectItem> collectQueue = new();
         private readonly ConcurrentQueue<QueueLoadItem> loadQueue = new();
         private int loadedFileCount = 0;

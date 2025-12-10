@@ -1,4 +1,4 @@
-﻿using VidHub.Core.Models.Notifications;
+﻿using VidHub.Core.Notifications;
 using VidHub.Core.Settings.Models;
 
 namespace VidHub.Core.Settings
