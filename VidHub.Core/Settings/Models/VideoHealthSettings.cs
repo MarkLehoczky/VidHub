@@ -4,6 +4,6 @@ namespace VidHub.Core.Settings.Models
 {
     public class VideoHealthSettings
     {
-        public HealthCheckLevel Level { get; set; } = HealthCheckLevel.QUICKCHECK;
+        public VideoHealthCheckType Type { get; set; } = VideoHealthCheckType.QUICKCHECK;
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace VidHub.Core.Enums
 {
-    public enum HealthCheckLevel
+    public enum VideoHealthCheckType
     {
         NONE,
         EXISTENCECHECK,

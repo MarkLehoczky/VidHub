@@ -103,7 +103,7 @@
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
-                                <FontIcon Glyph="{Binding Condition.VideoState, Converter={StaticResource FormatStateIcon}}" Foreground="{Binding Condition.VideoState, Converter={StaticResource FormatStateColor}}" ToolTipService.ToolTip="{Binding Condition.Description}" FontFamily="Segoe Fluent Icons" Margin="10 5 5 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" />
+                                <FontIcon Glyph="{Binding HealthState.State, Converter={StaticResource FormatStateIcon}}" Foreground="{Binding HealthState.State, Converter={StaticResource FormatStateColor}}" ToolTipService.ToolTip="{Binding HealthState.Details}" FontFamily="Segoe Fluent Icons" Margin="10 5 5 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" />
                                 <TextBlock Text="{Binding Date, Converter={StaticResource FormatDate}}" IsTextSelectionEnabled="True" FontStyle="Italic" Margin="5 5 10 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" />
                             </Grid>
                         </Grid>
@@ -120,7 +120,7 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <InfoBar IsOpen="{Binding DisplayNotification}" Title="{Binding Title}" Message="{Binding Details}" Severity="{Binding Severity, Converter={StaticResource TransformSeverityType}}" IsClosable="{Binding IsClosable}" ActionButton="{Binding Button, Converter={StaticResource TransformNotificationButton}}">
+                    <InfoBar IsOpen="{Binding Display}" Title="{Binding Title}" Message="{Binding Details}" Severity="{Binding Severity, Converter={StaticResource TransformSeverityType}}" IsClosable="{Binding IsClosable}" ActionButton="{Binding Button, Converter={StaticResource TransformNotificationButton}}">
                     </InfoBar>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

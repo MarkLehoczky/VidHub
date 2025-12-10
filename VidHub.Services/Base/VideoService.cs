@@ -74,7 +74,7 @@ namespace VidHub.Services.Base
                         IList<Video> snapshot = [.. Videos];
                         foreach (Video video in snapshot)
                         {
-                            video.CheckCondition();
+                            video.HealthCheck();
                         }
                     }
 
@@ -124,7 +124,7 @@ namespace VidHub.Services.Base
             static bool displayCondition()
             {
                 IList<Video> snapshot = Context.Host.GetService<IVideoService>().GetAllVideos();
-                return snapshot.Count > 0 && snapshot.Any(video => video.Condition.VideoState == VideoCondition.State.NOTCHECKED);
+                return snapshot.Count > 0 && snapshot.Any(video => video.HealthState.State == VideoHealth.NOTCHECKED);
             }
             BarNotification notification = new()
             {
@@ -145,7 +145,7 @@ namespace VidHub.Services.Base
             static bool displayCondition()
             {
                 IList<Video> snapshot = Context.Host.GetService<IVideoService>().GetAllVideos();
-                return snapshot.Count > 0 && snapshot.All(video => video.Condition.VideoState is VideoCondition.State.HEALTHY or VideoCondition.State.INPROGRESS);
+                return snapshot.Count > 0 && snapshot.All(video => video.HealthState.State is VideoHealth.HEALTHY or VideoHealth.INPROGRESS);
             }
             BarNotification notification = new()
             {
@@ -270,9 +270,10 @@ namespace VidHub.Services.Base
             {
                 IList<Video> snapshot = Context.Host.GetService<IVideoService>().GetAllVideos();
                 return snapshot.Count > 0 && snapshot.Any(video =>
-                video.Condition.VideoState is VideoCondition.State.FILENOTFOUND
-                or VideoCondition.State.CORRUPTED
-                or VideoCondition.State.UNKNOWNERROR);
+                video.HealthState.State is VideoHealth.FILENOTFOUND
+                or VideoHealth.SERIOUSCORRUPTION
+                or VideoHealth.CRITICALCORRUPTION
+                or VideoHealth.UNKNOWNERROR);
             }
             BarNotification notification = new()
             {

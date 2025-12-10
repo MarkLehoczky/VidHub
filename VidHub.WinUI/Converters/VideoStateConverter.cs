@@ -2,7 +2,7 @@
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media;
 using System;
-using static VidHub.Core.VideoCondition;
+using VidHub.Core.Enums;
 
 namespace VidHub.WinUI.Converters
 {
@@ -10,18 +10,20 @@ namespace VidHub.WinUI.Converters
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            return value is State state
+            return value is VideoHealth state
                 ? state switch
                 {
-                    State.NOTCHECKED => "\uf142",
-                    State.INPROGRESS => "\uf143",
-                    State.HEALTHY => "\uf13e",
-                    State.CORRUPTED => "\uf13d",
-                    State.UNKNOWNERROR => "\uf13c",
-                    State.FILENOTFOUND => "\uf140",
-                    _ => "\uf141",
+                    VideoHealth.NOTCHECKED => "\uf141",
+                    VideoHealth.INPROGRESS => "\uf143",
+                    VideoHealth.HEALTHY => "\uf13e",
+                    VideoHealth.MINORCORRUPTION => "\uf13e",
+                    VideoHealth.SERIOUSCORRUPTION => "\uf13d",
+                    VideoHealth.CRITICALCORRUPTION => "\uf13d",
+                    VideoHealth.FILENOTFOUND => "\uf140",
+                    VideoHealth.UNKNOWNERROR => "\uf13c",
+                    _ => "\uf142",
                 }
-                : "\uf137";
+                : "\uf142";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
@@ -33,18 +35,20 @@ namespace VidHub.WinUI.Converters
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            return value is State state
+            return value is VideoHealth state
                 ? state switch
                 {
-                    State.NOTCHECKED => new SolidColorBrush(ColorHelper.FromArgb(255, 105, 105, 105)),
-                    State.INPROGRESS => new SolidColorBrush(ColorHelper.FromArgb(255, 30, 144, 255)),
-                    State.HEALTHY => new SolidColorBrush(ColorHelper.FromArgb(255, 0, 128, 0)),
-                    State.CORRUPTED => new SolidColorBrush(ColorHelper.FromArgb(255, 255, 0, 0)),
-                    State.UNKNOWNERROR => new SolidColorBrush(ColorHelper.FromArgb(255, 178, 34, 34)),
-                    State.FILENOTFOUND => new SolidColorBrush(ColorHelper.FromArgb(255, 139, 0, 0)),
-                    _ => new SolidColorBrush(ColorHelper.FromArgb(255, 105, 105, 105)),
+                    VideoHealth.NOTCHECKED => new SolidColorBrush(Colors.DimGray),
+                    VideoHealth.INPROGRESS => new SolidColorBrush(Colors.DeepSkyBlue),
+                    VideoHealth.HEALTHY => new SolidColorBrush(Colors.Green),
+                    VideoHealth.MINORCORRUPTION => new SolidColorBrush(Colors.Orange),
+                    VideoHealth.SERIOUSCORRUPTION => new SolidColorBrush(Colors.Orange),
+                    VideoHealth.CRITICALCORRUPTION => new SolidColorBrush(Colors.Red),
+                    VideoHealth.FILENOTFOUND => new SolidColorBrush(Colors.Red),
+                    VideoHealth.UNKNOWNERROR => new SolidColorBrush(Colors.DarkRed),
+                    _ => new SolidColorBrush(Colors.DimGray),
                 }
-                : new SolidColorBrush(ColorHelper.FromArgb(255, 105, 105, 105));
+                : new SolidColorBrush(Colors.DimGray);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

@@ -99,25 +99,15 @@ namespace VidHub.Core.Settings
 
         public TimeSpan GetPreviewImageTime(Video video)
         {
-            if (video.DefaultVideoStream != null && video.DefaultVideoStream.Duration > TimeSpan.Zero)
-            {
-                return GetPreviewImageTime(video.DefaultVideoStream.Duration);
-            }
-            else
-            {
-                return GetPreviewImageTime(video.Duration);
-            }
+            return video.DefaultVideoStream != null && video.DefaultVideoStream.Duration > TimeSpan.Zero
+                ? GetPreviewImageTime(video.DefaultVideoStream.Duration)
+                : GetPreviewImageTime(video.Duration);
         }
         public TimeSpan GetPreviewImageTime(TimeSpan duration)
         {
-            if (Modals.PreviewImageFormat.RelativePosition)
-            {
-                return duration * Modals.PreviewImageFormat.RelativeTime;
-            }
-            else
-            {
-                return duration > Modals.PreviewImageFormat.FixedTime ? Modals.PreviewImageFormat.FixedTime : duration;
-            }
+            return Modals.PreviewImageFormat.RelativePosition
+                ? duration * Modals.PreviewImageFormat.RelativeTime
+                : duration > Modals.PreviewImageFormat.FixedTime ? Modals.PreviewImageFormat.FixedTime : duration;
         }
 
         public void CustomizeVideoTitle(ref Video video)

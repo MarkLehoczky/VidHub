@@ -140,45 +140,45 @@ namespace VidHub.Services.Connectors.Base
 
         public bool DisabledHealthCheck
         {
-            get => settings.VideoHealth.Level == HealthCheckLevel.NONE;
+            get => settings.VideoHealth.Type == VideoHealthCheckType.NONE;
             set
             {
                 if (value)
                 {
-                    settings.VideoHealth.Level = HealthCheckLevel.NONE;
+                    settings.VideoHealth.Type = VideoHealthCheckType.NONE;
                 }
             }
         }
         public bool ExistenceHealthCheck
         {
-            get => settings.VideoHealth.Level == HealthCheckLevel.EXISTENCECHECK;
+            get => settings.VideoHealth.Type == VideoHealthCheckType.EXISTENCECHECK;
             set
             {
                 if (value)
                 {
-                    settings.VideoHealth.Level = HealthCheckLevel.EXISTENCECHECK;
+                    settings.VideoHealth.Type = VideoHealthCheckType.EXISTENCECHECK;
                 }
             }
         }
         public bool QuickHealthCheck
         {
-            get => settings.VideoHealth.Level == HealthCheckLevel.QUICKCHECK;
+            get => settings.VideoHealth.Type == VideoHealthCheckType.QUICKCHECK;
             set
             {
                 if (value)
                 {
-                    settings.VideoHealth.Level = HealthCheckLevel.QUICKCHECK;
+                    settings.VideoHealth.Type = VideoHealthCheckType.QUICKCHECK;
                 }
             }
         }
         public bool FullHealthCheck
         {
-            get => settings.VideoHealth.Level == HealthCheckLevel.FULLCHECK;
+            get => settings.VideoHealth.Type == VideoHealthCheckType.FULLCHECK;
             set
             {
                 if (value)
                 {
-                    settings.VideoHealth.Level = HealthCheckLevel.FULLCHECK;
+                    settings.VideoHealth.Type = VideoHealthCheckType.FULLCHECK;
                 }
             }
         }
