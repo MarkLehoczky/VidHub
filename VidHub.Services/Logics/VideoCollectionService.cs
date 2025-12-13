@@ -31,7 +31,7 @@ namespace VidHub.Services.Logics
         // TODO: Optimize update logic
         private void UpdateDisplayedVideos(IEnumerable<UpdateSection> sections)
         {
-            IList<Video> nextDisplayVideos = service.GetDisplayVideos();
+            IList<Video> nextDisplayVideos = service.GetDisplayedVideos();
 
             if (sections.Contains(UpdateSection.VIDEOCOLLECTION))
             {
@@ -60,7 +60,7 @@ namespace VidHub.Services.Logics
             if (sections.Contains(UpdateSection.NOTIFICATIONS))
             {
                 DisplayedNotifications.Clear();
-                foreach (BarNotification notification in service.GetDisplayNotifications())
+                foreach (BarNotification notification in service.GetDisplayedNotifications())
                 {
                     DisplayedNotifications.Add(notification);
                 }

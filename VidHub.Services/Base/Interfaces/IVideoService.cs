@@ -3,14 +3,14 @@ using VidHub.Core.Notifications;
 
 namespace VidHub.Services.Base.Interfaces
 {
-    public interface IVideoService : IUpdateService, IList<Video>
+    public interface IVideoService : IList<Video>, IUpdateService
     {
         Comparer<Video> Comparer { get; set; }
         Func<Video, bool> Predicate { get; set; }
-        IList<Video> GetAllVideos();
-        IList<Video> GetDisplayVideos();
+
         IList<BarNotification> GetAllNotifications();
-        IList<BarNotification> GetDisplayNotifications();
-        void AddNotification(BarNotification notification);
+        IList<Video> GetAllVideos();
+        IList<BarNotification> GetDisplayedNotifications();
+        IList<Video> GetDisplayedVideos();
     }
 }

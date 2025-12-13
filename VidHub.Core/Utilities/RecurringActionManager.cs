@@ -1,0 +1,29 @@
+﻿namespace VidHub.Core.Utilities
+{
+    public class RecurringActionManager : IDisposable
+    {
+        private readonly IList<Task> recurringTasks = [];
+
+        public void Add(Action action, TimeSpan timeout)
+        {
+            Task task = Task.Run(async () =>
+            {
+                while (true)
+                {
+                    await Task.Run(action);
+                    await Task.Delay(timeout).ConfigureAwait(false);
+                }
+            });
+            recurringTasks.Add(task);
+        }
+
+        public void Dispose()
+        {
+            foreach (var task in recurringTasks)
+            {
+                task.Dispose();
+            }
+            GC.SuppressFinalize(this);
+        }
+    }
+}
