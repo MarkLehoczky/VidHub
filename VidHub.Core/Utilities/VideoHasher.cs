@@ -47,8 +47,8 @@ namespace VidHub.Core.Utilities
                 return false;
             }
 
-            Video cache = JsonSerializer.Deserialize<Video>(File.ReadAllText(cacheFilePath))!;
-            if (File.Exists(cache.FilePath))
+            Video? cache = JsonSerializer.Deserialize<Video>(File.ReadAllText(cacheFilePath));
+            if (cache is not null && File.Exists(cache.FilePath))
             {
                 FileInfo oldFile = new(cache.FilePath);
                 FileInfo newFile = new(video.FilePath);
@@ -80,3 +80,4 @@ namespace VidHub.Core.Utilities
         }
     }
 }
+

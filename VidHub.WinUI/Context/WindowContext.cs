@@ -18,7 +18,16 @@ namespace VidHub.WinUI.Context
 
         public bool TryEnqueue(Action callback)
         {
-            return window.DispatcherQueue.TryEnqueue(callback.Invoke);
+            try
+            {
+                callback ??= () => { };
+                if (window is Window actualWindow && actualWindow.DispatcherQueue != null)
+                {
+                    return window.DispatcherQueue.TryEnqueue(callback.Invoke);
+                }
+                return false;
+            }
+            catch { return false; }
         }
 
         public async Task ShowDialogAsync(string type, string title, string closeButton)

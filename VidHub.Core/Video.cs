@@ -104,7 +104,11 @@ namespace VidHub.Core
             }
 
             string json = File.ReadAllText(cachePath);
-            Video video = JsonSerializer.Deserialize<Video>(json)!;
+            Video? video = JsonSerializer.Deserialize<Video>(json);
+            if (video is null)
+            {
+                return false;
+            }
 
             Title = video.Title;
             Date = video.Date;
@@ -133,7 +137,7 @@ namespace VidHub.Core
                 () => UnknownStreams = metadataProcessor.GetUnknownStreams(),
                 () => Title = VidHubSettings.Instance.GetCustomizedVideoTitle(this),
                 () => Date = FormatStream.CreationTime != DateTime.MinValue ? FormatStream.CreationTime : File.GetLastWriteTime(FilePath),
-                () => Duration = DefaultVideoStream!.Duration != TimeSpan.Zero ? DefaultVideoStream.Duration : FormatStream.Duration,
+                () => Duration = DefaultVideoStream is not null && DefaultVideoStream.Duration != TimeSpan.Zero ? DefaultVideoStream.Duration : FormatStream.Duration,
                 () => ProcessPreviewImage()
             ];
         }
@@ -143,9 +147,9 @@ namespace VidHub.Core
             try
             {
                 VideoProcessor processor = new(this);
-                if (processor.ProcessPreviewImage(out var extractedImagePath))
+                if (processor.ProcessPreviewImage(out var extractedImagePath) && extractedImagePath is not null)
                 {
-                    PreviewImagePath = extractedImagePath!;
+                    PreviewImagePath = extractedImagePath;
                     return true;
                 }
                 return false;
@@ -175,14 +179,18 @@ namespace VidHub.Core
 
         public void HealthCheck()
         {
-            List<VideoHealthCheckType> existenceCheckTypes = [VideoHealthCheckType.EXISTENCECHECK, VideoHealthCheckType.QUICKCHECK, VideoHealthCheckType.FULLCHECK];
-
-            if (existenceCheckTypes.Contains(VidHubSettings.Instance.VideoHealth.Type))
+            if (VidHubSettings.Instance.VideoHealth.Type is VideoHealthCheckType.NONE)
+            {
+                return;
+            }
+            if (VidHubSettings.Instance.VideoHealth.Type is VideoHealthCheckType.EXISTENCECHECK)
+            {
+                HealthState = File.Exists(FilePath) ? VideoHealth.HEALTHY : VideoHealth.FILENOTFOUND;
+                return;
+            }
+            if (!File.Exists(FilePath))
             {
                 HealthState = VideoHealth.FILENOTFOUND;
-            }
-            if (VidHubSettings.Instance.VideoHealth.Type == VideoHealthCheckType.NONE || VidHubSettings.Instance.VideoHealth.Type == VideoHealthCheckType.EXISTENCECHECK)
-            {
                 return;
             }
 
