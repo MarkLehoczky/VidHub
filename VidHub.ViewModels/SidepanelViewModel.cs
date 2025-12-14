@@ -15,8 +15,8 @@ namespace VidHub.ViewModels
         public IEnumerable<string> SortOptions => connector.GetSortOptions();
         public string? CurrentSortOption
         {
-            get => connector.CurrentSortOption;
-            set => connector.CurrentSortOption = value;
+            get => connector.SortBy;
+            set => connector.SortBy = value;
         }
 
         public string SearchText
@@ -28,8 +28,8 @@ namespace VidHub.ViewModels
                 OnPropertyChanged(nameof(Suggestions));
             }
         }
-        public bool EnableLiveSearch => connector.EnableLiveSearch;
-        public IEnumerable<string> Suggestions => connector.Suggestions();
+        public bool EnableLiveSearch => connector.UseRealTimeSearch;
+        public IEnumerable<string> Suggestions => connector.GetSearchSuggestions();
 
         public bool FilterDate
         {

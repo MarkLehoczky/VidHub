@@ -1,19 +1,25 @@
 using Microsoft.UI.Xaml.Controls;
-using System;
-using System.Collections.Generic;
+using VidHub.Services.Base.Interfaces;
+using VidHub.Services.Connectors.Modals;
 using VidHub.ViewModels.Modals;
+using VidHub.Core.Settings;
 
 namespace VidHub.WinUI.UserControls.Modals
 {
     public sealed partial class VideoTitleFormatCustomizationUserControl : UserControl
     {
-        public VideoTitleFormatCustomizationUserControl(Tuple<bool, IEnumerable<int>> loadContent)
+        public VideoTitleFormatCustomizationUserControl(bool futureCustomization)
         {
             InitializeComponent();
             if (DataContext is VideoTitleFormatCustomizationViewModel viewmodel)
             {
-                viewmodel.TemplateMode = loadContent.Item1;
-                viewmodel.ChangeVideos(loadContent.Item2);
+                if (futureCustomization)
+                {
+                    IVideoService service = Platform.Context.Host.GetService<IVideoService>();
+                    IVidHubSettings settings = Platform.Context.Host.GetService<IVidHubSettings>();
+                    viewmodel.Connector = new VideoTitleLoadFormatCustomizationConnector(service, settings);
+                }
+                viewmodel.Connector.UpdateTitles();
             }
         }
     }

@@ -1,6 +1,4 @@
-﻿using VidHub.Core;
-using VidHub.Core.Models;
-using VidHub.Core.Utilities.Helper;
+﻿using VidHub.Core.Utilities.Helper;
 using VidHub.Platform;
 using VidHub.Services.Connectors.Modals.Interfaces;
 using VidHub.ViewModels.Base;
@@ -9,80 +7,72 @@ namespace VidHub.ViewModels.Modals
 {
     public partial class VideoTitleFormatCustomizationViewModel(IVideoTitleFormatCustomizationConnector connector) : ViewModelTemplate(connector)
     {
-        public VideoTitleFormatCustomizationViewModel() : this(Context.Host.GetService<IVideoTitleFormatCustomizationConnector>()) { }
+        public IVideoTitleFormatCustomizationConnector Connector { get; set; }
+
+        public VideoTitleFormatCustomizationViewModel() : this(Context.Host.GetService<IVideoTitleFormatCustomizationConnector>())
+        {
+            Connector = Context.Host.GetService<IVideoTitleFormatCustomizationConnector>();
+        }
 
 
-        public IList<VideoTitleTemplate> TitleCollection => connector.Videos;
+        public IList<string> TitleCollection => Connector.Titles;
 
         public bool IncludePath
         {
-            get => connector.IncludePath;
-            set => connector.IncludePath = value;
+            get => Connector.IncludePath;
+            set => Connector.IncludePath = value;
         }
         public bool IncludeDate
         {
-            get => connector.IncludeDate;
-            set => connector.IncludeDate = value;
+            get => Connector.IncludeDate;
+            set => Connector.IncludeDate = value;
         }
         public bool IncludeFilename
         {
-            get => connector.IncludeFilename;
-            set => connector.IncludeFilename = value;
+            get => Connector.IncludeFilename;
+            set => Connector.IncludeFilename = value;
         }
         public bool IncludeMetadata
         {
-            get => connector.IncludeMetadata;
-            set => connector.IncludeMetadata = value;
+            get => Connector.IncludeMetadata;
+            set => Connector.IncludeMetadata = value;
         }
         public bool IncludeExtension
         {
-            get => connector.IncludeExtension;
-            set => connector.IncludeExtension = value;
+            get => Connector.IncludeExtension;
+            set => Connector.IncludeExtension = value;
         }
 
         public string RegexPattern
         {
-            get => connector.RegexPattern;
+            get => Connector.RegexPattern;
             set
             {
-                connector.RegexPattern = value;
+                Connector.RegexPattern = value;
                 OnPropertyChanged(nameof(InvalidRegex));
             }
         }
         public string RegexReplacement
         {
-            get => connector.RegexReplacement; set => connector.RegexReplacement = value;
+            get => Connector.RegexReplacement; set => Connector.RegexReplacement = value;
         }
-        public bool InvalidRegex => connector.InvalidRegex;
+        public bool InvalidRegex => Connector.InvalidRegex;
 
         public bool EnabledRegex
         {
-            get => connector.EnabledRegex;
-            set => connector.EnabledRegex = value;
+            get => Connector.UseRegex;
+            set => Connector.UseRegex = value;
         }
         public bool DontShowTitleCustomizationAgain
         {
-            get => connector.DontShowTitleCustomizationAgain;
-            set => connector.DontShowTitleCustomizationAgain = value;
+            get => Connector.HideTitleCustomization;
+            set => Connector.HideTitleCustomization = value;
         }
 
-        public bool TemplateMode
+
+        public override void Update(IEnumerable<UpdateSection> sections)
         {
-            get => connector.IsTemplateMode;
-            set => connector.IsTemplateMode = value;
+            OnPropertyChanged(nameof(EnabledRegex));
         }
-
-        public void ChangeVideos(IEnumerable<int> ids)
-        {
-            connector.ChangeVideos(ids);
-        }
-
-        public void ChangeVideos(IEnumerable<Video> videos)
-        {
-            connector.ChangeVideos(videos);
-        }
-
-
-        public override void Update(IEnumerable<UpdateSection> sections) { }
     }
 }

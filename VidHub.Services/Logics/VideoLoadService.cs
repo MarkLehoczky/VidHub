@@ -16,9 +16,12 @@ namespace VidHub.Services.Logics
     public class VideoLoadService(IVideoService service, IVidHubSettings settings, ISystemManager system) : IVideoLoadService
     {
         private readonly LoadingManager manager = new();
-        private readonly List<int> IDCollection = [];
 
         public bool HasActiveTransfer => manager.IsActive;
+
+        public int LoadedFileCount => manager.LoadedFileCount;
+
+        public int TotalFileCount => manager.TotalFileCount;
 
         public string TransferDescription => !manager.IsActive
             ? "No active loading..."
@@ -26,10 +29,52 @@ namespace VidHub.Services.Logics
                 ? "Collecting and loading videos"
                 : "Loading videos";
 
-        public int LoadedFileCount => manager.LoadedFileCount;
 
-        public int TotalFileCount => manager.TotalFileCount;
+        public async Task ExportCollectionAsync()
+        {
+            InitLoadingManager();
+            StorageFile? file = await FileSaver("Export");
 
+            if (file != null)
+            {
+                await FileIO.WriteTextAsync(file, string.Join('\n', service.Select(v => v.FilePath)));
+            }
+        }
+
+        public async Task ImportCollectionAsync()
+        {
+            InitLoadingManager();
+            StorageFile? file = await SingleFileOpener("Import");
+
+            if (file != null)
+            {
+                await Task.Run(async () =>
+                {
+                    await Task.Run(async () =>
+                    {
+                        IList<string> files = await FileIO.ReadLinesAsync(file);
+                        WrapActions<string> collectActions = new(WrapActions<string>.NoAction, UpdateUI);
+                        WrapActions<string> loadActions = new(LoadVideo, UpdateUI);
+                        await manager.QueueVideoCollecting(files, false, collectActions, loadActions);
+                    });
+
+                });
+            }
+        }
+
+        public async Task LoadItems(IEnumerable<IStorageItem> items, bool includeSubfolders)
+        {
+            InitLoadingManager();
+            if (items.Any())
+            {
+                await Task.Run(async () =>
+                {
+                    WrapActions<string> collectActions = new(WrapActions<string>.NoAction, UpdateUI);
+                    WrapActions<string> loadActions = new(LoadVideo, UpdateUI);
+                    await manager.QueueVideoCollecting(items, includeSubfolders, collectActions, loadActions);
+                });
+            }
+        }
 
         public async Task LoadFilesAsync()
         {
@@ -60,51 +105,6 @@ namespace VidHub.Services.Logics
                     WrapActions<string> loadActions = new(LoadVideo, UpdateUI);
                     await manager.QueueVideoCollecting([folder], includeSubfolders, collectActions, loadActions);
                 });
-            }
-        }
-
-        public async Task LoadItems(IEnumerable<IStorageItem> items, bool includeSubfolders)
-        {
-            InitLoadingManager();
-            if (items.Any())
-            {
-                await Task.Run(async () =>
-                {
-                    WrapActions<string> collectActions = new(WrapActions<string>.NoAction, UpdateUI);
-                    WrapActions<string> loadActions = new(LoadVideo, UpdateUI);
-                    await manager.QueueVideoCollecting(items, includeSubfolders, collectActions, loadActions);
-                });
-            }
-        }
-
-        public async Task ImportCollectionAsync()
-        {
-            InitLoadingManager();
-            StorageFile? file = await SingleFileOpener("Import");
-
-            if (file != null)
-            {
-                await Task.Run(async () =>
-                {
-                    await Task.Run(async () =>
-                    {
-                        IList<string> files = await FileIO.ReadLinesAsync(file);
-                        WrapActions<string> collectActions = new(WrapActions<string>.NoAction, UpdateUI);
-                        WrapActions<string> loadActions = new(LoadVideo, UpdateUI);
-                        await manager.QueueVideoCollecting(files, false, collectActions, loadActions);
-                    });
-
-                });
-            }
-        }
-        public async Task ExportCollectionAsync()
-        {
-            InitLoadingManager();
-            StorageFile? file = await FileSaver("Export");
-
-            if (file != null)
-            {
-                await FileIO.WriteTextAsync(file, string.Join('\n', service.Select(v => v.FilePath)));
             }
         }
 
@@ -169,7 +169,6 @@ namespace VidHub.Services.Logics
             return await picker.PickSaveFileAsync();
         }
 
-
         private static async Task<IEnumerable<StorageFile>> CollectFilesAsync(StorageFolder folder, bool includeSubfolders, List<string> fileTypeFilters)
         {
             List<StorageFile> files = [.. await folder.GetFilesAsync()];
@@ -190,9 +189,7 @@ namespace VidHub.Services.Logics
         {
             Video video = new(file);
             video.Load();
-
             service.Add(video);
-            IDCollection.Add(video.ID);
         };
 
         private Action<string> UpdateUI => _ =>
@@ -207,28 +204,36 @@ namespace VidHub.Services.Logics
 
         private void InitLoadingManager()
         {
-            if (!initializedLoadingManager)
+            if (initializedLoadingManager)
             {
-                initializedLoadingManager = true;
-                manager.LoadingFinished += () =>
-                {
-                    if (!settings.Modals.TitleFormat.HideTitleCustomization)
-                    {
-                        _ = Context.Window.TryEnqueue(() => Context.Window.ShowDialogAsync("CustomizeTitleFormat", "Customize video title", "Confirm", new Tuple<bool, IEnumerable<int>>(false, IDCollection)));
-                    }
-
-                    system.DisplayToast(new SystemNotification()
-                    {
-                        Title = "Video loading finished!",
-                        Details = $"{IDCollection.Count} videos were loaded successfully.",
-                        Severity = NotificationSeverity.SUCCESS
-                    });
-                    service.Update(UpdateSections.SIDEPANEL);
-                    service.Update(UpdateSection.VIDEOCOLLECTION);
-                    IDCollection.Clear();
-                };
-                service.SubscribeToUpdateEvent(_ => manager.ConcurrentLoading = settings.Performance.UseConcurrentLoading);
+                return;
             }
+
+            initializedLoadingManager = true;
+            manager.LoadingFinished += async () =>
+            {
+                if (!settings.Modals.TitleFormat.HideTitleCustomization)
+                {
+                    _ = Context.Window;
+                }
+                SystemNotification notification = new()
+                {
+                    Title = "Video loading finished!",
+                    Details = $"{service.GetAllVideos().Where(v => !v.LoadingFinished).Count()} videos were loaded successfully.",
+                    Severity = NotificationSeverity.SUCCESS
+                };
+                notification.Display();
+                service.Update(UpdateSections.SIDEPANEL);
+                service.Update(UpdateSection.VIDEOCOLLECTION);
+                if (!settings.Modals.TitleFormat.HideTitleCustomization)
+                {
+                    await Context.Window.OpenTitleFormatModal();
+                }
+                foreach (var item in service.GetAllVideos())
+                {
+                    item.LoadingFinished = true;
+                }
+            };
         }
     }
 }

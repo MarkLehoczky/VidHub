@@ -5,7 +5,7 @@ using VidHub.Services.Connectors.Modals.Interfaces;
 
 namespace VidHub.Services.Connectors.Modals
 {
-    public class VideoDisplayCustomizationConnector(IVideoService vs, IVidHubSettings settings) : IVideoDisplayCustomizationConnector
+    public class VideoDisplayCustomizationConnector(IVideoService vs, IVidHubSettings settings) : ServiceTemplate(vs), IVideoDisplayCustomizationConnector
     {
         public string DateFormat
         {
@@ -16,6 +16,7 @@ namespace VidHub.Services.Connectors.Modals
                 vs.Update(UpdateSection.VIDEOCOLLECTION);
             }
         }
+
         public string DurationDayFormat
         {
             get => settings.Modals.DisplayFormat.DurationDayFormat;
@@ -52,6 +53,7 @@ namespace VidHub.Services.Connectors.Modals
                 vs.Update(UpdateSection.VIDEOCOLLECTION);
             }
         }
+
         public double PreviewImageWidth
         {
             get => settings.Modals.DisplayFormat.PreviewImageWidth;
@@ -69,25 +71,6 @@ namespace VidHub.Services.Connectors.Modals
                 settings.Modals.DisplayFormat.PreviewImageHeight = value;
                 vs.Update(UpdateSection.VIDEOCOLLECTION);
             }
-        }
-
-        public void SubscribeToUpdateEvent(Action<IEnumerable<UpdateSection>> action)
-        {
-            vs.SubscribeToUpdateEvent(action);
-        }
-
-        public void UnsubscribeFromUpdateEvent(Action<IEnumerable<UpdateSection>> action)
-        {
-            vs.UnsubscribeFromUpdateEvent(action);
-        }
-
-        public void Update(IEnumerable<UpdateSection> sections)
-        {
-            vs.Update(sections);
-        }
-        public void Update(params UpdateSection[] sections)
-        {
-            vs.Update(sections);
         }
     }
 }

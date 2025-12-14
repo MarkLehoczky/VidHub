@@ -13,40 +13,40 @@ namespace VidHub.ViewModels.Modals
 
         public int Hours
         {
-            get => connector.Hours;
-            set => connector.Hours = value;
+            get => connector.FixedHours;
+            set => connector.FixedHours = value;
         }
         public int Minutes
         {
-            get => connector.Minutes;
-            set => connector.Minutes = value;
+            get => connector.FixedMinutes;
+            set => connector.FixedMinutes = value;
         }
         public int Seconds
         {
-            get => connector.Seconds;
-            set => connector.Seconds = value;
+            get => connector.FixedSeconds;
+            set => connector.FixedSeconds = value;
         }
         public int Milliseconds
         {
-            get => connector.Milliseconds;
-            set => connector.Milliseconds = value;
+            get => connector.FixedMilliseconds;
+            set => connector.FixedMilliseconds = value;
         }
         public int Percentage
         {
-            get => connector.Percentage;
-            set => connector.Percentage = value;
+            get => connector.RelativePercentage;
+            set => connector.RelativePercentage = value;
         }
 
         public bool FixedPosition => !connector.RelativePosition;
         public bool ExtractEmbeddedImageCommand
         {
-            get => connector.ExtractEmbeddedImageCommand;
-            set => connector.ExtractEmbeddedImageCommand = value;
+            get => connector.ExtractEmbeddedImage;
+            set => connector.ExtractEmbeddedImage = value;
         }
         public bool UseContentHash
         {
-            get => connector.UseContentHash;
-            set => connector.UseContentHash = value;
+            get => connector.UseFileContentHash;
+            set => connector.UseFileContentHash = value;
         }
 
         public bool RelativePosition

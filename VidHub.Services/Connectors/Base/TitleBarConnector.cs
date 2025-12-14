@@ -8,7 +8,7 @@ using Windows.Storage;
 
 namespace VidHub.Services.Connectors.Base
 {
-    public class TitleBarConnector(IVideoService vs, IVidHubSettings settings, IVideoLoadService load) : ITitleBarConnector
+    public class TitleBarConnector(IVideoService vs, IVidHubSettings settings, IVideoLoadService load) : ServiceTemplate(vs), ITitleBarConnector
     {
         public bool DisplayDates
         {
@@ -185,17 +185,17 @@ namespace VidHub.Services.Connectors.Base
 
         public async Task CustomizeVideoDisplayingAsync()
         {
-            await Context.Window.ShowDialogAsync("CustomizeVideoDisplayFormat", "Customize video displaying", "Confirm");
+            await Context.Window.OpenDisplayFormatModal();
         }
 
         public async Task CustomizeVideoLoadingAsync()
         {
-            await Context.Window.ShowDialogAsync("CustomizeTitleFormat", "Customize video title", "Confirm", new Tuple<bool, IEnumerable<int>>(true, vs.Select(v => v.ID)));
+            await Context.Window.OpenTitleFutureFormatModal();
         }
 
         public async Task CustomizeVideoPreviewImageAsync()
         {
-            await Context.Window.ShowDialogAsync("CustomizePreviewImageFrame", "Customize video preview image", "Confirm");
+            await Context.Window.OpenPreviewImageFormatModal();
         }
 
         public async Task ExportCollectionAsync()
@@ -225,32 +225,12 @@ namespace VidHub.Services.Connectors.Base
 
         public async Task OpenLicensesModalAsync()
         {
-            await Context.Window.ShowDialogAsync("DisplayLicenseInformation", "COPYRIGHT", "Close");
+            await Context.Window.OpenLicenseModal();
         }
 
         public async Task OpenVersionsModalAsync()
         {
-            await Context.Window.ShowDialogAsync("DisplayVersionInformation", "VERSION CHANGES", "Close");
-        }
-
-        public void SubscribeToUpdateEvent(Action<IEnumerable<UpdateSection>> action)
-        {
-            vs.SubscribeToUpdateEvent(action);
-        }
-
-        public void UnsubscribeFromUpdateEvent(Action<IEnumerable<UpdateSection>> action)
-        {
-            vs.UnsubscribeFromUpdateEvent(action);
-        }
-
-        public void Update(IEnumerable<UpdateSection> sections)
-        {
-            vs.Update(sections);
-        }
-
-        public void Update(params UpdateSection[] sections)
-        {
-            vs.Update(sections);
+            await Context.Window.OpenVersionModal();
         }
     }
 }

@@ -4,8 +4,13 @@
     {
         nint HWND { get; }
         bool IsActive { get; set; }
+        Task OpenDisplayFormatModal();
+        Task OpenLicenseModal();
+        Task OpenPreviewImageFormatModal();
+        Task OpenTitleFutureFormatModal();
+        Task OpenTitleFormatModal();
+        Task OpenVersionModal();
+        Task OpenVideoRenameModal(object obj);
         bool TryEnqueue(Action callback);
-        Task ShowDialogAsync(string type, string title, string closeButton);
-        Task ShowDialogAsync(string type, string title, string closeButton, object obj);
     }
 }

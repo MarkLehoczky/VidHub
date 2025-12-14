@@ -8,6 +8,7 @@ namespace VidHub.Services.Logics.Interfaces
         int LoadedFileCount { get; }
         int TotalFileCount { get; }
         string TransferDescription { get; }
+
         Task ExportCollectionAsync();
         Task ImportCollectionAsync();
         Task LoadItems(IEnumerable<IStorageItem> items, bool includeSubfolders);

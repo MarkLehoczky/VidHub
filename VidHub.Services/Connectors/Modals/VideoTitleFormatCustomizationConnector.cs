@@ -1,7 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
-using VidHub.Core;
-using VidHub.Core.Models;
 using VidHub.Core.Settings;
 using VidHub.Core.Utilities.Helper;
 using VidHub.Services.Base.Interfaces;
@@ -9,10 +7,9 @@ using VidHub.Services.Connectors.Modals.Interfaces;
 
 namespace VidHub.Services.Connectors.Modals
 {
-    public class VideoTitleFormatCustomizationConnector(IVideoService vs, IVidHubSettings settings) : IVideoTitleFormatCustomizationConnector
+    public class VideoTitleFormatCustomizationConnector(IVideoService vs, IVidHubSettings settings) : ServiceTemplate(vs), IVideoTitleFormatCustomizationConnector
     {
-        public ObservableCollection<VideoTitleTemplate> Videos { get; } = [];
-        public bool IsTemplateMode { get; set; }
+        public ObservableCollection<string> Titles { get; } = [];
 
         public bool IncludePath
         {
@@ -20,7 +17,7 @@ namespace VidHub.Services.Connectors.Modals
             set
             {
                 settings.Modals.TitleFormat.IncludePath = value;
-                UpdateFormats();
+                UpdateTitles();
             }
         }
         public bool IncludeDate
@@ -29,7 +26,7 @@ namespace VidHub.Services.Connectors.Modals
             set
             {
                 settings.Modals.TitleFormat.IncludeDate = value;
-                UpdateFormats();
+                UpdateTitles();
             }
         }
         public bool IncludeFilename
@@ -38,7 +35,7 @@ namespace VidHub.Services.Connectors.Modals
             set
             {
                 settings.Modals.TitleFormat.IncludeFilename = value;
-                UpdateFormats();
+                UpdateTitles();
             }
         }
         public bool IncludeMetadata
@@ -47,7 +44,7 @@ namespace VidHub.Services.Connectors.Modals
             set
             {
                 settings.Modals.TitleFormat.IncludeMetadata = value;
-                UpdateFormats();
+                UpdateTitles();
             }
         }
         public bool IncludeExtension
@@ -56,7 +53,7 @@ namespace VidHub.Services.Connectors.Modals
             set
             {
                 settings.Modals.TitleFormat.IncludeExtension = value;
-                UpdateFormats();
+                UpdateTitles();
             }
         }
 
@@ -66,7 +63,7 @@ namespace VidHub.Services.Connectors.Modals
             set
             {
                 settings.Modals.TitleFormat.RegexPattern = value;
-                UpdateFormats();
+                UpdateTitles();
             }
         }
         public string RegexReplacement
@@ -75,44 +72,30 @@ namespace VidHub.Services.Connectors.Modals
             set
             {
                 settings.Modals.TitleFormat.RegexReplacement = value;
-                UpdateFormats();
+                UpdateTitles();
             }
         }
         public bool InvalidRegex { get; set; } = false;
 
-        public bool EnabledRegex
+        public bool UseRegex
         {
             get => settings.Modals.TitleFormat.UseRegex;
             set
             {
                 settings.Modals.TitleFormat.UseRegex = value;
-                UpdateFormats();
+                UpdateTitles();
+                Update(UpdateSections.ALL);
             }
         }
-        public bool DontShowTitleCustomizationAgain
+
+        public bool HideTitleCustomization
         {
             get => settings.Modals.TitleFormat.HideTitleCustomization;
             set => settings.Modals.TitleFormat.HideTitleCustomization = value;
         }
 
 
-        public void ChangeVideos(IEnumerable<int> ids)
-        {
-            ChangeVideos(vs.Where(v => ids.Contains(v.ID)));
-        }
-        public void ChangeVideos(IEnumerable<Video> videos)
-        {
-            Videos.Clear();
-
-            foreach (Video video in videos)
-            {
-                Videos.Add(new VideoTitleTemplate(video));
-            }
-
-            UpdateFormats();
-        }
-
-        public void UpdateFormats()
+        public virtual void UpdateTitles()
         {
             try
             {
@@ -124,33 +107,22 @@ namespace VidHub.Services.Connectors.Modals
                 InvalidRegex = true;
             }
 
-            foreach (VideoTitleTemplate video in Videos)
+            var videos = vs.GetAllVideos();
+            for (int i = 0; i < Math.Min(Titles.Count, videos.Count); i++)
             {
-                video.Title = settings.GetCustomizedVideoTitle(video.Instance, EnabledRegex && !InvalidRegex);
-                if (!IsTemplateMode)
+                if (!Equals(Titles[i], videos[i]))
                 {
-                    video.Instance.Title = video.Title;
+                    Titles[i] = settings.GetCustomizedVideoTitle(videos[i]);
                 }
             }
-        }
-
-        public void SubscribeToUpdateEvent(Action<IEnumerable<UpdateSection>> action)
-        {
-            vs.SubscribeToUpdateEvent(action);
-        }
-
-        public void UnsubscribeFromUpdateEvent(Action<IEnumerable<UpdateSection>> action)
-        {
-            vs.UnsubscribeFromUpdateEvent(action);
-        }
-
-        public void Update(IEnumerable<UpdateSection> sections)
-        {
-            vs.Update(sections);
-        }
-        public void Update(params UpdateSection[] sections)
-        {
-            vs.Update(sections);
+            while (Titles.Count > videos.Count)
+            {
+                Titles.RemoveAt(Titles.Count - 1);
+            }
+            for (int i = Titles.Count; i < videos.Count; i++)
+            {
+                Titles.Add(settings.GetCustomizedVideoTitle(videos[i]));
+            }
         }
     }
 }

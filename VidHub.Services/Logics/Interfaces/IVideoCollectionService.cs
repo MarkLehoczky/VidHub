@@ -6,7 +6,7 @@ namespace VidHub.Services.Logics.Interfaces
 {
     public interface IVideoCollectionService
     {
-        ObservableCollection<Video> DisplayedVideos { get; }
         ObservableCollection<BarNotification> DisplayedNotifications { get; }
+        ObservableCollection<Video> DisplayedVideos { get; }
     }
 }

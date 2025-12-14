@@ -2,7 +2,6 @@
 using VidHub.Core;
 using VidHub.Core.Notifications;
 using VidHub.Core.Settings;
-using VidHub.Core.Utilities.Helper;
 using VidHub.Platform;
 using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Connectors.Base.Interfaces;
@@ -14,32 +13,18 @@ using Windows.System;
 
 namespace VidHub.Services.Connectors.Base
 {
-    public class VideoCollectionConnector(IVideoService vs, IVidHubSettings settings, IVideoCollectionService service) : IVideoCollectionConnector
+    public class VideoCollectionConnector(IVideoService vs, IVidHubSettings settings, IVideoCollectionService service) : ServiceTemplate(vs), IVideoCollectionConnector
     {
         public bool DisplayDates => settings.Display.DisplayDates;
-
         public bool DisplayDurations => settings.Display.DisplayDurations;
-
         public bool DisplayTitles => settings.Display.DisplayTitles;
 
-        public ObservableCollection<Video> DisplayedVideos => service.DisplayedVideos;
-
         public double PreviewImageWidth => settings.Modals.DisplayFormat.PreviewImageWidth;
-
         public double PreviewImageHeight => settings.Modals.DisplayFormat.PreviewImageHeight;
 
+        public ObservableCollection<Video> DisplayedVideos => service.DisplayedVideos;
         public ObservableCollection<BarNotification> DisplayedNotifications => service.DisplayedNotifications;
 
-        public async Task ClearCacheAsync()
-        {
-            await Task.Run(() =>
-            {
-                foreach (string item in Directory.GetFiles(Path.Combine(Path.GetTempPath(), "VidHub"), "*", SearchOption.AllDirectories))
-                {
-                    File.Delete(item);
-                }
-            });
-        }
 
         public async Task CopyFileAsync(Video video)
         {
@@ -81,7 +66,7 @@ namespace VidHub.Services.Connectors.Base
                 RequestedOperation = DataPackageOperation.Copy
             };
             data.Properties.Title = video.Title;
-            data.Properties.Description = $"Thumbnail of '{video.FilePath}' file copied to clipboard.";
+            data.Properties.Description = $"Preview image of '{video.FilePath}' file copied to clipboard.";
             data.SetBitmap(RandomAccessStreamReference.CreateFromFile(file));
 
             Clipboard.SetContent(data);
@@ -106,27 +91,7 @@ namespace VidHub.Services.Connectors.Base
 
         public async Task RenameAsync(Video video)
         {
-            await Context.Window.ShowDialogAsync("ChangeVideoTitle", $"Rename '{video.Title}'", "Confirm", video);
-            Context.Host.GetService<IVideoService>().Update(UpdateSection.VIDEOCOLLECTION);
-        }
-
-        public void SubscribeToUpdateEvent(Action<IEnumerable<UpdateSection>> action)
-        {
-            vs.SubscribeToUpdateEvent(action);
-        }
-
-        public void UnsubscribeFromUpdateEvent(Action<IEnumerable<UpdateSection>> action)
-        {
-            vs.UnsubscribeFromUpdateEvent(action);
-        }
-
-        public void Update(IEnumerable<UpdateSection> sections)
-        {
-            vs.Update(sections);
-        }
-        public void Update(params UpdateSection[] sections)
-        {
-            vs.Update(sections);
+            await Context.Window.OpenVideoRenameModal(video);
         }
     }
 }

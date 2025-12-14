@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Data;
+using VidHub.Core.Settings;
 using VidHub.Core.Utilities.Helper;
 using VidHub.Core.Utilities.Internal;
 using Windows.Storage;
@@ -17,7 +18,6 @@ namespace VidHub.Core.Utilities
         public event Action? CollectingFinished;
         public event Action? LoadingFinished;
 
-        public bool ConcurrentLoading { get; set; } = true;
         public bool IsActive => IsCollecting || IsLoading;
         public bool IsCollecting { get; private set; } = false;
         public bool IsLoading { get; private set; } = false;
@@ -115,7 +115,7 @@ namespace VidHub.Core.Utilities
             IsLoading = true;
 
 
-            if (ConcurrentLoading)
+            if (VidHubSettings.Instance.Performance.UseConcurrentLoading)
             {
                 List<QueueLoadItem> batch = [currentLoadQueue];
                 for (int i = 1; i < (Environment.ProcessorCount * 3); i++)

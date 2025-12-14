@@ -37,7 +37,7 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Grid BorderBrush="{ThemeResource TextFillColorDisabled}" BorderThickness="0 0 0 1" Margin="0 0 12 0">
-                            <TextBlock Text="{Binding Title}" FontStyle="Italic" TextWrapping="Wrap" TextTrimming="None" IsTextSelectionEnabled="True" Margin="0 5" Grid.Column="2" />
+                            <TextBlock Text="{Binding}" FontStyle="Italic" TextWrapping="Wrap" TextTrimming="None" IsTextSelectionEnabled="True" Margin="0 5" Grid.Column="2" />
                         </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

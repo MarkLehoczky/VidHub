@@ -1,12 +1,10 @@
-﻿using VidHub.Core.Notifications;
-using VidHub.Core.Utilities;
+﻿using VidHub.Core.Utilities;
 
 namespace VidHub.Services.System.Interfaces
 {
     public interface ISystemManager
     {
         void ClearProgressbar();
-        void DisplayToast(SystemNotification notification);
         void FlashWindow();
         void SetIndeterminateProgressbar();
         void SetProgressbar(int completed, int total);

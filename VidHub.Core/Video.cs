@@ -30,6 +30,7 @@ namespace VidHub.Core
         private IEnumerable<MediaStream> unknownStreams;
         private FormatStream formatStream;
         private DetailedVideoState healthState;
+        private bool loadingFinished = false;
 
         [JsonIgnore] public int ID { get => id; set => SetFocusedProperty(ref id, value); }
         public string Hash { get => hash; set => SetFocusedProperty(ref hash, value); }
@@ -48,6 +49,7 @@ namespace VidHub.Core
         [JsonIgnore] public AudioStream? DefaultAudioStream => AudioStreams.FirstOrDefault(s => s.IsDefault) ?? AudioStreams.FirstOrDefault();
 
         public DetailedVideoState HealthState { get => healthState; set => SetFocusedProperty(ref healthState, value); }
+        public bool LoadingFinished { get => loadingFinished; set => SetFocusedProperty(ref loadingFinished, value); }
 
 
         public Video()

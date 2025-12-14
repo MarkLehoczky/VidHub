@@ -21,13 +21,13 @@ namespace VidHub.Services.Logics
             };
 
 
-        public string? CurrentSortOption
+        public string? SortBy
         {
             get => settings.SidePanel.SortBy;
             set
             {
                 settings.SidePanel.SortBy = value;
-                UpdateOrganizers();
+                UpdateDisplayedVideos();
             }
         }
 
@@ -42,7 +42,7 @@ namespace VidHub.Services.Logics
                 }
 
                 localSearchText = value;
-                UpdateOrganizers();
+                UpdateDisplayedVideos();
             }
         }
 
@@ -52,7 +52,7 @@ namespace VidHub.Services.Logics
             set
             {
                 settings.SidePanel.FilterDate = value;
-                UpdateOrganizers();
+                UpdateDisplayedVideos();
             }
         }
         public DateTimeOffset? StartDate
@@ -61,7 +61,7 @@ namespace VidHub.Services.Logics
             set
             {
                 settings.SidePanel.StartDate = value;
-                UpdateOrganizers();
+                UpdateDisplayedVideos();
             }
         }
         public DateTimeOffset? EndDate
@@ -70,7 +70,7 @@ namespace VidHub.Services.Logics
             set
             {
                 settings.SidePanel.EndDate = value;
-                UpdateOrganizers();
+                UpdateDisplayedVideos();
             }
         }
 
@@ -80,7 +80,7 @@ namespace VidHub.Services.Logics
             set
             {
                 settings.SidePanel.FilterDuration = value;
-                UpdateOrganizers();
+                UpdateDisplayedVideos();
             }
         }
         public TimeSpan? MinDuration
@@ -89,7 +89,7 @@ namespace VidHub.Services.Logics
             set
             {
                 settings.SidePanel.MinDuration = value;
-                UpdateOrganizers();
+                UpdateDisplayedVideos();
             }
         }
         public TimeSpan? MaxDuration
@@ -98,7 +98,7 @@ namespace VidHub.Services.Logics
             set
             {
                 settings.SidePanel.MaxDuration = value;
-                UpdateOrganizers();
+                UpdateDisplayedVideos();
             }
         }
 
@@ -108,21 +108,7 @@ namespace VidHub.Services.Logics
             return sortOptions.Keys;
         }
 
-        public void UpdateSearchText()
-        {
-            settings.SidePanel.SearchText = localSearchText;
-            UpdateOrganizers();
-        }
-
-
-        private void UpdateOrganizers()
-        {
-            service.Predicate = settings.ValidVideo;
-            service.Comparer = sortOptions.GetValueOrDefault(settings.SidePanel.SortBy ?? string.Empty, Comparer<Video>.Default);
-            service.Update(UpdateSection.VIDEOCOLLECTION);
-        }
-
-        public IEnumerable<string> Suggestions()
+        public IEnumerable<string> GetSearchSuggestions()
         {
             if (settings.SidePanel.UseSearchSuggestions)
             {
@@ -134,5 +120,18 @@ namespace VidHub.Services.Logics
             return [];
         }
 
+        public void UpdateSearchText()
+        {
+            settings.SidePanel.SearchText = localSearchText;
+            UpdateDisplayedVideos();
+        }
+
+
+        private void UpdateDisplayedVideos()
+        {
+            service.Predicate = settings.ValidVideo;
+            service.Comparer = sortOptions.TryGetValue(settings.SidePanel.SortBy ?? string.Empty, out Comparer<Video>? comparer) ? comparer : Comparer<Video>.Default;
+            service.Update(UpdateSection.VIDEOCOLLECTION);
+        }
     }
 }

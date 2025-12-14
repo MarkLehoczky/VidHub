@@ -30,34 +30,127 @@ namespace VidHub.WinUI.Context
             catch { return false; }
         }
 
-        public async Task ShowDialogAsync(string type, string title, string closeButton)
+        public async Task OpenDisplayFormatModal()
         {
-            await ShowDialogAsync(type, title, closeButton, null!);
+            TryEnqueue(async () =>
+            {
+                VideoDisplayCustomizationUserControl content = new();
+                ContentDialog dialog = new()
+                {
+                    Title = "FORMAT VIDEO COLLECTION",
+                    CloseButtonText = "Finish",
+                    DefaultButton = ContentDialogButton.Close,
+                    Content = content,
+                    XamlRoot = window.Content.XamlRoot
+                };
+                await dialog.ShowAsync();
+            });
         }
-        public async Task ShowDialogAsync(string type, string title, string closeButton, object instance)
+
+        public async Task OpenLicenseModal()
         {
-            object content = new();
-
-            switch (type)
+            TryEnqueue(async () =>
             {
-                case "CustomizeVideoDisplayFormat": content = new VideoDisplayCustomizationUserControl(); break;
-                case "CustomizeTitleFormat": content = new VideoTitleFormatCustomizationUserControl((Tuple<bool, IEnumerable<int>>)instance); break;
-                case "CustomizePreviewImageFrame": content = new VideoPreviewImageCustomizationUserControl(); break;
-                case "ChangeVideoTitle": content = new RenameUserControl((Video)instance); break;
-                case "DisplayLicenseInformation": content = new LicensesUserControl(); break;
-                case "DisplayVersionInformation": content = new VersionsUserControl(); break;
-            }
+                LicensesUserControl content = new();
+                ContentDialog dialog = new()
+                {
+                    Title = "COPYRIGHT",
+                    CloseButtonText = "Close",
+                    DefaultButton = ContentDialogButton.Close,
+                    Content = content,
+                    XamlRoot = window.Content.XamlRoot
+                };
+                await dialog.ShowAsync();
+            });
+        }
 
-            ContentDialog dialog = new()
+        public async Task OpenPreviewImageFormatModal()
+        {
+            TryEnqueue(async () =>
             {
-                Title = title,
-                CloseButtonText = closeButton,
-                DefaultButton = ContentDialogButton.Close,
-                Content = content,
-                XamlRoot = window.Content.XamlRoot
-            };
+                VideoPreviewImageCustomizationUserControl content = new();
+                ContentDialog dialog = new()
+                {
+                    Title = "FORMAT PREVIEW IMAGES",
+                    CloseButtonText = "Finish",
+                    DefaultButton = ContentDialogButton.Close,
+                    Content = content,
+                    XamlRoot = window.Content.XamlRoot
+                };
+                await dialog.ShowAsync();
+            });
+        }
 
-            _ = await dialog.ShowAsync();
+        public async Task OpenTitleFutureFormatModal()
+        {
+            TryEnqueue(async () =>
+            {
+                VideoTitleFormatCustomizationUserControl content = new(false);
+                ContentDialog dialog = new()
+                {
+                    Title = "FORMAT TITLES",
+                    CloseButtonText = "Finish",
+                    DefaultButton = ContentDialogButton.Close,
+                    Content = content,
+                    XamlRoot = window.Content.XamlRoot
+                };
+                await dialog.ShowAsync();
+            });
+        }
+
+        public async Task OpenTitleFormatModal()
+        {
+            TryEnqueue(async () =>
+            {
+                VideoTitleFormatCustomizationUserControl content = new(true);
+                ContentDialog dialog = new()
+                {
+                    Title = "FORMAT TITLES",
+                    CloseButtonText = "Finish",
+                    DefaultButton = ContentDialogButton.Close,
+                    Content = content,
+                    XamlRoot = window.Content.XamlRoot
+                };
+                await dialog.ShowAsync();
+            });
+        }
+
+        public async Task OpenVersionModal()
+        {
+            TryEnqueue(async () =>
+            {
+                VersionsUserControl content = new();
+                ContentDialog dialog = new()
+                {
+                    Title = "VERSION CHANGES",
+                    CloseButtonText = "Close",
+                    DefaultButton = ContentDialogButton.Close,
+                    Content = content,
+                    XamlRoot = window.Content.XamlRoot
+                };
+                await dialog.ShowAsync();
+            });
+        }
+
+        public async Task OpenVideoRenameModal(object obj)
+        {
+            TryEnqueue(async () =>
+            {
+                if (obj == null || obj is not Video video)
+                {
+                    return;
+                }
+                RenameUserControl content = new(video);
+                ContentDialog dialog = new()
+                {
+                    Title = $"Rename '{video.Title}'",
+                    CloseButtonText = "Finish",
+                    DefaultButton = ContentDialogButton.Close,
+                    Content = content,
+                    XamlRoot = window.Content.XamlRoot
+                };
+                await dialog.ShowAsync();
+            });
         }
     }
 }

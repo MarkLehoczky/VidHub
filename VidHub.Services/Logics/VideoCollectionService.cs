@@ -7,7 +7,7 @@ using VidHub.Services.Logics.Interfaces;
 
 namespace VidHub.Services.Logics
 {
-    public class VideoCollectionService : IVideoCollectionService
+    public class VideoCollectionService : IVideoCollectionService, IDisposable
     {
         private readonly IVideoService service;
         public ObservableCollection<Video> DisplayedVideos { get; } = [];
@@ -21,50 +21,66 @@ namespace VidHub.Services.Logics
             service.SubscribeToUpdateEvent(UpdateDisplayedNotifications);
         }
 
-        ~VideoCollectionService()
-        {
-            service.UnsubscribeFromUpdateEvent(UpdateDisplayedVideos);
-            service.UnsubscribeFromUpdateEvent(UpdateDisplayedNotifications);
-        }
-
 
         // TODO: Optimize update logic
         private void UpdateDisplayedVideos(IEnumerable<UpdateSection> sections)
         {
-            IList<Video> nextDisplayVideos = service.GetDisplayedVideos();
+            IList<Video> nextDisplayedVideos = service.GetDisplayedVideos();
 
             if (sections.Contains(UpdateSection.VIDEOCOLLECTION))
             {
-                for (int i = 0; i < Math.Min(DisplayedVideos.Count, nextDisplayVideos.Count); i++)
+                for (int i = 0; i < Math.Min(DisplayedVideos.Count, nextDisplayedVideos.Count); i++)
                 {
-                    if (!Equals(DisplayedVideos[i], nextDisplayVideos[i]))
+                    if (!Equals(DisplayedVideos[i], nextDisplayedVideos[i]))
                     {
-                        DisplayedVideos[i] = nextDisplayVideos[i];
+                        DisplayedVideos[i] = nextDisplayedVideos[i];
                     }
                 }
 
-                while (DisplayedVideos.Count > nextDisplayVideos.Count)
+                while (DisplayedVideos.Count > nextDisplayedVideos.Count)
                 {
                     DisplayedVideos.RemoveAt(DisplayedVideos.Count - 1);
                 }
 
-                for (int i = DisplayedVideos.Count; i < nextDisplayVideos.Count; i++)
+                for (int i = DisplayedVideos.Count; i < nextDisplayedVideos.Count; i++)
                 {
-                    DisplayedVideos.Add(nextDisplayVideos[i]);
+                    DisplayedVideos.Add(nextDisplayedVideos[i]);
                 }
             }
         }
 
+        // TODO: Optimize update logic
         private void UpdateDisplayedNotifications(IEnumerable<UpdateSection> sections)
         {
+            IList<BarNotification> nextDisplayedNotifications = service.GetDisplayedNotifications();
+
             if (sections.Contains(UpdateSection.NOTIFICATIONS))
             {
-                DisplayedNotifications.Clear();
-                foreach (BarNotification notification in service.GetDisplayedNotifications())
+                for (int i = 0; i < Math.Min(DisplayedNotifications.Count, nextDisplayedNotifications.Count); i++)
                 {
-                    DisplayedNotifications.Add(notification);
+                    if (!Equals(DisplayedNotifications[i], nextDisplayedNotifications[i]))
+                    {
+                        DisplayedNotifications[i] = nextDisplayedNotifications[i];
+                    }
+                }
+
+                while (DisplayedNotifications.Count > nextDisplayedNotifications.Count)
+                {
+                    DisplayedNotifications.RemoveAt(DisplayedNotifications.Count - 1);
+                }
+
+                for (int i = DisplayedNotifications.Count; i < nextDisplayedNotifications.Count; i++)
+                {
+                    DisplayedNotifications.Add(nextDisplayedNotifications[i]);
                 }
             }
+        }
+
+        public void Dispose()
+        {
+            service.UnsubscribeFromUpdateEvent(UpdateDisplayedVideos);
+            service.UnsubscribeFromUpdateEvent(UpdateDisplayedNotifications);
+            GC.SuppressFinalize(this);
         }
     }
 }

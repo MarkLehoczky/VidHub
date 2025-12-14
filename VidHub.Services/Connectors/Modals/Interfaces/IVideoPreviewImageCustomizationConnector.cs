@@ -4,15 +4,13 @@ namespace VidHub.Services.Connectors.Modals.Interfaces
 {
     public interface IVideoPreviewImageCustomizationConnector : IUpdateService
     {
-        bool ExtractEmbeddedImageCommand { get; set; }
-        int Hours { get; set; }
-        int Milliseconds { get; set; }
-        int Minutes { get; set; }
-        int Percentage { get; set; }
+        bool ExtractEmbeddedImage { get; set; }
+        int FixedHours { get; set; }
+        int FixedMilliseconds { get; set; }
+        int FixedMinutes { get; set; }
+        int RelativePercentage { get; set; }
         bool RelativePosition { get; set; }
-        int Seconds { get; set; }
-        bool UseContentHash { get; set; }
-        Task ExtractLoadedVideoPreviewImagesAsync();
-        Task RemoveAllPreviewImagesAsync();
+        int FixedSeconds { get; set; }
+        bool UseFileContentHash { get; set; }
     }
 }
