@@ -9,6 +9,7 @@ namespace VidHub.Services.Connectors.Base.Interfaces
     {
         bool DisplayDates { get; }
         bool DisplayDurations { get; }
+        bool DisplayHealths { get; }
         bool DisplayTitles { get; }
         ObservableCollection<Video> DisplayedVideos { get; }
         ObservableCollection<BarNotification> DisplayedNotifications { get; }

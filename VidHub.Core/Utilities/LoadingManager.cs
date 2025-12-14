@@ -1,6 +1,5 @@
 ﻿using System.Collections.Concurrent;
 using System.Data;
-using System.Diagnostics;
 using VidHub.Core.Settings;
 using VidHub.Core.Utilities.Helper;
 using VidHub.Core.Utilities.Internal;
@@ -10,6 +9,7 @@ namespace VidHub.Core.Utilities
 {
     public class LoadingManager
     {
+        private readonly object locker = new();
         private readonly ConcurrentQueue<QueueCollectItem> collectQueue = new();
         private readonly ConcurrentQueue<QueueLoadItem> loadQueue = new();
         private int loadedFileCount = 0;
@@ -50,8 +50,17 @@ namespace VidHub.Core.Utilities
 
         private async Task QueueVideoLoading(string file, WrapActions<string> loadActions)
         {
+            bool shouldStartProcessing;
             loadQueue.Enqueue(new QueueLoadItem(file, loadActions));
-            if (!IsLoading)
+            lock (locker)
+            {
+                shouldStartProcessing = IsLoading;
+                if (!IsLoading)
+                {
+                    IsLoading = true;
+                }
+            }
+            if (!shouldStartProcessing)
             {
                 await ProcessNextLoading();
             }
@@ -60,89 +69,76 @@ namespace VidHub.Core.Utilities
 
         private async Task ProcessNextCollecting()
         {
-            if (!collectQueue.TryDequeue(out QueueCollectItem? currentCollectQueue) || currentCollectQueue is null)
+            while (collectQueue.TryDequeue(out QueueCollectItem? currentCollectQueue) && currentCollectQueue is not null)
             {
-                if (IsCollecting)
+                IsCollecting = true;
+                IEnumerable<string> files = currentCollectQueue.Items.Where(File.Exists);
+                IEnumerable<string> folders = currentCollectQueue.Items.Where(Directory.Exists);
+
+                foreach (string? file in files.Where(f => Video.ExtensionTypes.Contains(Path.GetExtension(f))))
                 {
-                    CollectingFinished?.Invoke();
+                    currentCollectQueue.CollectActions.PreAction(file);
+                    _ = Interlocked.Increment(ref totalFileCount);
+                    _ = Task.Run(async () => await QueueVideoLoading(file, currentCollectQueue.LoadActions));
+                    currentCollectQueue.CollectActions.PostAction(file);
                 }
-                IsCollecting = false;
-                return;
-            }
 
-            IsCollecting = true;
-
-
-            IEnumerable<string> files = currentCollectQueue.Items.Where(File.Exists);
-            IEnumerable<string> folders = currentCollectQueue.Items.Where(Directory.Exists);
-
-            foreach (string? file in files.Where(f => Video.ExtensionTypes.Contains(Path.GetExtension(f))))
-            {
-                currentCollectQueue.CollectActions.PreAction(file);
-                _ = Interlocked.Increment(ref totalFileCount);
-                _ = Task.Run(async () => await QueueVideoLoading(file, currentCollectQueue.LoadActions));
-                currentCollectQueue.CollectActions.PostAction(file);
-            }
-
-            if (currentCollectQueue.IncludeSubfolders)
-            {
-                foreach (string? folder in folders)
+                if (currentCollectQueue.IncludeSubfolders)
                 {
-                    foreach (string file in CollectFiles(folder).Where(f => Video.ExtensionTypes.Contains(Path.GetExtension(f))))
+                    foreach (string? folder in folders)
                     {
-                        currentCollectQueue.CollectActions.PreAction(file);
-                        _ = Interlocked.Increment(ref totalFileCount);
-                        _ = Task.Run(async () => await QueueVideoLoading(file, currentCollectQueue.LoadActions));
-                        currentCollectQueue.CollectActions.PostAction(file);
+                        foreach (string file in CollectFiles(folder).Where(f => Video.ExtensionTypes.Contains(Path.GetExtension(f))))
+                        {
+                            currentCollectQueue.CollectActions.PreAction(file);
+                            _ = Interlocked.Increment(ref totalFileCount);
+                            _ = Task.Run(async () => await QueueVideoLoading(file, currentCollectQueue.LoadActions));
+                            currentCollectQueue.CollectActions.PostAction(file);
+                        }
                     }
                 }
             }
 
-            await ProcessNextCollecting();
+            CollectingFinished?.Invoke();
+            IsCollecting = false;
+            return;
         }
 
         private async Task ProcessNextLoading()
         {
-            if (!loadQueue.TryDequeue(out QueueLoadItem? currentLoadQueue) || currentLoadQueue is null)
+            while (loadQueue.TryDequeue(out QueueLoadItem? currentLoadQueue) && currentLoadQueue is not null)
             {
-                Debug.WriteLine("Loading Finished Step In");
-                if (IsLoading && !IsCollecting)
+                IsLoading = true;
+                if (VidHubSettings.Instance.Performance.UseConcurrentLoading)
                 {
-                    Debug.WriteLine("Loading Finished Invoke");
-                    LoadingFinished?.Invoke();
-                }
-                IsLoading = false;
-                return;
-            }
-
-            IsLoading = true;
-
-
-            if (VidHubSettings.Instance.Performance.UseConcurrentLoading)
-            {
-                List<QueueLoadItem> batch = [currentLoadQueue];
-                for (int i = 1; i < (Environment.ProcessorCount * 3); i++)
-                {
-                    if (loadQueue.TryDequeue(out QueueLoadItem? nextLoadQueue) && nextLoadQueue is not null)
+                    List<QueueLoadItem> batch = [currentLoadQueue];
+                    for (int i = 1; i < (Environment.ProcessorCount * 3); i++)
                     {
-                        batch.Add(nextLoadQueue);
+                        if (loadQueue.TryDequeue(out QueueLoadItem? nextLoadQueue) && nextLoadQueue is not null)
+                        {
+                            batch.Add(nextLoadQueue);
+                        }
                     }
+                    _ = Parallel.ForEach(batch, new ParallelOptions() { MaxDegreeOfParallelism = Environment.ProcessorCount }, loadItem =>
+                    {
+                        loadItem.PreActionInvoke();
+                        _ = Interlocked.Increment(ref loadedFileCount);
+                        loadItem.PostActionInvoke();
+                    });
                 }
-                _ = Parallel.ForEach(batch, new ParallelOptions() { MaxDegreeOfParallelism = Environment.ProcessorCount }, loadItem =>
+                else
                 {
-                    loadItem.PreActionInvoke();
+                    currentLoadQueue.PreActionInvoke();
                     _ = Interlocked.Increment(ref loadedFileCount);
-                    loadItem.PostActionInvoke();
-                });
-            }
-            else
-            {
-                currentLoadQueue.PreActionInvoke();
-                _ = Interlocked.Increment(ref loadedFileCount);
-                currentLoadQueue.PostActionInvoke();
+                    currentLoadQueue.PostActionInvoke();
+                }
             }
 
-            await ProcessNextLoading();
+            if (!IsCollecting)
+            {
+                LoadingFinished?.Invoke();
+            }
+            IsLoading = false;
+            return;
         }
 
         private IEnumerable<string> CollectFiles(string folder)

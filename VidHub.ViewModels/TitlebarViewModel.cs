@@ -101,6 +101,11 @@ namespace VidHub.ViewModels
             get => connector.DisplayDurations;
             set => connector.DisplayDurations = value;
         }
+        public bool DisplayHealths
+        {
+            get => connector.DisplayHealths;
+            set => connector.DisplayHealths = value;
+        }
 
         public bool KeepSidePanelSettings
         {

@@ -18,6 +18,7 @@ namespace VidHub.ViewModels
         public bool DisplayTitles => connector.DisplayTitles;
         public bool DisplayDates => connector.DisplayDates;
         public bool DisplayDurations => connector.DisplayDurations;
+        public bool DisplayHealths => connector.DisplayHealths;
         public double PreviewImageWidth => connector.PreviewImageWidth;
         public double PreviewImageHeight => connector.PreviewImageHeight;
         public ObservableCollection<BarNotification> Notifications => connector.DisplayedNotifications;
@@ -74,6 +75,7 @@ namespace VidHub.ViewModels
                 OnPropertyChanged(nameof(DisplayTitles));
                 OnPropertyChanged(nameof(DisplayDates));
                 OnPropertyChanged(nameof(DisplayDurations));
+                OnPropertyChanged(nameof(DisplayHealths));
                 OnPropertyChanged(nameof(PreviewImageWidth));
                 OnPropertyChanged(nameof(PreviewImageHeight));
             }

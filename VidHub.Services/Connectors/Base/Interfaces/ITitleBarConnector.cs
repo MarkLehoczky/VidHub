@@ -7,6 +7,7 @@ namespace VidHub.Services.Connectors.Base.Interfaces
     {
         bool DisplayDates { get; set; }
         bool DisplayDurations { get; set; }
+        bool DisplayHealths { get; set; }
         bool DisplayTitles { get; set; }
         bool DisplayInformationalSystemNotification { get; set; }
         bool DisplaySuccessSystemNotification { get; set; }

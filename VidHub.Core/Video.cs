@@ -30,7 +30,7 @@ namespace VidHub.Core
         private IEnumerable<MediaStream> unknownStreams;
         private FormatStream formatStream;
         private DetailedVideoState healthState;
-        private bool loadingFinished = false;
+        private bool loadingFinished;
 
         [JsonIgnore] public int ID { get => id; set => SetFocusedProperty(ref id, value); }
         public string Hash { get => hash; set => SetFocusedProperty(ref hash, value); }
@@ -68,6 +68,7 @@ namespace VidHub.Core
             subtitleStreams = [];
             unknownStreams = [];
             healthState = new DetailedVideoState();
+            loadingFinished = false;
         }
         public Video(string file) : this()
         {

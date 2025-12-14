@@ -28,6 +28,15 @@ namespace VidHub.Services.Connectors.Base
                 vs.Update(UpdateSection.VIDEOCOLLECTION);
             }
         }
+        public bool DisplayHealths
+        {
+            get => settings.Display.DisplayHealths;
+            set
+            {
+                settings.Display.DisplayHealths = value;
+                vs.Update(UpdateSection.VIDEOCOLLECTION);
+            }
+        }
         public bool DisplayTitles
         {
             get => settings.Display.DisplayTitles;

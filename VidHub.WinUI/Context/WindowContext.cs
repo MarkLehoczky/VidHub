@@ -4,6 +4,7 @@ using System;
 using System.Threading.Tasks;
 using VidHub.Core;
 using VidHub.Platform.Interfaces;
+using VidHub.Services.Base.Interfaces;
 using VidHub.WinUI.UserControls.Modals;
 using WinRT.Interop;
 
@@ -105,6 +106,13 @@ namespace VidHub.WinUI.Context
                     DefaultButton = ContentDialogButton.Close,
                     Content = content,
                     XamlRoot = window.Content.XamlRoot
+                };
+                dialog.CloseButtonClick += (_, _) =>
+                {
+                    foreach (Video video in Platform.Context.Host.GetService<IVideoService>())
+                    {
+                        video.LoadingFinished = true;
+                    }
                 };
                 _ = await dialog.ShowAsync();
             });

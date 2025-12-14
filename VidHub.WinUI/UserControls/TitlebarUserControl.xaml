@@ -39,9 +39,10 @@
                     </MenuFlyoutItem.Icon>
                 </MenuFlyoutItem>
                 <MenuFlyoutSeparator />
-                <ToggleMenuFlyoutItem Text="Display Titles" ToolTipService.ToolTip="Display video titles in the collection." IsChecked="{Binding DisplayTitles, Mode=TwoWay}" />
-                <ToggleMenuFlyoutItem Text="Display Dates" ToolTipService.ToolTip="Display video creation date in the collection." IsChecked="{Binding DisplayDates, Mode=TwoWay}" />
-                <ToggleMenuFlyoutItem Text="Display Durations" ToolTipService.ToolTip="Display video playback duration in the collection." IsChecked="{Binding DisplayDurations, Mode=TwoWay}" />
+                <ToggleMenuFlyoutItem Text="Display Video Title" ToolTipService.ToolTip="Display video titles in the collection." IsChecked="{Binding DisplayTitles, Mode=TwoWay}" />
+                <ToggleMenuFlyoutItem Text="Display Video Date" ToolTipService.ToolTip="Display video creation date in the collection." IsChecked="{Binding DisplayDates, Mode=TwoWay}" />
+                <ToggleMenuFlyoutItem Text="Display Video Duration" ToolTipService.ToolTip="Display video playback duration in the collection." IsChecked="{Binding DisplayDurations, Mode=TwoWay}" />
+                <ToggleMenuFlyoutItem Text="Display Video Health" ToolTipService.ToolTip="Display video health in the collection." IsChecked="{Binding DisplayHealths, Mode=TwoWay}" />
             </MenuBarItem>
             <MenuBarItem Title="Settings" Height="32" Margin="0">
                 <MenuFlyoutSubItem Text="Notifications">

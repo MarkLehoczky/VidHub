@@ -17,6 +17,7 @@ namespace VidHub.Services.Connectors.Base
     {
         public bool DisplayDates => settings.Display.DisplayDates;
         public bool DisplayDurations => settings.Display.DisplayDurations;
+        public bool DisplayHealths => settings.Display.DisplayHealths;
         public bool DisplayTitles => settings.Display.DisplayTitles;
 
         public double PreviewImageWidth => settings.Modals.DisplayFormat.PreviewImageWidth;
