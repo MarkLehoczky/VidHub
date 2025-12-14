@@ -13,7 +13,7 @@ namespace VidHub.ViewModels
         public bool OpenPanel => connector.OpenedSidePanel;
 
         public IEnumerable<string> SortOptions => connector.GetSortOptions();
-        public string? CurrentSortOption
+        public string? SortBy
         {
             get => connector.SortBy;
             set => connector.SortBy = value;
@@ -25,11 +25,11 @@ namespace VidHub.ViewModels
             set
             {
                 connector.SearchText = value;
-                OnPropertyChanged(nameof(Suggestions));
+                OnPropertyChanged(nameof(SearchSuggestions));
             }
         }
-        public bool EnableLiveSearch => connector.UseRealTimeSearch;
-        public IEnumerable<string> Suggestions => connector.GetSearchSuggestions();
+        public bool UseRealTimeSearch => connector.UseRealTimeSearch;
+        public IEnumerable<string> SearchSuggestions => connector.GetSearchSuggestions();
 
         public bool FilterDate
         {
@@ -81,7 +81,7 @@ namespace VidHub.ViewModels
             if (sections.Contains(UpdateSection.FILTERPANEL))
             {
                 OnPropertyChanged(nameof(OpenPanel));
-                OnPropertyChanged(nameof(EnableLiveSearch));
+                OnPropertyChanged(nameof(UseRealTimeSearch));
             }
             if (sections.Contains(UpdateSection.LOADPANEL))
             {

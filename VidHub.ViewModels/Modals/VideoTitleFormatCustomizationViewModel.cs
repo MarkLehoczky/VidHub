@@ -7,7 +7,7 @@ namespace VidHub.ViewModels.Modals
 {
     public partial class VideoTitleFormatCustomizationViewModel(IVideoTitleFormatCustomizationConnector connector) : ViewModelTemplate(connector)
     {
-        public IVideoTitleFormatCustomizationConnector Connector { get; set; }
+        public IVideoTitleFormatCustomizationConnector Connector { get; set; } = connector;
 
         public VideoTitleFormatCustomizationViewModel() : this(Context.Host.GetService<IVideoTitleFormatCustomizationConnector>())
         {

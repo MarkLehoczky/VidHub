@@ -23,13 +23,13 @@ namespace VidHub.Services.Connectors.Base.Interfaces
         bool QuickHealthCheck { get; set; }
         bool FullHealthCheck { get; set; }
 
-        bool EnableCacheLoading { get; set; }
-        bool EnableCaseSensitiveSearch { get; set; }
-        bool EnableConcurrentLoading { get; set; }
-        bool EnableLiveSearch { get; set; }
-        bool EnableSearchSuggestions { get; set; }
+        bool UseCacheLoading { get; set; }
+        bool UseCaseSensitiveSearch { get; set; }
+        bool UseConcurrentLoading { get; set; }
+        bool UseRealTimeSearch { get; set; }
+        bool UseSearchSuggestions { get; set; }
         bool OpenedSidePanel { get; set; }
-        bool SaveOrganizerSettings { get; set; }
+        bool KeepSidePanelSettings { get; set; }
         Task CustomizeVideoDisplayingAsync();
         Task CustomizeVideoLoadingAsync();
         Task CustomizeVideoPreviewImageAsync();

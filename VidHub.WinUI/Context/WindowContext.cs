@@ -1,7 +1,6 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using VidHub.Core;
 using VidHub.Platform.Interfaces;
@@ -21,18 +20,14 @@ namespace VidHub.WinUI.Context
             try
             {
                 callback ??= () => { };
-                if (window is Window actualWindow && actualWindow.DispatcherQueue != null)
-                {
-                    return window.DispatcherQueue.TryEnqueue(callback.Invoke);
-                }
-                return false;
+                return window is Window actualWindow && actualWindow.DispatcherQueue != null && window.DispatcherQueue.TryEnqueue(callback.Invoke);
             }
             catch { return false; }
         }
 
         public async Task OpenDisplayFormatModal()
         {
-            TryEnqueue(async () =>
+            _ = TryEnqueue(async () =>
             {
                 VideoDisplayCustomizationUserControl content = new();
                 ContentDialog dialog = new()
@@ -43,13 +38,13 @@ namespace VidHub.WinUI.Context
                     Content = content,
                     XamlRoot = window.Content.XamlRoot
                 };
-                await dialog.ShowAsync();
+                _ = await dialog.ShowAsync();
             });
         }
 
         public async Task OpenLicenseModal()
         {
-            TryEnqueue(async () =>
+            _ = TryEnqueue(async () =>
             {
                 LicensesUserControl content = new();
                 ContentDialog dialog = new()
@@ -60,13 +55,13 @@ namespace VidHub.WinUI.Context
                     Content = content,
                     XamlRoot = window.Content.XamlRoot
                 };
-                await dialog.ShowAsync();
+                _ = await dialog.ShowAsync();
             });
         }
 
         public async Task OpenPreviewImageFormatModal()
         {
-            TryEnqueue(async () =>
+            _ = TryEnqueue(async () =>
             {
                 VideoPreviewImageCustomizationUserControl content = new();
                 ContentDialog dialog = new()
@@ -77,13 +72,13 @@ namespace VidHub.WinUI.Context
                     Content = content,
                     XamlRoot = window.Content.XamlRoot
                 };
-                await dialog.ShowAsync();
+                _ = await dialog.ShowAsync();
             });
         }
 
         public async Task OpenTitleFutureFormatModal()
         {
-            TryEnqueue(async () =>
+            _ = TryEnqueue(async () =>
             {
                 VideoTitleFormatCustomizationUserControl content = new(false);
                 ContentDialog dialog = new()
@@ -94,13 +89,13 @@ namespace VidHub.WinUI.Context
                     Content = content,
                     XamlRoot = window.Content.XamlRoot
                 };
-                await dialog.ShowAsync();
+                _ = await dialog.ShowAsync();
             });
         }
 
         public async Task OpenTitleFormatModal()
         {
-            TryEnqueue(async () =>
+            _ = TryEnqueue(async () =>
             {
                 VideoTitleFormatCustomizationUserControl content = new(true);
                 ContentDialog dialog = new()
@@ -111,13 +106,13 @@ namespace VidHub.WinUI.Context
                     Content = content,
                     XamlRoot = window.Content.XamlRoot
                 };
-                await dialog.ShowAsync();
+                _ = await dialog.ShowAsync();
             });
         }
 
         public async Task OpenVersionModal()
         {
-            TryEnqueue(async () =>
+            _ = TryEnqueue(async () =>
             {
                 VersionsUserControl content = new();
                 ContentDialog dialog = new()
@@ -128,13 +123,13 @@ namespace VidHub.WinUI.Context
                     Content = content,
                     XamlRoot = window.Content.XamlRoot
                 };
-                await dialog.ShowAsync();
+                _ = await dialog.ShowAsync();
             });
         }
 
         public async Task OpenVideoRenameModal(object obj)
         {
-            TryEnqueue(async () =>
+            _ = TryEnqueue(async () =>
             {
                 if (obj == null || obj is not Video video)
                 {
@@ -149,7 +144,7 @@ namespace VidHub.WinUI.Context
                     Content = content,
                     XamlRoot = window.Content.XamlRoot
                 };
-                await dialog.ShowAsync();
+                _ = await dialog.ShowAsync();
             });
         }
     }

@@ -6,17 +6,17 @@ namespace VidHub.ViewModels.Base
 {
     public abstract class ViewModelTemplate : ObservableRecipient, IDisposable
     {
-        private readonly IUpdateService _service;
+        private readonly IUpdateService service;
 
         public ViewModelTemplate(IUpdateService service)
         {
-            _service = service;
-            _service.SubscribeToUpdateEvent(Update);
+            this.service = service;
+            this.service.SubscribeToUpdateEvent(Update);
         }
 
         public void Dispose()
         {
-            _service.UnsubscribeFromUpdateEvent(Update);
+            service.UnsubscribeFromUpdateEvent(Update);
             GC.SuppressFinalize(this);
         }
 

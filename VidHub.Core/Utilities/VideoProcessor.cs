@@ -20,9 +20,9 @@ namespace VidHub.Core.Utilities
         {
             if (metadata == null || metadata.Count == 0)
             {
-                ExtractMetadata();
+                _ = ExtractMetadata();
             }
-            return new FormatStream(metadata?.Where(kv => kv.Key.StartsWith("format")).ToDictionary(kv => kv.Key[7..], kv => kv.Value) ?? new Dictionary<string, string>());
+            return new FormatStream(metadata?.Where(kv => kv.Key.StartsWith("format")).ToDictionary(kv => kv.Key[7..], kv => kv.Value) ?? []);
         }
         public IEnumerable<VideoStream> GetVideoStreams()
         {

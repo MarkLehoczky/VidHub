@@ -1,5 +1,4 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using VidHub.Core.Utilities.Helper;
+﻿using VidHub.Core.Utilities.Helper;
 using VidHub.Platform;
 using VidHub.Services.Connectors.Modals.Interfaces;
 using VidHub.ViewModels.Base;
@@ -62,31 +61,6 @@ namespace VidHub.ViewModels.Modals
 
         public bool InactiveThumbnailAction => !ActiveThumbnailAction;
         public bool ActiveThumbnailAction { get; set; } = false;
-
-
-        [RelayCommand(CanExecute = nameof(InactiveThumbnailAction))]
-        private async Task RemoveAllPreviewImagesAsync()
-        {
-            ChangeButtonExecution(true);
-            await connector.RemoveAllPreviewImagesAsync();
-            ChangeButtonExecution(false);
-        }
-
-        [RelayCommand(CanExecute = nameof(InactiveThumbnailAction))]
-        private async Task ExtractLoadedVideoPreviewImagesAsync()
-        {
-            ChangeButtonExecution(true);
-            await connector.ExtractLoadedVideoPreviewImagesAsync();
-            ChangeButtonExecution(false);
-        }
-
-        private void ChangeButtonExecution(bool status)
-        {
-            ActiveThumbnailAction = status;
-            RemoveAllPreviewImagesCommand.NotifyCanExecuteChanged();
-            ExtractLoadedVideoPreviewImagesCommand.NotifyCanExecuteChanged();
-            OnPropertyChanged(nameof(ActiveThumbnailAction));
-        }
 
 
         public override void Update(IEnumerable<UpdateSection> sections) { }

@@ -15,11 +15,11 @@ namespace VidHub.ViewModels
 
 
         public ObservableCollection<Video> Videos => connector.DisplayedVideos;
-        public bool ShowTitles => connector.DisplayTitles;
-        public bool ShowDates => connector.DisplayDates;
-        public bool ShowDurations => connector.DisplayDurations;
-        public double PreviewWidth => connector.PreviewImageWidth;
-        public double PreviewHeight => connector.PreviewImageHeight;
+        public bool DisplayTitles => connector.DisplayTitles;
+        public bool DisplayDates => connector.DisplayDates;
+        public bool DisplayDurations => connector.DisplayDurations;
+        public double PreviewImageWidth => connector.PreviewImageWidth;
+        public double PreviewImageHeight => connector.PreviewImageHeight;
         public ObservableCollection<BarNotification> Notifications => connector.DisplayedNotifications;
 
 
@@ -71,11 +71,14 @@ namespace VidHub.ViewModels
             if (sections.Contains(UpdateSection.VIDEOCOLLECTION))
             {
                 OnPropertyChanged(nameof(Videos));
-                OnPropertyChanged(nameof(ShowTitles));
-                OnPropertyChanged(nameof(ShowDates));
-                OnPropertyChanged(nameof(ShowDurations));
-                OnPropertyChanged(nameof(PreviewWidth));
-                OnPropertyChanged(nameof(PreviewHeight));
+                OnPropertyChanged(nameof(DisplayTitles));
+                OnPropertyChanged(nameof(DisplayDates));
+                OnPropertyChanged(nameof(DisplayDurations));
+                OnPropertyChanged(nameof(PreviewImageWidth));
+                OnPropertyChanged(nameof(PreviewImageHeight));
+            }
+            if (sections.Contains(UpdateSection.NOTIFICATIONS))
+            {
                 OnPropertyChanged(nameof(Notifications));
             }
         }

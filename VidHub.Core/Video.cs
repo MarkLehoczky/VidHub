@@ -149,7 +149,7 @@ namespace VidHub.Core
             try
             {
                 VideoProcessor processor = new(this);
-                if (processor.ProcessPreviewImage(out var extractedImagePath) && extractedImagePath is not null)
+                if (processor.ProcessPreviewImage(out string? extractedImagePath) && extractedImagePath is not null)
                 {
                     PreviewImagePath = extractedImagePath;
                     return true;

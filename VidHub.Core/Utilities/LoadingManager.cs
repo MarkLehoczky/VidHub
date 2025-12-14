@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Data;
+using System.Diagnostics;
 using VidHub.Core.Settings;
 using VidHub.Core.Utilities.Helper;
 using VidHub.Core.Utilities.Internal;
@@ -61,9 +62,11 @@ namespace VidHub.Core.Utilities
         {
             if (!collectQueue.TryDequeue(out QueueCollectItem? currentCollectQueue) || currentCollectQueue is null)
             {
-                currentCollectQueue = null;
+                if (IsCollecting)
+                {
+                    CollectingFinished?.Invoke();
+                }
                 IsCollecting = false;
-                CollectingFinished?.Invoke();
                 return;
             }
 
@@ -102,13 +105,13 @@ namespace VidHub.Core.Utilities
         {
             if (!loadQueue.TryDequeue(out QueueLoadItem? currentLoadQueue) || currentLoadQueue is null)
             {
-                currentLoadQueue = null;
-                IsLoading = false;
-                if (!IsCollecting)
+                Debug.WriteLine("Loading Finished Step In");
+                if (IsLoading && !IsCollecting)
                 {
+                    Debug.WriteLine("Loading Finished Invoke");
                     LoadingFinished?.Invoke();
                 }
-
+                IsLoading = false;
                 return;
             }
 

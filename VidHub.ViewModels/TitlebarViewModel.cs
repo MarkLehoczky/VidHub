@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using VidHub.Core.Data;
 using VidHub.Core.Utilities.Helper;
 using VidHub.Platform;
 using VidHub.Services.Connectors.Base.Interfaces;
@@ -9,7 +10,6 @@ namespace VidHub.ViewModels
     public partial class TitleBarViewModel(ITitleBarConnector connector) : ViewModelTemplate(connector)
     {
         public TitleBarViewModel() : this(Context.Host.GetService<ITitleBarConnector>()) { }
-
 
 
         public bool DisplayInformationalSystemNotification
@@ -75,15 +75,15 @@ namespace VidHub.ViewModels
             set => connector.FullHealthCheck = value;
         }
 
-        public bool EnableCacheLoading
+        public bool UseCacheLoading
         {
-            get => connector.EnableCacheLoading;
-            set => connector.EnableCacheLoading = value;
+            get => connector.UseCacheLoading;
+            set => connector.UseCacheLoading = value;
         }
-        public bool EnableConcurrentLoading
+        public bool UseConcurrentLoading
         {
-            get => connector.EnableConcurrentLoading;
-            set => connector.EnableConcurrentLoading = value;
+            get => connector.UseConcurrentLoading;
+            set => connector.UseConcurrentLoading = value;
         }
 
         public bool DisplayTitles
@@ -102,30 +102,30 @@ namespace VidHub.ViewModels
             set => connector.DisplayDurations = value;
         }
 
-        public bool SaveOrganizerSettings
+        public bool KeepSidePanelSettings
         {
-            get => connector.SaveOrganizerSettings;
-            set => connector.SaveOrganizerSettings = value;
+            get => connector.KeepSidePanelSettings;
+            set => connector.KeepSidePanelSettings = value;
         }
-        public bool EnableLiveSearch
+        public bool UseRealTimeSearch
         {
-            get => connector.EnableLiveSearch;
-            set => connector.EnableLiveSearch = value;
+            get => connector.UseRealTimeSearch;
+            set => connector.UseRealTimeSearch = value;
         }
-        public bool EnableCaseSensitiveSearch
+        public bool UseCaseSensitiveSearch
         {
-            get => connector.EnableCaseSensitiveSearch;
-            set => connector.EnableCaseSensitiveSearch = value;
+            get => connector.UseCaseSensitiveSearch;
+            set => connector.UseCaseSensitiveSearch = value;
         }
-        public bool EnableSearchSuggestions
+        public bool UseSearchSuggestions
         {
-            get => connector.EnableSearchSuggestions;
-            set => connector.EnableSearchSuggestions = value;
+            get => connector.UseSearchSuggestions;
+            set => connector.UseSearchSuggestions = value;
         }
 
 
-        public string Version => "VidHub 0.5.0";
-        public string License => "Copyright © Mark Lehoczky";
+        public string Version => VersionData.CurrentVersion;
+        public string License => ApplicationLicenseData.ShortCopyright;
 
 
 

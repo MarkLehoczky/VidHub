@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
+using VidHub.Core;
 using VidHub.Core.Settings;
 using VidHub.Core.Utilities.Helper;
 using VidHub.Services.Base.Interfaces;
@@ -107,7 +108,7 @@ namespace VidHub.Services.Connectors.Modals
                 InvalidRegex = true;
             }
 
-            var videos = vs.GetAllVideos();
+            IList<Video> videos = vs.GetAllVideos();
             for (int i = 0; i < Math.Min(Titles.Count, videos.Count); i++)
             {
                 if (!Equals(Titles[i], videos[i]))

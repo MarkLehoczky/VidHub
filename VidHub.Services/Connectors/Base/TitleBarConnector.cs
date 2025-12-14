@@ -37,7 +37,7 @@ namespace VidHub.Services.Connectors.Base
                 vs.Update(UpdateSection.VIDEOCOLLECTION);
             }
         }
-        public bool EnableCacheLoading
+        public bool UseCacheLoading
         {
             get => settings.Performance.UseCacheLoading;
             set
@@ -46,7 +46,7 @@ namespace VidHub.Services.Connectors.Base
                 vs.Update(UpdateSection.VIDEOCOLLECTION);
             }
         }
-        public bool EnableCaseSensitiveSearch
+        public bool UseCaseSensitiveSearch
         {
             get => settings.SidePanel.UseCaseSensitiveSearch;
             set
@@ -55,7 +55,7 @@ namespace VidHub.Services.Connectors.Base
                 vs.Update(UpdateSection.VIDEOCOLLECTION);
             }
         }
-        public bool EnableConcurrentLoading
+        public bool UseConcurrentLoading
         {
             get => settings.Performance.UseConcurrentLoading;
             set
@@ -64,7 +64,7 @@ namespace VidHub.Services.Connectors.Base
                 vs.Update(UpdateSection.VIDEOCOLLECTION);
             }
         }
-        public bool EnableLiveSearch
+        public bool UseRealTimeSearch
         {
             get => settings.SidePanel.UseRealTimeSearch;
             set
@@ -74,7 +74,7 @@ namespace VidHub.Services.Connectors.Base
                 vs.Update(UpdateSection.VIDEOCOLLECTION);
             }
         }
-        public bool EnableSearchSuggestions
+        public bool UseSearchSuggestions
         {
             get => settings.SidePanel.UseSearchSuggestions;
             set
@@ -92,7 +92,7 @@ namespace VidHub.Services.Connectors.Base
                 vs.Update(UpdateSections.SIDEPANEL);
             }
         }
-        public bool SaveOrganizerSettings
+        public bool KeepSidePanelSettings
         {
             get => settings.General.KeepSidePanelSettings;
             set => settings.General.KeepSidePanelSettings = value;

@@ -19,7 +19,7 @@
 
         public void Dispose()
         {
-            foreach (var task in recurringTasks)
+            foreach (Task task in recurringTasks)
             {
                 task.Dispose();
             }

@@ -20,27 +20,12 @@
 
     <StackPanel>
         <Grid Grid.Row="0" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" CornerRadius="{ThemeResource ControlCornerRadius}" Margin="0 0 0 5">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-
             <FontIcon Glyph="&#xf167;" FontFamily="Segoe Fluent Icons" Foreground="{ThemeResource AccentFillColorDefaultBrush}" Margin="10 10 10 10" Grid.Row="0" Grid.Column="0" />
             <TextBlock Text="Previously extracted thumbnails will not be changed." IsTextSelectionEnabled="True" FontWeight="Bold" VerticalAlignment="Center" Margin="0 0 10 0" Grid.Row="0" Grid.Column="1" />
-
-            <ProgressRing IsIndeterminate="{Binding ActiveThumbnailAction}" Margin="10 10 10 10" Grid.Row="1" Grid.Column="0" />
-            <Grid VerticalAlignment="Center" Grid.Row="1" Grid.Column="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                <Button Content="Remove Thumbnails" Command="{Binding RemoveAllPreviewImagesCommand}" ToolTipService.ToolTip="Removing all extracted thumbnails will delete the images. Thumbnails must be extracted again to be displayed." Margin="0 0 5 0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Column="0" />
-                <Button Content="Extract Thumbnails" Command="{Binding ExtractLoadedVideoPreviewImagesCommand}" ToolTipService.ToolTip="Extracting thumbnails again may take some time and does not affect any other previously cached videos." Margin="5 0 10 0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Column="1" />
-            </Grid>
         </Grid>
 
         <Grid Visibility="{Binding FixedPosition}" Margin="0 20 0 0">

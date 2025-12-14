@@ -38,6 +38,10 @@
                         <FontIcon Glyph="&#xea49;" FontFamily="Segoe Fluent Icons" />
                     </MenuFlyoutItem.Icon>
                 </MenuFlyoutItem>
+                <MenuFlyoutSeparator />
+                <ToggleMenuFlyoutItem Text="Display Titles" ToolTipService.ToolTip="Display video titles in the collection." IsChecked="{Binding DisplayTitles, Mode=TwoWay}" />
+                <ToggleMenuFlyoutItem Text="Display Dates" ToolTipService.ToolTip="Display video creation date in the collection." IsChecked="{Binding DisplayDates, Mode=TwoWay}" />
+                <ToggleMenuFlyoutItem Text="Display Durations" ToolTipService.ToolTip="Display video playback duration in the collection." IsChecked="{Binding DisplayDurations, Mode=TwoWay}" />
             </MenuBarItem>
             <MenuBarItem Title="Settings" Height="32" Margin="0">
                 <MenuFlyoutSubItem Text="Notifications">
@@ -72,17 +76,14 @@
                     <MenuFlyoutSubItem.Icon>
                         <FontIcon Glyph="&#xec4a;" FontFamily="Segoe Fluent Icons" />
                     </MenuFlyoutSubItem.Icon>
-                    <ToggleMenuFlyoutItem Text="Cached Loading" ToolTipService.ToolTip="Load video details from previously extracted metadata to speed up startup and scanning." IsChecked="{Binding EnableCacheLoading, Mode=TwoWay}" />
-                    <ToggleMenuFlyoutItem Text="Parallel Loading" ToolTipService.ToolTip="Load multiple videos at the same time for faster processing." IsChecked="{Binding EnableConcurrentLoading, Mode=TwoWay}" />
+                    <ToggleMenuFlyoutItem Text="Cached Loading" ToolTipService.ToolTip="Load video details from previously extracted metadata to speed up startup and scanning." IsChecked="{Binding UseCacheLoading, Mode=TwoWay}" />
+                    <ToggleMenuFlyoutItem Text="Parallel Loading" ToolTipService.ToolTip="Load multiple videos at the same time for faster processing." IsChecked="{Binding UseConcurrentLoading, Mode=TwoWay}" />
                 </MenuFlyoutSubItem>
 
                 <MenuFlyoutSubItem Text="Video Display">
                     <MenuFlyoutSubItem.Icon>
                         <FontIcon Glyph="&#xe786;" FontFamily="Segoe Fluent Icons" />
                     </MenuFlyoutSubItem.Icon>
-                    <ToggleMenuFlyoutItem Text="Show Titles" ToolTipService.ToolTip="Display video titles in the collection." IsChecked="{Binding DisplayTitles, Mode=TwoWay}" />
-                    <ToggleMenuFlyoutItem Text="Show Dates" ToolTipService.ToolTip="Display video creation date in the collection." IsChecked="{Binding DisplayDates, Mode=TwoWay}" />
-                    <ToggleMenuFlyoutItem Text="Show Durations" ToolTipService.ToolTip="Display video playback duration in the collection." IsChecked="{Binding DisplayDurations, Mode=TwoWay}" />
                     <MenuFlyoutItem Text="Customize Video Displaying" ToolTipService.ToolTip="" Command="{Binding CustomizeVideoDisplayingCommand}" />
                     <MenuFlyoutItem Text="Customize Video Loading" ToolTipService.ToolTip="" Command="{Binding CustomizeVideoLoadingCommand}" />
                     <MenuFlyoutItem Text="Customize Video Thumbnail" ToolTipService.ToolTip="" Command="{Binding CustomizeThumbnailCommand}" />
@@ -92,10 +93,10 @@
                     <MenuFlyoutSubItem.Icon>
                         <FontIcon Glyph="&#xe71c;" FontFamily="Segoe Fluent Icons" />
                     </MenuFlyoutSubItem.Icon>
-                    <ToggleMenuFlyoutItem Text="Restore Filters" ToolTipService.ToolTip="Automatically reload your last used filters when the app starts." IsChecked="{Binding SaveOrganizerSettings, Mode=TwoWay}" />
-                    <ToggleMenuFlyoutItem Text="Live Search" ToolTipService.ToolTip="Search video titles dynamically as you type in the filter box." IsChecked="{Binding EnableLiveSearch, Mode=TwoWay}" />
-                    <ToggleMenuFlyoutItem Text="Case Sensitive Search" ToolTipService.ToolTip="Match video titles exactly, respecting uppercase and lowercase letters." IsChecked="{Binding EnableCaseSensitiveSearch, Mode=TwoWay}" />
-                    <ToggleMenuFlyoutItem Text="Title Suggestions" ToolTipService.ToolTip="Show possible title matches while typing in the filter box." IsChecked="{Binding EnableSearchSuggestions, Mode=TwoWay}" />
+                    <ToggleMenuFlyoutItem Text="Keep Side Panel Settings" ToolTipService.ToolTip="Automatically reload your last used filters when the app starts." IsChecked="{Binding KeepSidePanelSettings, Mode=TwoWay}" />
+                    <ToggleMenuFlyoutItem Text="Real Time Search" ToolTipService.ToolTip="Search video titles dynamically as you type in the filter box." IsChecked="{Binding UseRealTimeSearch, Mode=TwoWay}" />
+                    <ToggleMenuFlyoutItem Text="Case Sensitive Search" ToolTipService.ToolTip="Match video titles exactly, respecting uppercase and lowercase letters." IsChecked="{Binding UseCaseSensitiveSearch, Mode=TwoWay}" />
+                    <ToggleMenuFlyoutItem Text="Search Suggestions" ToolTipService.ToolTip="Show possible title matches while typing in the filter box." IsChecked="{Binding UseSearchSuggestions, Mode=TwoWay}" />
                 </MenuFlyoutSubItem>
             </MenuBarItem>
             <MenuBarItem Title="About" Height="32" Margin="0">

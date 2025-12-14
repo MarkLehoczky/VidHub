@@ -8,7 +8,6 @@ namespace VidHub.Core.Data
     {
         public static BarNotification FFmpegNotInstalledNotification()
         {
-
             return new BarNotification
             {
                 Title = "FFmpeg Not Detected",
@@ -24,7 +23,7 @@ namespace VidHub.Core.Data
                     process.StartInfo.UseShellExecute = false;
                     process.StartInfo.CreateNoWindow = true;
 
-                    process.Start();
+                    _ = process.Start();
                     string output = process.StandardOutput.ReadToEnd();
                     process.WaitForExit();
                     return string.IsNullOrEmpty(output);

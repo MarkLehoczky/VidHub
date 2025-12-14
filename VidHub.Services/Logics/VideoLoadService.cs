@@ -229,7 +229,7 @@ namespace VidHub.Services.Logics
                 {
                     await Context.Window.OpenTitleFormatModal();
                 }
-                foreach (var item in service.GetAllVideos())
+                foreach (Video item in service.GetAllVideos())
                 {
                     item.LoadingFinished = true;
                 }
