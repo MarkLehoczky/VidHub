@@ -1,32 +1,32 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using System;
-using VidHub.Core.Notifications.Base;
+using VidHub.Core.Notifications;
 
 namespace VidHub.WinUI.Converters
 {
     public partial class NotificationButtonConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, string language)
+        public object? Convert(object value, Type targetType, object parameter, string language)
         {
-            if (value is ActionNotificationButton actionButton && actionButton != null)
+            if (value is CustomActionNotificationButton actionButton && actionButton != null)
             {
-                var actualButton = new Button
+                Button actualButton = new()
                 {
-                    Content = actionButton.Text,
+                    Content = actionButton.Label,
                     Command = actionButton.Command
                 };
-                ToolTipService.SetToolTip(actualButton, actionButton.Description);
+                ToolTipService.SetToolTip(actualButton, actionButton.Details);
                 return actualButton;
             }
-            else if (value is LinkNotificationButton linkButton && linkButton != null)
+            else if (value is HyperlinkNotificationButton linkButton && linkButton != null)
             {
-                var actualButton = new HyperlinkButton
+                HyperlinkButton actualButton = new()
                 {
-                    Content = linkButton.Text,
-                    NavigateUri = new Uri(linkButton.Link)
+                    Content = linkButton.Label,
+                    NavigateUri = linkButton.Hyperlink
                 };
-                ToolTipService.SetToolTip(actualButton, linkButton.Description);
+                ToolTipService.SetToolTip(actualButton, linkButton.Details);
                 return actualButton;
             }
 

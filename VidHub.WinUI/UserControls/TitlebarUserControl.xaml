@@ -16,17 +16,17 @@
     <Grid Height="32">
         <MenuBar HorizontalAlignment="Left" VerticalAlignment="Center">
             <MenuBarItem Title="File" Height="32" Margin="0">
-                <MenuFlyoutItem Text="Import collection" Icon="Import" Command="{Binding ImportCollectionCommand}" />
+                <MenuFlyoutItem Text="Import collection" Icon="Import" Command="{Binding ImportCommand}" />
                 <MenuFlyoutItem Text="Load Files" Icon="OpenFile" Command="{Binding LoadFilesCommand}" />
                 <MenuFlyoutItem Text="Load Folder" Icon="OpenLocal" Command="{Binding LoadSingleFolderCommand}" />
                 <MenuFlyoutItem Text="Load Folder &amp; Sub-Folders" Icon="OpenLocal" Command="{Binding LoadAllFolderCommand}" />
-                <MenuFlyoutItem Text="Export collection" Command="{Binding ExportCollectionCommand}">
+                <MenuFlyoutItem Text="Export collection" Command="{Binding ExportCommand}">
                     <MenuFlyoutItem.Icon>
                         <FontIcon Glyph="&#xede1;" FontFamily="Segoe Fluent Icons" />
                     </MenuFlyoutItem.Icon>
                 </MenuFlyoutItem>
             </MenuBarItem>
-            <MenuBarItem Title="View" Height="32" Margin="0">
+            <MenuBarItem Title="Display" Height="32" Margin="0">
                 <MenuFlyoutItem Text="Open Side Panel" Command="{Binding OpenSidePanelCommand}">
                     <MenuFlyoutItem.Icon>
                         <FontIcon Glyph="&#xea5b;" FontFamily="Segoe Fluent Icons" />
@@ -38,6 +38,11 @@
                         <FontIcon Glyph="&#xea49;" FontFamily="Segoe Fluent Icons" />
                     </MenuFlyoutItem.Icon>
                 </MenuFlyoutItem>
+                <MenuFlyoutSeparator />
+                <ToggleMenuFlyoutItem Text="Display Video Title" IsChecked="{Binding DisplayTitles, Mode=TwoWay}" />
+                <ToggleMenuFlyoutItem Text="Display Video Date" IsChecked="{Binding DisplayDates, Mode=TwoWay}" />
+                <ToggleMenuFlyoutItem Text="Display Video Duration" IsChecked="{Binding DisplayDurations, Mode=TwoWay}" />
+                <ToggleMenuFlyoutItem Text="Display Video Health" IsChecked="{Binding DisplayHealths, Mode=TwoWay}" />
             </MenuBarItem>
             <MenuBarItem Title="Settings" Height="32" Margin="0">
                 <MenuFlyoutSubItem Text="Notifications">
@@ -45,16 +50,16 @@
                         <FontIcon Glyph="&#xea8f;" FontFamily="Segoe Fluent Icons" />
                     </MenuFlyoutSubItem.Icon>
                     <MenuFlyoutSubItem Text="System Notifications">
-                        <ToggleMenuFlyoutItem Text="Informational" ToolTipService.ToolTip="Display informational system notifications" IsChecked="{Binding DisplayInformationalSystemNotification, Mode=TwoWay}" />
-                        <ToggleMenuFlyoutItem Text="Success" ToolTipService.ToolTip="Display success system notifications" IsChecked="{Binding DisplaySuccessSystemNotification, Mode=TwoWay}" />
-                        <ToggleMenuFlyoutItem Text="Warning" ToolTipService.ToolTip="Display warning system notifications" IsChecked="{Binding DisplayWarningSystemNotification, Mode=TwoWay}" />
-                        <ToggleMenuFlyoutItem Text="Error" ToolTipService.ToolTip="Display error system notifications" IsChecked="{Binding DisplayErrorSystemNotification, Mode=TwoWay}" />
+                        <ToggleMenuFlyoutItem Text="Informational" IsChecked="{Binding DisplayInformationalSystemNotification, Mode=TwoWay}" />
+                        <ToggleMenuFlyoutItem Text="Success" IsChecked="{Binding DisplaySuccessSystemNotification, Mode=TwoWay}" />
+                        <ToggleMenuFlyoutItem Text="Warning" IsChecked="{Binding DisplayWarningSystemNotification, Mode=TwoWay}" />
+                        <ToggleMenuFlyoutItem Text="Error" IsChecked="{Binding DisplayErrorSystemNotification, Mode=TwoWay}" />
                     </MenuFlyoutSubItem>
                     <MenuFlyoutSubItem Text="Bar Notifications">
-                        <ToggleMenuFlyoutItem Text="Informational" ToolTipService.ToolTip="Display informational bar notifications" IsChecked="{Binding DisplayInformationalBarNotification, Mode=TwoWay}" />
-                        <ToggleMenuFlyoutItem Text="Success" ToolTipService.ToolTip="Display success bar notifications" IsChecked="{Binding DisplaySuccessBarNotification, Mode=TwoWay}" />
-                        <ToggleMenuFlyoutItem Text="Warning" ToolTipService.ToolTip="Display warning bar notifications" IsChecked="{Binding DisplayWarningBarNotification, Mode=TwoWay}" />
-                        <ToggleMenuFlyoutItem Text="Error" ToolTipService.ToolTip="Display error bar notifications" IsChecked="{Binding DisplayErrorBarNotification, Mode=TwoWay}" />
+                        <ToggleMenuFlyoutItem Text="Informational" IsChecked="{Binding DisplayInformationalBarNotification, Mode=TwoWay}" />
+                        <ToggleMenuFlyoutItem Text="Success" IsChecked="{Binding DisplaySuccessBarNotification, Mode=TwoWay}" />
+                        <ToggleMenuFlyoutItem Text="Warning" IsChecked="{Binding DisplayWarningBarNotification, Mode=TwoWay}" />
+                        <ToggleMenuFlyoutItem Text="Error" IsChecked="{Binding DisplayErrorBarNotification, Mode=TwoWay}" />
                     </MenuFlyoutSubItem>
                 </MenuFlyoutSubItem>
 
@@ -62,45 +67,44 @@
                     <MenuFlyoutSubItem.Icon>
                         <FontIcon Glyph="&#xe95e;" FontFamily="Segoe Fluent Icons" />
                     </MenuFlyoutSubItem.Icon>
-                    <RadioMenuFlyoutItem Text="No Check" ToolTipService.ToolTip="Does not check whether the video files are playable." IsChecked="{Binding DisabledHealthCheck, Mode=TwoWay}" GroupName="HealthCheckOption" />
-                    <RadioMenuFlyoutItem Text="Existence Check" ToolTipService.ToolTip="Periodically checks whether the video files are playable by checking the file exists." IsChecked="{Binding ExistenceHealthCheck, Mode=TwoWay}" GroupName="HealthCheckOption" />
-                    <RadioMenuFlyoutItem Text="Quick Check" ToolTipService.ToolTip="Periodically checks whether the video files are playable by checking their header and first frame." IsChecked="{Binding QuickHealthCheck, Mode=TwoWay}" GroupName="HealthCheckOption" />
-                    <RadioMenuFlyoutItem Text="Full Check" ToolTipService.ToolTip="Periodically checks whether the video files are playable by checking their header and entire content." IsChecked="{Binding FullHealthCheck, Mode=TwoWay}" GroupName="HealthCheckOption" />
+                    <RadioMenuFlyoutItem Text="No Check" IsChecked="{Binding DisabledHealthCheck, Mode=TwoWay}" GroupName="HealthCheckOption" />
+                    <RadioMenuFlyoutItem Text="Existence Check" IsChecked="{Binding ExistenceHealthCheck, Mode=TwoWay}" GroupName="HealthCheckOption" />
+                    <RadioMenuFlyoutItem Text="Quick Check" IsChecked="{Binding QuickHealthCheck, Mode=TwoWay}" GroupName="HealthCheckOption" />
+                    <RadioMenuFlyoutItem Text="Full Check" IsChecked="{Binding FullHealthCheck, Mode=TwoWay}" GroupName="HealthCheckOption" />
                 </MenuFlyoutSubItem>
 
                 <MenuFlyoutSubItem Text="Performance">
                     <MenuFlyoutSubItem.Icon>
                         <FontIcon Glyph="&#xec4a;" FontFamily="Segoe Fluent Icons" />
                     </MenuFlyoutSubItem.Icon>
-                    <ToggleMenuFlyoutItem Text="Cached Loading" ToolTipService.ToolTip="Load video details from previously extracted metadata to speed up startup and scanning." IsChecked="{Binding EnableCacheLoading, Mode=TwoWay}" />
-                    <ToggleMenuFlyoutItem Text="Parallel Loading" ToolTipService.ToolTip="Load multiple videos at the same time for faster processing." IsChecked="{Binding EnableConcurrentLoading, Mode=TwoWay}" />
+                    <ToggleMenuFlyoutItem Text="Cached Loading" IsChecked="{Binding UseCacheLoading, Mode=TwoWay}" />
+                    <ToggleMenuFlyoutItem Text="Concurrent Loading" IsChecked="{Binding UseConcurrentLoading, Mode=TwoWay}" />
+                    <MenuFlyoutSeparator />
+                    <ToggleMenuFlyoutItem Text="File Content Hash" IsChecked="{Binding UseContentHash, Mode=TwoWay}" />
                 </MenuFlyoutSubItem>
 
-                <MenuFlyoutSubItem Text="Video Display">
+                <MenuFlyoutSubItem Text="Video Format">
                     <MenuFlyoutSubItem.Icon>
                         <FontIcon Glyph="&#xe786;" FontFamily="Segoe Fluent Icons" />
                     </MenuFlyoutSubItem.Icon>
-                    <ToggleMenuFlyoutItem Text="Show Titles" ToolTipService.ToolTip="Display video titles in the collection." IsChecked="{Binding DisplayTitles, Mode=TwoWay}" />
-                    <ToggleMenuFlyoutItem Text="Show Dates" ToolTipService.ToolTip="Display video creation date in the collection." IsChecked="{Binding DisplayDates, Mode=TwoWay}" />
-                    <ToggleMenuFlyoutItem Text="Show Durations" ToolTipService.ToolTip="Display video playback duration in the collection." IsChecked="{Binding DisplayDurations, Mode=TwoWay}" />
-                    <MenuFlyoutItem Text="Customize Video Displaying" ToolTipService.ToolTip="" Command="{Binding CustomizeVideoDisplayingCommand}" />
-                    <MenuFlyoutItem Text="Customize Video Loading" ToolTipService.ToolTip="" Command="{Binding CustomizeVideoLoadingCommand}" />
-                    <MenuFlyoutItem Text="Customize Video Thumbnail" ToolTipService.ToolTip="" Command="{Binding CustomizeThumbnailCommand}" />
+                    <MenuFlyoutItem Text="Format the Display" Command="{Binding OpenDisplayFormatDialogCommand}" />
+                    <MenuFlyoutItem Text="Format the initial Title" Command="{Binding OpenPassiveTitleFormatDialogCommand}" />
+                    <MenuFlyoutItem Text="Format the initial Preview Image" Command="{Binding OpenPreviewImageFormatDialogCommand}" />
                 </MenuFlyoutSubItem>
 
                 <MenuFlyoutSubItem Text="Filtering &amp; Search">
                     <MenuFlyoutSubItem.Icon>
                         <FontIcon Glyph="&#xe71c;" FontFamily="Segoe Fluent Icons" />
                     </MenuFlyoutSubItem.Icon>
-                    <ToggleMenuFlyoutItem Text="Restore Filters" ToolTipService.ToolTip="Automatically reload your last used filters when the app starts." IsChecked="{Binding SaveOrganizerSettings, Mode=TwoWay}" />
-                    <ToggleMenuFlyoutItem Text="Live Search" ToolTipService.ToolTip="Search video titles dynamically as you type in the filter box." IsChecked="{Binding EnableLiveSearch, Mode=TwoWay}" />
-                    <ToggleMenuFlyoutItem Text="Case Sensitive Search" ToolTipService.ToolTip="Match video titles exactly, respecting uppercase and lowercase letters." IsChecked="{Binding EnableCaseSensitiveSearch, Mode=TwoWay}" />
-                    <ToggleMenuFlyoutItem Text="Title Suggestions" ToolTipService.ToolTip="Show possible title matches while typing in the filter box." IsChecked="{Binding EnableSearchSuggestions, Mode=TwoWay}" />
+                    <ToggleMenuFlyoutItem Text="Keep Side Panel Settings" IsChecked="{Binding KeepSidePanelSettings, Mode=TwoWay}" />
+                    <ToggleMenuFlyoutItem Text="Real Time Search" IsChecked="{Binding UseRealTimeSearch, Mode=TwoWay}" />
+                    <ToggleMenuFlyoutItem Text="Case Sensitive Search" IsChecked="{Binding UseCaseSensitiveSearch, Mode=TwoWay}" />
+                    <ToggleMenuFlyoutItem Text="Search Suggestions" IsChecked="{Binding UseSearchSuggestions, Mode=TwoWay}" />
                 </MenuFlyoutSubItem>
             </MenuBarItem>
             <MenuBarItem Title="About" Height="32" Margin="0">
-                <MenuFlyoutItem Text="{Binding Version}" Command="{Binding OpenVersionsModalCommand}" />
-                <MenuFlyoutItem Text="{Binding License}" Command="{Binding OpenLicensesModalCommand}" />
+                <MenuFlyoutItem Text="{Binding Version}" Command="{Binding OpenVersionsDialogCommand}" />
+                <MenuFlyoutItem Text="{Binding License}" Command="{Binding OpenLicensesDialogCommand}" />
             </MenuBarItem>
         </MenuBar>
     </Grid>

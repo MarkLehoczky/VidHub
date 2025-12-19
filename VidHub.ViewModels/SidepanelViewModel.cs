@@ -1,7 +1,6 @@
-﻿using VidHub.Core.Enums;
-using VidHub.Platform;
-using VidHub.Services.Connectors.Base.Interfaces;
-using VidHub.ViewModels.Base;
+﻿using VidHub.Core.Utilities;
+using VidHub.Platform.Environment;
+using VidHub.Services.Connectors.Base;
 
 namespace VidHub.ViewModels
 {
@@ -13,10 +12,10 @@ namespace VidHub.ViewModels
         public bool OpenPanel => connector.OpenedSidePanel;
 
         public IEnumerable<string> SortOptions => connector.GetSortOptions();
-        public string? CurrentSortOption
+        public string? SortBy
         {
-            get => connector.CurrentSortOption;
-            set => connector.CurrentSortOption = value;
+            get => connector.SortBy;
+            set => connector.SortBy = value;
         }
 
         public string SearchText
@@ -25,11 +24,11 @@ namespace VidHub.ViewModels
             set
             {
                 connector.SearchText = value;
-                OnPropertyChanged(nameof(Suggestions));
+                OnPropertyChanged(nameof(SearchSuggestions));
             }
         }
-        public bool EnableLiveSearch => connector.EnableLiveSearch;
-        public IEnumerable<string> Suggestions => connector.Suggestions();
+        public bool UseRealTimeSearch => connector.UseRealTimeSearch;
+        public IEnumerable<string> SearchSuggestions => connector.GetSearchSuggestions();
 
         public bool FilterDate
         {
@@ -63,7 +62,6 @@ namespace VidHub.ViewModels
             set => connector.MaxDuration = value;
         }
 
-
         public string TransferDescription => connector.TransferDescription;
         public bool HasActiveTransfer => connector.HasActiveTransfer;
         public int LoadedCount => connector.LoadedFileCount;
@@ -76,12 +74,22 @@ namespace VidHub.ViewModels
         }
 
 
-        public override void Update(UpdateType type)
+        public override void Update(IEnumerable<UpdateSection> sections)
         {
-            if (type is UpdateType.UpdateSidePanel or UpdateType.ForceUpdateSidePanel)
+            if (sections.Contains(UpdateSection.FILTERPANEL))
             {
                 OnPropertyChanged(nameof(OpenPanel));
-                OnPropertyChanged(nameof(EnableLiveSearch));
+                OnPropertyChanged(nameof(UseRealTimeSearch));
+                OnPropertyChanged(nameof(FilterDate));
+                OnPropertyChanged(nameof(StartDate));
+                OnPropertyChanged(nameof(EndDate));
+                OnPropertyChanged(nameof(FilterDuration));
+                OnPropertyChanged(nameof(MinDuration));
+                OnPropertyChanged(nameof(MaxDuration));
+            }
+            if (sections.Contains(UpdateSection.LOADPANEL))
+            {
+                OnPropertyChanged(nameof(OpenPanel));
                 OnPropertyChanged(nameof(TransferDescription));
                 OnPropertyChanged(nameof(HasActiveTransfer));
                 OnPropertyChanged(nameof(LoadedCount));

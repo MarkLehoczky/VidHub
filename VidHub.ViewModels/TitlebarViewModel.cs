@@ -1,15 +1,14 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using VidHub.Core.Enums;
-using VidHub.Platform;
-using VidHub.Services.Connectors.Base.Interfaces;
-using VidHub.ViewModels.Base;
+using VidHub.Core.Data;
+using VidHub.Core.Utilities;
+using VidHub.Platform.Environment;
+using VidHub.Services.Connectors.Base;
 
 namespace VidHub.ViewModels
 {
     public partial class TitleBarViewModel(ITitleBarConnector connector) : ViewModelTemplate(connector)
     {
         public TitleBarViewModel() : this(Context.Host.GetService<ITitleBarConnector>()) { }
-
 
 
         public bool DisplayInformationalSystemNotification
@@ -75,15 +74,20 @@ namespace VidHub.ViewModels
             set => connector.FullHealthCheck = value;
         }
 
-        public bool EnableCacheLoading
+        public bool UseCacheLoading
         {
-            get => connector.EnableCacheLoading;
-            set => connector.EnableCacheLoading = value;
+            get => connector.UseCacheLoading;
+            set => connector.UseCacheLoading = value;
         }
-        public bool EnableConcurrentLoading
+        public bool UseConcurrentLoading
         {
-            get => connector.EnableConcurrentLoading;
-            set => connector.EnableConcurrentLoading = value;
+            get => connector.UseConcurrentLoading;
+            set => connector.UseConcurrentLoading = value;
+        }
+        public bool UseContentHash
+        {
+            get => connector.UseContentHash;
+            set => connector.UseContentHash = value;
         }
 
         public bool DisplayTitles
@@ -101,39 +105,41 @@ namespace VidHub.ViewModels
             get => connector.DisplayDurations;
             set => connector.DisplayDurations = value;
         }
-
-        public bool SaveOrganizerSettings
+        public bool DisplayHealths
         {
-            get => connector.SaveOrganizerSettings;
-            set => connector.SaveOrganizerSettings = value;
-        }
-        public bool EnableLiveSearch
-        {
-            get => connector.EnableLiveSearch;
-            set => connector.EnableLiveSearch = value;
-        }
-        public bool EnableCaseSensitiveSearch
-        {
-            get => connector.EnableCaseSensitiveSearch;
-            set => connector.EnableCaseSensitiveSearch = value;
-        }
-        public bool EnableSearchSuggestions
-        {
-            get => connector.EnableSearchSuggestions;
-            set => connector.EnableSearchSuggestions = value;
+            get => connector.DisplayHealths;
+            set => connector.DisplayHealths = value;
         }
 
+        public bool KeepSidePanelSettings
+        {
+            get => connector.KeepSidePanelSettings;
+            set => connector.KeepSidePanelSettings = value;
+        }
+        public bool UseRealTimeSearch
+        {
+            get => connector.UseRealTimeSearch;
+            set => connector.UseRealTimeSearch = value;
+        }
+        public bool UseCaseSensitiveSearch
+        {
+            get => connector.UseCaseSensitiveSearch;
+            set => connector.UseCaseSensitiveSearch = value;
+        }
+        public bool UseSearchSuggestions
+        {
+            get => connector.UseSearchSuggestions;
+            set => connector.UseSearchSuggestions = value;
+        }
 
-        public string Version => "VidHub 0.5.0";
-        public string License => "Copyright © Mark Lehoczky";
-
+        public string Version => VersionData.CurrentVersion;
+        public string License => ApplicationLicenseData.Copyright;
 
 
         private bool CanOpenSidePanel()
         {
             return !connector.OpenedSidePanel;
         }
-
         private bool CanCloseSidePanel()
         {
             return connector.OpenedSidePanel;
@@ -142,31 +148,31 @@ namespace VidHub.ViewModels
         [RelayCommand(AllowConcurrentExecutions = true)]
         private async Task LoadFilesAsync()
         {
-            await connector.LoadFilesAsync();
+            await connector.LoadFiles();
         }
 
         [RelayCommand(AllowConcurrentExecutions = true)]
         private async Task LoadSingleFolderAsync()
         {
-            await connector.LoadFoldersAsync(false);
+            await connector.LoadFolders(false);
         }
 
         [RelayCommand(AllowConcurrentExecutions = true)]
         private async Task LoadAllFolderAsync()
         {
-            await connector.LoadFoldersAsync(true);
+            await connector.LoadFolders(true);
         }
 
         [RelayCommand]
-        private async Task ImportCollectionAsync()
+        private async Task ImportAsync()
         {
-            await connector.ImportCollectionAsync();
+            await connector.Import();
         }
 
         [RelayCommand]
-        private async Task ExportCollectionAsync()
+        private async Task ExportAsync()
         {
-            await connector.ExportCollectionAsync();
+            await connector.Export();
         }
 
 
@@ -187,36 +193,36 @@ namespace VidHub.ViewModels
         }
 
         [RelayCommand]
-        private async Task CustomizeVideoDisplayingAsync()
+        private async Task OpenDisplayFormatDialogAsync()
         {
-            await connector.CustomizeVideoDisplayingAsync();
+            await connector.OpenDisplayFormatDialog();
         }
 
         [RelayCommand]
-        private async Task CustomizeVideoLoadingAsync()
+        private async Task OpenPassiveTitleFormatDialogAsync()
         {
-            await connector.CustomizeVideoLoadingAsync();
+            await connector.OpenPassiveTitleFormatDialog();
         }
 
         [RelayCommand]
-        private async Task CustomizeThumbnailAsync()
+        private async Task OpenPreviewImageFormatDialogAsync()
         {
-            await connector.CustomizeVideoPreviewImageAsync();
+            await connector.OpenPreviewImageFormatDialog();
         }
 
         [RelayCommand]
-        private async Task OpenVersionsModalAsync()
+        private async Task OpenVersionsDialogAsync()
         {
-            await connector.OpenVersionsModalAsync();
+            await connector.OpenVersionsDialog();
         }
 
         [RelayCommand]
-        private async Task OpenLicensesModalAsync()
+        private async Task OpenLicensesDialogAsync()
         {
-            await connector.OpenLicensesModalAsync();
+            await connector.OpenLicensesDialog();
         }
 
 
-        public override void Update(UpdateType type) { }
+        public override void Update(IEnumerable<UpdateSection> sections) { }
     }
 }

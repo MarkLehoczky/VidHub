@@ -2,8 +2,8 @@
 {
     public class ExternalLicense
     {
-        public string Name { get; set; } = string.Empty;
+        public string Module { get; set; } = string.Empty;
         public string License { get; set; } = string.Empty;
-        public string Link { get; set; } = string.Empty;
+        public string Hyperlink { get; set; } = string.Empty;
     }
 }

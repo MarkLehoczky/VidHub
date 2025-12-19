@@ -11,12 +11,13 @@
     mc:Ignorable="d">
 
     <UserControl.Resources>
-        <converter:DateFormatConverter x:Key="FormatDate" />
-        <converter:DurationFormatConverter x:Key="FormatDuration" />
-        <converter:SeverityTypeConverter x:Key="TransformSeverityType" />
-        <converter:VideoStateIconConverter x:Key="FormatStateIcon" />
-        <converter:VideoStateColorConverter x:Key="FormatStateColor" />
-        <converter:NotificationButtonConverter x:Key="TransformNotificationButton" />
+        <converter:DateFormatConverter x:Key="DateFormatting" />
+        <converter:DurationFormatConverter x:Key="DurationFormatting" />
+        <converter:SeverityConverter x:Key="TransfromSeverity" />
+        <converter:HealthIconConverter x:Key="HealthIcon" />
+        <converter:HealthColorConverter x:Key="HealthColor" />
+        <converter:NotificationButtonConverter x:Key="TransformButton" />
+        <converter:PreviewImagePlaceholderConverter x:Key="PlaceholderFallback" />
     </UserControl.Resources>
 
     <UserControl.DataContext>
@@ -71,13 +72,13 @@
                                             <FontIcon Glyph="&#xe756;" FontFamily="Segoe Fluent Icons" />
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
-                                    <MenuFlyoutItem Text="Copy Thumbnail" Command="{Binding ElementName=videocollection, Path=DataContext.CopyPreviewImageCommand}" CommandParameter="{Binding}">
+                                    <MenuFlyoutItem Text="Copy Preview Image" Command="{Binding ElementName=videocollection, Path=DataContext.CopyPreviewImageCommand}" CommandParameter="{Binding}">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xe91b;" FontFamily="Segoe Fluent Icons" />
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
                                     <MenuFlyoutSeparator />
-                                    <MenuFlyoutItem Text="Remove" Command="{Binding ElementName=videocollection, Path=DataContext.RemoveVideoCommand}" CommandParameter="{Binding}">
+                                    <MenuFlyoutItem Text="Remove" Command="{Binding ElementName=videocollection, Path=DataContext.RemoveCommand}" CommandParameter="{Binding}">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xe74d;" FontFamily="Segoe Fluent Icons" />
                                         </MenuFlyoutItem.Icon>
@@ -85,27 +86,22 @@
                                 </MenuFlyout>
                             </Grid.ContextFlyout>
 
-                            <Grid Width="{Binding ElementName=videocollection, Path=DataContext.PreviewWidth}" Height="{Binding ElementName=videocollection, Path=DataContext.PreviewHeight}" Grid.Row="0">
+                            <Grid Width="{Binding ElementName=videocollection, Path=DataContext.PreviewImageWidth}" Height="{Binding ElementName=videocollection, Path=DataContext.PreviewImageHeight}" Grid.Row="0">
                                 <Grid HorizontalAlignment="Center" VerticalAlignment="Bottom">
                                     <Border BorderThickness="0" CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                        <Image Source="{Binding PreviewImagePath}" Stretch="Uniform" DoubleTapped="OpenVideo" />
+                                        <Image Source="{Binding PreviewImagePath, Converter={StaticResource PlaceholderFallback}}" Stretch="Uniform" DoubleTapped="OpenVideo" />
                                     </Border>
-                                    <Border Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Visibility="{Binding ElementName=videocollection, Path=DataContext.ShowDurations}" Opacity="0.8" BorderThickness="0" CornerRadius="10" Margin="4" HorizontalAlignment="Right" VerticalAlignment="Bottom" >
-                                        <TextBlock Text="{Binding Duration, Converter={StaticResource FormatDuration}}" IsTextSelectionEnabled="True" FontFamily="Consolas" Margin="6 2" />
+                                    <Border Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Visibility="{Binding ElementName=videocollection, Path=DataContext.DisplayDurations}" Opacity="0.8" BorderThickness="0" CornerRadius="10" Margin="4" HorizontalAlignment="Right" VerticalAlignment="Bottom" >
+                                        <TextBlock Text="{Binding Duration, Converter={StaticResource DurationFormatting}}" IsTextSelectionEnabled="True" FontFamily="Consolas" Margin="6 2" />
                                     </Border>
+
+                                    <FontIcon Glyph="&#xf136;" Foreground="{ThemeResource ApplicationPageBackgroundThemeBrush}" Opacity="0.8" Visibility="{Binding ElementName=videocollection, Path=DataContext.DisplayHealths}" FontFamily="Segoe Fluent Icons" Margin="4" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
+                                    <FontIcon Glyph="{Binding Health.State, Converter={StaticResource HealthIcon}}" Foreground="{Binding Health.State, Converter={StaticResource HealthColor}}" ToolTipService.ToolTip="{Binding Health.Details}" Visibility="{Binding ElementName=videocollection, Path=DataContext.DisplayHealths}" FontFamily="Segoe Fluent Icons" Margin="4" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
                                 </Grid>
                             </Grid>
 
-                            <TextBlock Text="{Binding Title}" FontWeight="Bold" TextTrimming="CharacterEllipsis" IsTextTrimmedChanged="TextTrimmingChanged" Visibility="{Binding ElementName=videocollection, Path=DataContext.ShowTitles}" IsTextSelectionEnabled="True" Margin="10 5 10 0" Grid.Row="1" />
-                            <Grid Visibility="{Binding ElementName=videocollection, Path=DataContext.ShowDates}" Grid.Row="2">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-
-                                <FontIcon Glyph="{Binding Condition.VideoState, Converter={StaticResource FormatStateIcon}}" Foreground="{Binding Condition.VideoState, Converter={StaticResource FormatStateColor}}" ToolTipService.ToolTip="{Binding Condition.Description}" FontFamily="Segoe Fluent Icons" Margin="10 5 5 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" />
-                                <TextBlock Text="{Binding Date, Converter={StaticResource FormatDate}}" IsTextSelectionEnabled="True" FontStyle="Italic" Margin="5 5 10 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" />
-                            </Grid>
+                            <TextBlock Text="{Binding Title}" FontWeight="Bold" TextTrimming="CharacterEllipsis" IsTextTrimmedChanged="TextTrimmingChanged" Visibility="{Binding ElementName=videocollection, Path=DataContext.DisplayTitles}" IsTextSelectionEnabled="True" Margin="10 5 10 0" Grid.Row="1" />
+                            <TextBlock Text="{Binding Date, Converter={StaticResource DateFormatting}}" Visibility="{Binding ElementName=videocollection, Path=DataContext.DisplayDates}" IsTextSelectionEnabled="True" FontStyle="Italic" Margin="5 5 10 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="2" />
                         </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
@@ -120,7 +116,7 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <InfoBar IsOpen="{Binding DisplayNotification}" Title="{Binding Title}" Message="{Binding Message}" Severity="{Binding Severity, Converter={StaticResource TransformSeverityType}}" IsClosable="{Binding IsClosable}" ActionButton="{Binding Button, Converter={StaticResource TransformNotificationButton}}">
+                    <InfoBar IsOpen="{Binding Display}" Title="{Binding Title}" Message="{Binding Details}" Severity="{Binding Severity, Converter={StaticResource TransformSeverityType}}" IsClosable="{Binding IsClosable}" ActionButton="{Binding Button, Converter={StaticResource TransformNotificationButton}}">
                     </InfoBar>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

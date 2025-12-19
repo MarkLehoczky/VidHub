@@ -1,51 +1,38 @@
-﻿using VidHub.Core.Enums;
-using VidHub.Core.Settings;
-using VidHub.Services.Base.Interfaces;
-using VidHub.Services.Connectors.Base.Interfaces;
-using VidHub.Services.Logics.Interfaces;
+﻿using VidHub.Core.Settings;
+using VidHub.Services.Base;
+using VidHub.Services.Logics;
 
 namespace VidHub.Services.Connectors.Base
 {
-    public class SidePanelConnector(IVideoService vs, IVidHubSettings settings, IVideoLoadService load, IVideoOrganizerService organize) : ISidePanelConnector
+    public class SidePanelConnector(IVideoService vs, IVidHubSettings settings, IVideoLoadService load, IVideoOrganizerService organize) : ConnectorTemplate(vs), ISidePanelConnector
     {
-        public string? CurrentSortOption { get => organize.CurrentSortOption; set => organize.CurrentSortOption = value; }
-        public bool EnableLiveSearch => settings.Organizer.Global.EnableLiveSearch;
-        public DateTimeOffset? EndDate { get => organize.EndDate; set => organize.EndDate = value; }
+        public bool OpenedSidePanel => settings.General.OpenedSidePanel;
+        public string? SortBy { get => organize.SortBy; set => organize.SortBy = value; }
         public string SearchText { get => organize.SearchText; set => organize.SearchText = value; }
+        public bool UseRealTimeSearch => settings.SidePanel.UseRealTimeSearch;
+
         public bool FilterDate { get => organize.FilterDate; set => organize.FilterDate = value; }
+        public DateTimeOffset? StartDate { get => organize.StartDate; set => organize.StartDate = value; }
+        public DateTimeOffset? EndDate { get => organize.EndDate; set => organize.EndDate = value; }
+
         public bool FilterDuration { get => organize.FilterDuration; set => organize.FilterDuration = value; }
-        public bool HasActiveTransfer => load.HasActiveTransfer;
-        public int LoadedFileCount => load.LoadedFileCount;
         public TimeSpan? MaxDuration { get => organize.MaxDuration; set => organize.MaxDuration = value; }
         public TimeSpan? MinDuration { get => organize.MinDuration; set => organize.MinDuration = value; }
-        public bool OpenedSidePanel => settings.Organizer.Global.OpenedSidePanel;
-        public DateTimeOffset? StartDate { get => organize.StartDate; set => organize.StartDate = value; }
+
+        public bool HasActiveTransfer => load.HasActiveTransfer;
+        public int LoadedFileCount => load.LoadedFileCount;
         public int TotalFileCount => load.TotalFileCount;
         public string TransferDescription => load.TransferDescription;
+
 
         public IEnumerable<string> GetSortOptions()
         {
             return organize.GetSortOptions();
         }
 
-        public void SubscribeToUpdateEvent(Action<UpdateType> action)
+        public IEnumerable<string> GetSearchSuggestions()
         {
-            vs.SubscribeToUpdateEvent(action);
-        }
-
-        public IEnumerable<string> Suggestions()
-        {
-            return organize.Suggestions();
-        }
-
-        public void UnsubscribeFromUpdateEvent(Action<UpdateType> action)
-        {
-            vs.UnsubscribeFromUpdateEvent(action);
-        }
-
-        public void Update(UpdateType type)
-        {
-            vs.Update(type);
+            return organize.GetSearchSuggestions();
         }
 
         public void UpdateSearchText()

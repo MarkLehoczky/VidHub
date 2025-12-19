@@ -13,10 +13,11 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Assets\Placeholder.Image.png" />
     <None Remove="Pages\MainPage.xaml" />
-    <None Remove="UserControls\Modals\LicensesUserControl.xaml" />
-    <None Remove="UserControls\Modals\RenameUserControl.xaml" />
-    <None Remove="UserControls\Modals\VersionsUserControl.xaml" />
+    <None Remove="UserControls\Dialogs\LicensesUserControl.xaml" />
+    <None Remove="UserControls\Dialogs\RenameUserControl.xaml" />
+    <None Remove="UserControls\Dialogs\VersionsUserControl.xaml" />
     <None Remove="UserControls\SidepanelUserControl.xaml" />
     <None Remove="UserControls\TitlebarUserControl.xaml" />
     <None Remove="UserControls\VideoCollectionUserControl.xaml" />
@@ -53,6 +54,11 @@
     <ProjectReference Include="..\VidHub.Core\VidHub.Core.csproj" />
     <ProjectReference Include="..\VidHub.Services\VidHub.Services.csproj" />
     <ProjectReference Include="..\VidHub.ViewModels\VidHub.ViewModels.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="Assets\Placeholder.Image.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Page Update="UserControls\Modals\LicensesUserControl.xaml">

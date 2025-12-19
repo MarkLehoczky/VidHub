@@ -1,251 +1,240 @@
-﻿using VidHub.Core.Enums;
+﻿using VidHub.Core.Models;
 using VidHub.Core.Settings;
-using VidHub.Platform;
-using VidHub.Services.Base.Interfaces;
-using VidHub.Services.Connectors.Base.Interfaces;
-using VidHub.Services.Logics.Interfaces;
+using VidHub.Core.Utilities;
+using VidHub.Platform.Environment;
+using VidHub.Services.Base;
+using VidHub.Services.Logics;
 using Windows.Storage;
 
 namespace VidHub.Services.Connectors.Base
 {
-    public class TitleBarConnector(IVideoService vs, IVidHubSettings settings, IVideoLoadService load) : ITitleBarConnector
+    public class TitleBarConnector(IVideoService vs, IVidHubSettings settings, IVideoLoadService load) : ConnectorTemplate(vs), ITitleBarConnector
     {
-        public bool DisplayDates
+        public bool OpenedSidePanel
         {
-            get => settings.DisplayCustomization.DisplayDates;
+            get => settings.General.OpenedSidePanel;
             set
             {
-                settings.DisplayCustomization.DisplayDates = value;
-                vs.Update(UpdateType.UpdateVideoCollection);
+                settings.General.OpenedSidePanel = value;
+                vs.Update(UpdateSections.SIDEPANEL);
+            }
+        }
+        public bool KeepSidePanelSettings
+        {
+            get => settings.General.KeepSidePanelSettings;
+            set => settings.General.KeepSidePanelSettings = value;
+        }
+        public bool UseRealTimeSearch
+        {
+            get => settings.SidePanel.UseRealTimeSearch;
+            set
+            {
+                settings.SidePanel.UseRealTimeSearch = value;
+                vs.Update(UpdateSections.SIDEPANEL);
+                vs.Update(UpdateSection.VIDEOCOLLECTION);
+            }
+        }
+        public bool UseCaseSensitiveSearch
+        {
+            get => settings.SidePanel.UseCaseSensitiveSearch;
+            set
+            {
+                settings.SidePanel.UseCaseSensitiveSearch = value;
+                vs.Update(UpdateSection.VIDEOCOLLECTION);
+            }
+        }
+        public bool UseSearchSuggestions
+        {
+            get => settings.SidePanel.UseSearchSuggestions;
+            set
+            {
+                settings.SidePanel.UseSearchSuggestions = value;
+                vs.Update(UpdateSection.VIDEOCOLLECTION);
+            }
+        }
+        
+        public bool DisplayDates
+        {
+            get => settings.Display.DisplayDate;
+            set
+            {
+                settings.Display.DisplayDate = value;
+                vs.Update(UpdateSection.VIDEOCOLLECTION);
             }
         }
         public bool DisplayDurations
         {
-            get => settings.DisplayCustomization.DisplayDurations;
+            get => settings.Display.DisplayDuration;
             set
             {
-                settings.DisplayCustomization.DisplayDurations = value;
-                vs.Update(UpdateType.UpdateVideoCollection);
+                settings.Display.DisplayDuration = value;
+                vs.Update(UpdateSection.VIDEOCOLLECTION);
+            }
+        }
+        public bool DisplayHealths
+        {
+            get => settings.Display.DisplayHealth;
+            set
+            {
+                settings.Display.DisplayHealth = value;
+                vs.Update(UpdateSection.VIDEOCOLLECTION);
             }
         }
         public bool DisplayTitles
         {
-            get => settings.DisplayCustomization.DisplayTitles;
+            get => settings.Display.DisplayTitle;
             set
             {
-                settings.DisplayCustomization.DisplayTitles = value;
-                vs.Update(UpdateType.UpdateVideoCollection);
+                settings.Display.DisplayTitle = value;
+                vs.Update(UpdateSection.VIDEOCOLLECTION);
             }
         }
-        public bool EnableCacheLoading
+
+        public bool UseCacheLoading
         {
-            get => settings.Organizer.Global.EnableCacheLoading;
-            set
-            {
-                settings.Organizer.Global.EnableCacheLoading = value;
-                vs.Update(UpdateType.UpdateVideoCollection);
-            }
+            get => settings.Performance.UseCacheLoading;
+            set => settings.Performance.UseCacheLoading = value;
         }
-        public bool EnableCaseSensitiveSearch
+        public bool UseConcurrentLoading
         {
-            get => settings.Organizer.Global.EnableCaseSensitiveSearch;
-            set
-            {
-                settings.Organizer.Global.EnableCaseSensitiveSearch = value;
-                vs.Update(UpdateType.UpdateVideoCollection);
-            }
+            get => settings.Performance.UseConcurrentLoading;
+            set => settings.Performance.UseConcurrentLoading = value;
         }
-        public bool EnableConcurrentLoading
+        public bool UseContentHash
         {
-            get => settings.Organizer.Global.EnableConcurrentLoading;
-            set
-            {
-                settings.Organizer.Global.EnableConcurrentLoading = value;
-                vs.Update(UpdateType.UpdateVideoCollection);
-            }
+            get => settings.General.UseFileContentHash;
+            set => settings.General.UseFileContentHash = value;
         }
-        public bool EnableLiveSearch
-        {
-            get => settings.Organizer.Global.EnableLiveSearch;
-            set
-            {
-                settings.Organizer.Global.EnableLiveSearch = value;
-                vs.Update(UpdateType.UpdateSidePanel);
-                vs.Update(UpdateType.UpdateVideoCollection);
-            }
-        }
-        public bool EnableSearchSuggestions
-        {
-            get => settings.Organizer.Global.EnableSearchSuggestions;
-            set
-            {
-                settings.Organizer.Global.EnableSearchSuggestions = value;
-                vs.Update(UpdateType.UpdateVideoCollection);
-            }
-        }
-        public bool OpenedSidePanel
-        {
-            get => settings.Organizer.Global.OpenedSidePanel;
-            set
-            {
-                settings.Organizer.Global.OpenedSidePanel = value;
-                vs.Update(UpdateType.UpdateSidePanel);
-            }
-        }
-        public bool SaveOrganizerSettings
-        {
-            get => settings.Organizer.Global.SaveOrganizerSettings;
-            set => settings.Organizer.Global.SaveOrganizerSettings = value;
-        }
+
         public bool DisplayInformationalSystemNotification
         {
-            get => settings.Organizer.Global.DisplayInformationalSystemNotification;
-            set => settings.Organizer.Global.DisplayInformationalSystemNotification = value;
+            get => settings.Notifications.DisplayInformationalSystemNotification;
+            set => settings.Notifications.DisplayInformationalSystemNotification = value;
         }
         public bool DisplaySuccessSystemNotification
         {
-            get => settings.Organizer.Global.DisplaySuccessSystemNotification;
-            set => settings.Organizer.Global.DisplaySuccessSystemNotification = value;
+            get => settings.Notifications.DisplaySuccessSystemNotification;
+            set => settings.Notifications.DisplaySuccessSystemNotification = value;
         }
         public bool DisplayWarningSystemNotification
         {
-            get => settings.Organizer.Global.DisplayWarningSystemNotification;
-            set => settings.Organizer.Global.DisplayWarningSystemNotification = value;
+            get => settings.Notifications.DisplayWarningSystemNotification;
+            set => settings.Notifications.DisplayWarningSystemNotification = value;
         }
         public bool DisplayErrorSystemNotification
         {
-            get => settings.Organizer.Global.DisplayErrorSystemNotification;
-            set => settings.Organizer.Global.DisplayErrorSystemNotification = value;
+            get => settings.Notifications.DisplayErrorSystemNotification;
+            set => settings.Notifications.DisplayErrorSystemNotification = value;
         }
+
         public bool DisplayInformationalBarNotification
         {
-            get => settings.Organizer.Global.DisplayInformationalBarNotification;
-            set => settings.Organizer.Global.DisplayInformationalBarNotification = value;
+            get => settings.Notifications.DisplayInformationalBarNotification;
+            set => settings.Notifications.DisplayInformationalBarNotification = value;
         }
         public bool DisplaySuccessBarNotification
         {
-            get => settings.Organizer.Global.DisplaySuccessBarNotification;
-            set => settings.Organizer.Global.DisplaySuccessBarNotification = value;
+            get => settings.Notifications.DisplaySuccessBarNotification;
+            set => settings.Notifications.DisplaySuccessBarNotification = value;
         }
         public bool DisplayWarningBarNotification
         {
-            get => settings.Organizer.Global.DisplayWarningBarNotification;
-            set => settings.Organizer.Global.DisplayWarningBarNotification = value;
+            get => settings.Notifications.DisplayWarningBarNotification;
+            set => settings.Notifications.DisplayWarningBarNotification = value;
         }
         public bool DisplayErrorBarNotification
         {
-            get => settings.Organizer.Global.DisplayErrorBarNotification;
-            set => settings.Organizer.Global.DisplayErrorBarNotification = value;
+            get => settings.Notifications.DisplayErrorBarNotification;
+            set => settings.Notifications.DisplayErrorBarNotification = value;
         }
 
         public bool DisabledHealthCheck
         {
-            get => settings.Organizer.Global.HealthCheck == HealthCheckLevel.NONE;
+            get => settings.Health.Type == HealthType.NONE;
             set
             {
                 if (value)
                 {
-                    settings.Organizer.Global.HealthCheck = HealthCheckLevel.NONE;
+                    settings.Health.Type = HealthType.NONE;
                 }
             }
         }
         public bool ExistenceHealthCheck
         {
-            get => settings.Organizer.Global.HealthCheck == HealthCheckLevel.EXISTENCECHECK;
+            get => settings.Health.Type == HealthType.EXISTENCECHECK;
             set
             {
                 if (value)
                 {
-                    settings.Organizer.Global.HealthCheck = HealthCheckLevel.EXISTENCECHECK;
+                    settings.Health.Type = HealthType.EXISTENCECHECK;
                 }
             }
         }
         public bool QuickHealthCheck
         {
-            get => settings.Organizer.Global.HealthCheck == HealthCheckLevel.QUICKCHECK;
+            get => settings.Health.Type == HealthType.QUICKCHECK;
             set
             {
                 if (value)
                 {
-                    settings.Organizer.Global.HealthCheck = HealthCheckLevel.QUICKCHECK;
+                    settings.Health.Type = HealthType.QUICKCHECK;
                 }
             }
         }
         public bool FullHealthCheck
         {
-            get => settings.Organizer.Global.HealthCheck == HealthCheckLevel.FULLCHECK;
+            get => settings.Health.Type == HealthType.FULLCHECK;
             set
             {
                 if (value)
                 {
-                    settings.Organizer.Global.HealthCheck = HealthCheckLevel.FULLCHECK;
+                    settings.Health.Type = HealthType.FULLCHECK;
                 }
             }
         }
 
-        public async Task CustomizeVideoDisplayingAsync()
+
+        public async Task Import()
         {
-            await Context.Window.ShowDialogAsync("CustomizeVideoDisplayFormat", "Customize video displaying", "Confirm");
+            await load.Import();
+        }
+        public async Task Export()
+        {
+            await load.Export();
         }
 
-        public async Task CustomizeVideoLoadingAsync()
+        public async Task LoadFiles()
         {
-            await Context.Window.ShowDialogAsync("CustomizeTitleFormat", "Customize video title", "Confirm", new Tuple<bool, IEnumerable<int>>(true, vs.Select(v => v.ID)));
+            await load.LoadFiles();
         }
-
-        public async Task CustomizeVideoPreviewImageAsync()
+        public async Task LoadFolders(bool includeSubfolders)
         {
-            await Context.Window.ShowDialogAsync("CustomizePreviewImageFrame", "Customize video preview image", "Confirm");
+            await load.LoadFolders(includeSubfolders);
         }
-
-        public async Task ExportCollectionAsync()
-        {
-            await load.ExportCollectionAsync();
-        }
-
-        public async Task ImportCollectionAsync()
-        {
-            await load.ImportCollectionAsync();
-        }
-
-        public async Task LoadFilesAsync()
-        {
-            await load.LoadFilesAsync();
-        }
-
-        public async Task LoadFoldersAsync(bool includeSubfolders)
-        {
-            await load.LoadFoldersAsync(includeSubfolders);
-        }
-
         public async Task LoadItems(IEnumerable<IStorageItem> items, bool includeSubfolders)
         {
             await load.LoadItems(items, includeSubfolders);
         }
 
-        public async Task OpenLicensesModalAsync()
+        public async Task OpenLicensesDialog()
         {
-            await Context.Window.ShowDialogAsync("DisplayLicenseInformation", "COPYRIGHT", "Close");
+            await Context.Window.OpenLicensesDialog();
         }
-
-        public async Task OpenVersionsModalAsync()
+        public async Task OpenDisplayFormatDialog()
         {
-            await Context.Window.ShowDialogAsync("DisplayVersionInformation", "VERSION CHANGES", "Close");
+            await Context.Window.OpenDisplayFormatDialog();
         }
-
-        public void SubscribeToUpdateEvent(Action<UpdateType> action)
+        public async Task OpenPassiveTitleFormatDialog()
         {
-            vs.SubscribeToUpdateEvent(action);
+            await Context.Window.OpenPassiveTitleFormatDialog();
         }
-
-        public void UnsubscribeFromUpdateEvent(Action<UpdateType> action)
+        public async Task OpenPreviewImageFormatDialog()
         {
-            vs.UnsubscribeFromUpdateEvent(action);
+            await Context.Window.OpenPreviewImageFormatDialog();
         }
-
-        public void Update(UpdateType type)
+        public async Task OpenVersionsDialog()
         {
-            vs.Update(type);
+            await Context.Window.OpenVersionsDialog();
         }
     }
 }

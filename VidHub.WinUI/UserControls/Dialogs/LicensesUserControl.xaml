@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="VidHub.WinUI.UserControls.Dialogs.LicensesUserControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:VidHub.WinUI.UserControls.Dialogs"
+    xmlns:viewmodel="using:VidHub.ViewModels.Dialogs"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <UserControl.DataContext>
+        <viewmodel:LicensesViewModel />
+    </UserControl.DataContext>
+
+    <ScrollViewer Padding="0 0 5 0">
+        <StackPanel>
+
+            <StackPanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" CornerRadius="{ThemeResource ControlCornerRadius}" Padding="10" Margin="0 0 0 30">
+                <TextBlock Text="{Binding License}" FontWeight="Bold" HorizontalAlignment="Center" FontSize="24" Margin="0 0 0 10" />
+                <TextBlock Text="{Binding Copyright}" Foreground="{ThemeResource TextFillColorSecondary}" FontStyle="Italic" HorizontalAlignment="Center" Margin="0 0 0 10" />
+                <TextBlock Text="{Binding LicenseText}" TextWrapping="WrapWholeWords" HorizontalAlignment="Stretch" Margin="0 0 0 10" />
+            </StackPanel>
+            
+            <StackPanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" CornerRadius="{ThemeResource ControlCornerRadius}" Padding="10" Margin="0 0 0 30">
+                <TextBlock Text="External Licenses" FontWeight="Bold" HorizontalAlignment="Center" FontSize="24" Margin="0 0 0 10" />
+                <ItemsControl ItemsSource="{Binding ExternalLicenses}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="•" Margin="0 0 10 0" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding Name}" Margin="0 0 10 0" VerticalAlignment="Center" />
+                                <TextBlock Text="▷" Foreground="{ThemeResource TextFillColorSecondary}" VerticalAlignment="Center" />
+                                <HyperlinkButton Content="{Binding License}" NavigateUri="{Binding Link}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

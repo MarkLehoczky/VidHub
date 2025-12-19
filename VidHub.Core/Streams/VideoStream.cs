@@ -2,14 +2,8 @@
 {
     public class VideoStream(IDictionary<string, string> metadata) : MediaStream(metadata)
     {
-        public string Codec => Metadata.TryGetValue("codec_name", out string? value) ? value : string.Empty;
-
-        public string DetailedCodec => Metadata.TryGetValue("codec_long_name", out string? value) ? value : string.Empty;
-
         public int Width => Metadata.TryGetValue("width", out string? value) && int.TryParse(value, out int result) ? result : 0;
-
         public int Height => Metadata.TryGetValue("height", out string? value) && int.TryParse(value, out int result) ? result : 0;
-
         public Tuple<int, int> AspectRatio
         {
             get
@@ -25,7 +19,6 @@
                 return new Tuple<int, int>(0, 0);
             }
         }
-
         public Tuple<int, int> Framerate
         {
             get
@@ -41,15 +34,11 @@
                 return new Tuple<int, int>(0, 1);
             }
         }
-
         public TimeSpan Duration => Metadata.TryGetValue("duration", out string? value) && double.TryParse(value, out double durationSeconds)
                     ? TimeSpan.FromSeconds(durationSeconds)
                     : TimeSpan.Zero;
-
         public int Bitrate => Metadata.TryGetValue("bit_rate", out string? value) && int.TryParse(value, out int result) ? result : 0;
-
         public int FrameCount => Metadata.TryGetValue("nb_frames", out string? value) && int.TryParse(value, out int result) ? result : 0;
-
         public bool IsDefault => Metadata.TryGetValue("disposition.default", out string? value) && value == "1";
     }
 }

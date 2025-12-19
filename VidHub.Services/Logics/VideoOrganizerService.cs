@@ -1,8 +1,7 @@
 ﻿using VidHub.Core;
-using VidHub.Core.Enums;
 using VidHub.Core.Settings;
-using VidHub.Services.Base.Interfaces;
-using VidHub.Services.Logics.Interfaces;
+using VidHub.Core.Utilities;
+using VidHub.Services.Base;
 
 namespace VidHub.Services.Logics
 {
@@ -21,84 +20,86 @@ namespace VidHub.Services.Logics
             };
 
 
-        public string? CurrentSortOption
+        public string? SortBy
         {
-            get => settings.Organizer.Display.CurrentSortOption;
+            get => settings.SidePanel.SortBy;
             set
             {
-                settings.Organizer.Display.CurrentSortOption = value;
-                UpdateOrganizers();
+                settings.SidePanel.SortBy = value;
+                UpdateDisplayedVideos();
             }
         }
 
         public string SearchText
         {
-            get => settings.Organizer.Display.SearchText;
+            get => settings.SidePanel.SearchText;
             set
             {
-                if (settings.Organizer.Global.EnableLiveSearch)
+                if (settings.SidePanel.UseRealTimeSearch)
                 {
-                    settings.Organizer.Display.SearchText = value;
+                    settings.SidePanel.SearchText = value;
                 }
 
                 localSearchText = value;
-                UpdateOrganizers();
+                UpdateDisplayedVideos();
             }
         }
 
         public bool FilterDate
         {
-            get => settings.Organizer.Display.FilterDate;
+            get => settings.SidePanel.FilterDate;
             set
             {
-                settings.Organizer.Display.FilterDate = value;
-                UpdateOrganizers();
+                settings.SidePanel.FilterDate = value;
+                service.Update(UpdateSection.FILTERPANEL);
+                UpdateDisplayedVideos();
             }
         }
         public DateTimeOffset? StartDate
         {
-            get => settings.Organizer.Display.StartDate;
+            get => settings.SidePanel.StartDate;
             set
             {
-                settings.Organizer.Display.StartDate = value;
-                UpdateOrganizers();
+                settings.SidePanel.StartDate = value;
+                UpdateDisplayedVideos();
             }
         }
         public DateTimeOffset? EndDate
         {
-            get => settings.Organizer.Display.EndDate;
+            get => settings.SidePanel.EndDate;
             set
             {
-                settings.Organizer.Display.EndDate = value;
-                UpdateOrganizers();
+                settings.SidePanel.EndDate = value;
+                UpdateDisplayedVideos();
             }
         }
 
         public bool FilterDuration
         {
-            get => settings.Organizer.Display.FilterDuration;
+            get => settings.SidePanel.FilterDuration;
             set
             {
-                settings.Organizer.Display.FilterDuration = value;
-                UpdateOrganizers();
+                settings.SidePanel.FilterDuration = value;
+                service.Update(UpdateSection.FILTERPANEL);
+                UpdateDisplayedVideos();
             }
         }
         public TimeSpan? MinDuration
         {
-            get => settings.Organizer.Display.MinDuration;
+            get => settings.SidePanel.MinDuration;
             set
             {
-                settings.Organizer.Display.MinDuration = value;
-                UpdateOrganizers();
+                settings.SidePanel.MinDuration = value;
+                UpdateDisplayedVideos();
             }
         }
         public TimeSpan? MaxDuration
         {
-            get => settings.Organizer.Display.MaxDuration;
+            get => settings.SidePanel.MaxDuration;
             set
             {
-                settings.Organizer.Display.MaxDuration = value;
-                UpdateOrganizers();
+                settings.SidePanel.MaxDuration = value;
+                UpdateDisplayedVideos();
             }
         }
 
@@ -108,31 +109,30 @@ namespace VidHub.Services.Logics
             return sortOptions.Keys;
         }
 
-        public void UpdateSearchText()
+        public IEnumerable<string> GetSearchSuggestions()
         {
-            settings.Organizer.Display.SearchText = localSearchText;
-            UpdateOrganizers();
-        }
-
-
-        private void UpdateOrganizers()
-        {
-            service.Predicate = settings.Organizer.ValidVideo;
-            service.Comparer = sortOptions.GetValueOrDefault(settings.Organizer.Display.CurrentSortOption ?? string.Empty, Comparer<Video>.Default);
-            service.Update(UpdateType.UpdateVideoCollection);
-        }
-
-        public IEnumerable<string> Suggestions()
-        {
-            if (settings.Organizer.Global.EnableSearchSuggestions)
+            if (settings.SidePanel.UseSearchSuggestions)
             {
-                IEnumerable<string> startsWith = service.Select(v => v.Title).Where(v => v.StartsWith(SearchText, settings.Organizer.SearchComparison));
-                IEnumerable<string> contains = service.Select(v => v.Title).Except(startsWith).Where(v => v.Contains(SearchText, settings.Organizer.SearchComparison));
+                IEnumerable<string> startsWith = service.Select(v => v.Title).Where(v => v.StartsWith(SearchText, settings.SearchComparison()));
+                IEnumerable<string> contains = service.Select(v => v.Title).Except(startsWith).Where(v => v.Contains(SearchText, settings.SearchComparison()));
                 return startsWith.Union(contains);
             }
 
             return [];
         }
 
+        public void UpdateSearchText()
+        {
+            settings.SidePanel.SearchText = localSearchText;
+            UpdateDisplayedVideos();
+        }
+
+
+        private void UpdateDisplayedVideos()
+        {
+            service.Predicate = settings.ValidVideo;
+            service.Comparer = sortOptions.TryGetValue(settings.SidePanel.SortBy ?? string.Empty, out Comparer<Video>? comparer) ? comparer : Comparer<Video>.Default;
+            service.Update(UpdateSection.VIDEOCOLLECTION);
+        }
     }
 }

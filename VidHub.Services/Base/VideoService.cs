@@ -1,284 +1,145 @@
 ﻿using System.Collections;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using VidHub.Core;
-using VidHub.Core.Enums;
-using VidHub.Core.Notifications.Bar;
-using VidHub.Core.Notifications.Base;
+using VidHub.Core.Data;
+using VidHub.Core.Notifications;
 using VidHub.Core.Settings;
-using VidHub.Platform;
-using VidHub.Services.Base.Interfaces;
+using VidHub.Core.Utilities;
+using VidHub.Platform.Environment;
 
 namespace VidHub.Services.Base
 {
-    public class VideoService : IVideoService, IDisposable
+    public class VideoService : IVideoService
     {
         private readonly object locker = new();
-        private event Action<UpdateType>? UpdateEvent;
-        private readonly IList<Video> Videos = [];
-        public ObservableCollection<BarNotification> Notifications { get; } = [];
-        private readonly Task healthCheckTask;
-        private readonly Task updateNotificationTask;
-        private readonly Task periodicUpdateTask;
+        private readonly RecurrenceManager recurringActionManager = new();
+        private event Action<IEnumerable<UpdateSection>>? UpdateEvent;
+
+        private readonly IList<Video> videos = [];
+        private readonly IList<BarNotification> notifications = [];
 
         public Func<Video, bool> Predicate { get; set; } = _ => true;
         public Comparer<Video> Comparer { get; set; } = Comparer<Video>.Default;
 
-        public int Count => Videos.Count;
-        public bool IsReadOnly => Videos.IsReadOnly;
-        public Video this[int index] { get => Videos[index]; set => Videos[index] = value; }
-
-
 
         public VideoService()
         {
-            Notifications.Add(HealthyVideosNotification());
-            Notifications.Add(NotCheckedVideosNotification());
-            Notifications.Add(LargeCacheSizeNotification(1, 10, NotificationSeverity.Informational));
-            Notifications.Add(LargeCacheSizeNotification(10, int.MaxValue, NotificationSeverity.Warning));
-            Notifications.Add(UnhealthyVideosNotification());
-            Notifications.Add(FFmpegNotInstalledNotification());
+            notifications.Add(NotificationData.NotCheckedVideosNotification(videos));
+            notifications.Add(NotificationData.MediumCacheSizeNotification());
+            notifications.Add(NotificationData.HealthyVideosNotification(videos));
+            notifications.Add(NotificationData.UnhealthyVideosNotification(videos));
+            notifications.Add(NotificationData.LargeCacheSizeNotification());
+            notifications.Add(NotificationData.FFmpegNotInstalledNotification());
 
-            healthCheckTask = StartHealthCheck();
-            updateNotificationTask = UpdateNotification();
-            periodicUpdateTask = PeriodicUpdate();
+            recurringActionManager.Add(PeriodicDisplayUpdate, TimeSpan.FromSeconds(5));
+            recurringActionManager.Add(PeriodicHealthCheck, TimeSpan.FromSeconds(60));
+            recurringActionManager.Add(PeriodicNotificationUpdate, TimeSpan.FromSeconds(5));
         }
 
-        private Task PeriodicUpdate()
-        {
-            return Task.Run(async () =>
-            {
-                while (true)
-                {
-                    Debug.WriteLine("GUI update...");
-                    await Task.Run(() =>
-                    {
-                        try
-                        {
-                            Update(UpdateType.UpdateVideoCollection);
-                        }
-                        catch { }
-                    });
-                    await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
-                }
-            });
-        }
-        private Task StartHealthCheck()
-        {
-            return Task.Run(async () =>
-            {
-                while (true)
-                {
-                    Debug.WriteLine("Health check update...");
-                    lock (locker)
-                    {
-                        IList<Video> snapshot = [.. Videos];
-                        foreach (Video video in snapshot)
-                        {
-                            video.CheckCondition();
-                        }
-                    }
 
-                    await Task.Delay(TimeSpan.FromSeconds(60)).ConfigureAwait(false);
-                }
-            });
-        }
-        private Task UpdateNotification()
-        {
-            return Task.Run(async () =>
-            {
-                while (true)
-                {
-                    Debug.WriteLine("Notification update...");
-                    IList<BarNotification> snapshot;
-
-                    lock (locker)
-                    {
-                        snapshot = [.. Notifications];
-                    }
-
-                    await Task.Run(() =>
-                    {
-                        try
-                        {
-                            foreach (BarNotification notif in snapshot)
-                            {
-                                var before = notif.DisplayNotification;
-                                var after = notif.OpenCondition?.Invoke() ?? true;
-                                notif.DisplayNotification = after;
-                            }
-                        }
-                        catch { }
-                    });
-
-                    await Task.Delay(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
-                }
-            });
-        }
-
-        private static BarNotification NotCheckedVideosNotification()
-        {
-            string title = "Not Checked Videos Found";
-            string message = "Some loaded videos' health have not been checked yet.";
-            NotificationSeverity severity = NotificationSeverity.Informational;
-            bool isClosable = true;
-            Func<bool> openCondition = () =>
-            {
-                var snapshot = Context.Host.GetService<IVideoService>().GetAllVideos();
-                return snapshot.Count > 0 && snapshot.Any(video => video.Condition.VideoState == VideoCondition.State.NOTCHECKED);
-            };
-            BarNotification notification = new(title, message, severity, isClosable, openCondition);
-            return notification;
-        }
-        private static BarNotification HealthyVideosNotification()
-        {
-            string title = "All Videos Passed Health Check";
-            string message = "All loaded videos are healthy based on the set health level.";
-            NotificationSeverity severity = NotificationSeverity.Success;
-            bool isClosable = true;
-            Func<bool> openCondition = () =>
-            {
-                var snapshot = Context.Host.GetService<IVideoService>().GetAllVideos();
-                return snapshot.Count > 0 && snapshot.All(video => video.Condition.VideoState == VideoCondition.State.HEALTHY || video.Condition.VideoState == VideoCondition.State.INPROGRESS);
-            };
-            BarNotification notification = new(title, message, severity, isClosable, openCondition);
-            return notification;
-        }
-        private static BarNotification LargeCacheSizeNotification(int minSize, int maxSize, NotificationSeverity severity)
-        {
-            string buttonText = "Clear Cache";
-            string buttonDescription = "Clears cached files to recover disk space. With cache loading enabled, all previously cached videos has to be extracted again.";
-            Action buttonAction = async () =>
-            {
-                await Task.Run(() =>
-                {
-                    foreach (string item in Directory.GetFiles(Path.Combine(Path.GetTempPath(), "VidHub"), "*", SearchOption.AllDirectories))
-                    {
-                        File.Delete(item);
-                    }
-                });
-            };
-
-            string title = "Large Cache Size";
-            string message = $"The application's cache data has reached more than {minSize} GB";
-            bool isClosable = true;
-            Func<bool> openCondition = () =>
-            {
-                DirectoryInfo info = new(Path.Combine(Path.GetTempPath(), "VidHub"));
-                ulong size = (ulong)info.EnumerateFiles("*", SearchOption.AllDirectories).Sum(file => file.Length);
-                bool aboveMinSize = size >= Math.Pow(1024, 3) * minSize;
-                bool belowMaxSize = size < Math.Pow(1024, 3) * maxSize;
-                return aboveMinSize && belowMaxSize;
-            };
-            ActionNotificationButton button = new(buttonText, buttonAction, buttonDescription);
-
-            BarNotification notification = new(title, message, severity, isClosable, openCondition, button);
-            return notification;
-        }
-        private static BarNotification FFmpegNotInstalledNotification()
-        {
-            string buttonText = "Install FFmpeg";
-            string buttonDescription = "Installs FFmpeg using Winget";
-            Action buttonAction = async () =>
-            {
-                await Task.Run(() =>
-                {
-                    try
-                    {
-                        ProcessStartInfo info = new()
-                        {
-                            FileName = "winget",
-                            Arguments = "install ffmpeg",
-                            UseShellExecute = true,
-                            CreateNoWindow = true
-                        };
-                        using Process? process = Process.Start(info);
-                        process!.WaitForExit();
-                    }
-                    catch { }
-                });
-            };
-
-            string title = "FFmpeg Not Detected";
-            string message = "FFmpeg is required for generating video thumbnails and rendering previews. It was not found in the system PATH.";
-            bool isClosable = false;
-            NotificationSeverity severity = NotificationSeverity.Error;
-            Func<bool> openCondition = () =>
-            {
-                ProcessStartInfo info = new()
-                {
-                    FileName = "winget",
-                    Arguments = "list --query ffmpeg",
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                };
-                using Process? process = Process.Start(info);
-                string output = process!.StandardOutput.ReadToEnd();
-                process.WaitForExit();
-                return !output.Contains("FFmpeg");
-            };
-            ActionNotificationButton button = new(buttonText, buttonAction, buttonDescription);
-
-            BarNotification notification = new(title, message, severity, isClosable, openCondition, button);
-            return notification;
-        }
-        private static BarNotification UnhealthyVideosNotification()
-        {
-            string title = "Some Videos Failed Health Check";
-            string message = "Some loaded videos are not healthy based on the set health level.";
-            NotificationSeverity severity = NotificationSeverity.Warning;
-            bool isClosable = true;
-            Func<bool> openCondition = () =>
-            {
-                var snapshot = Context.Host.GetService<IVideoService>().GetAllVideos();
-                return snapshot.Count > 0 && snapshot.Any(video =>
-                video.Condition.VideoState == VideoCondition.State.FILENOTFOUND
-                || video.Condition.VideoState == VideoCondition.State.CORRUPTED
-                || video.Condition.VideoState == VideoCondition.State.UNKNOWNERROR);
-            };
-            BarNotification notification = new(title, message, severity, isClosable, openCondition);
-            return notification;
-        }
-
-        public IList<Video> GetDisplayVideos()
+        public IList<BarNotification> GetAllNotifications()
         {
             lock (locker)
             {
-                return [.. Videos.Where(Predicate).Order(Comparer)];
+                return [.. notifications];
             }
         }
         public IList<Video> GetAllVideos()
         {
             lock (locker)
             {
-                return [.. Videos];
+                return [.. videos];
+            }
+        }
+        public IList<BarNotification> GetDisplayedNotifications()
+        {
+            lock (locker)
+            {
+                return [.. notifications.Where(n => n.Display && VidHubSettings.Instance.DisplayNotification(n))];
+            }
+        }
+        public IList<Video> GetDisplayedVideos()
+        {
+            lock (locker)
+            {
+                return [.. videos.Where(Predicate).Order(Comparer)];
             }
         }
 
 
-        public void SubscribeToUpdateEvent(Action<UpdateType> action)
+        private void PeriodicDisplayUpdate()
+        {
+            Debug.WriteLine("Periodic Display Update");
+            try { Update(UpdateSections.ALL); }
+            catch { }
+        }
+        private void PeriodicHealthCheck()
+        {
+            Debug.WriteLine("Periodic Health Check");
+            IList<Video> snapshot;
+            lock (locker)
+            {
+                snapshot = [.. videos];
+            }
+            foreach (Video video in snapshot)
+            {
+                video.CheckHealth();
+            }
+        }
+        private void PeriodicNotificationUpdate()
+        {
+            Debug.WriteLine("Periodic Notification Update");
+            IList<BarNotification> snapshot;
+            lock (locker)
+            {
+                snapshot = [.. notifications];
+            }
+            foreach (BarNotification notif in snapshot)
+            {
+                bool before = notif.Display;
+                bool after = notif.DisplayCondition?.Invoke() ?? true;
+                notif.Display = after;
+            }
+        }
+
+
+        public void SubscribeToUpdateEvent(Action<IEnumerable<UpdateSection>> action)
         {
             lock (locker)
             {
                 UpdateEvent += action;
             }
         }
-
-        public void UnsubscribeFromUpdateEvent(Action<UpdateType> action)
+        public void UnsubscribeFromUpdateEvent(Action<IEnumerable<UpdateSection>> action)
         {
             lock (locker)
             {
                 UpdateEvent -= action;
             }
         }
-
-        public void Update(UpdateType type)
+        public void Update(IEnumerable<UpdateSection> sections)
         {
             lock (locker)
             {
-                _ = Context.Window.TryEnqueue(() => UpdateEvent?.Invoke(type));
+                _ = Context.Window.TryEnqueue(() => UpdateEvent?.Invoke(sections));
+            }
+        }
+        public void Update(params UpdateSection[] sections)
+        {
+            Update(sections.AsEnumerable());
+        }
+
+
+        public Video this[int index] { get => videos[index]; set => videos[index] = value; }
+        public int Count => videos.Count;
+        public bool IsReadOnly => videos.IsReadOnly;
+
+
+        public void Add(Video item)
+        {
+            lock (locker)
+            {
+                videos.Add(item);
             }
         }
 
@@ -286,31 +147,7 @@ namespace VidHub.Services.Base
         {
             lock (locker)
             {
-                return Videos.IndexOf(item);
-            }
-        }
-
-        public void Insert(int index, Video item)
-        {
-            lock (locker)
-            {
-                Videos.Insert(index, item);
-            }
-        }
-
-        public void RemoveAt(int index)
-        {
-            lock (locker)
-            {
-                Videos.RemoveAt(index);
-            }
-        }
-
-        public void Add(Video item)
-        {
-            lock (locker)
-            {
-                Videos.Add(item);
+                return videos.IndexOf(item);
             }
         }
 
@@ -318,7 +155,7 @@ namespace VidHub.Services.Base
         {
             lock (locker)
             {
-                Videos.Clear();
+                videos.Clear();
             }
         }
 
@@ -326,7 +163,7 @@ namespace VidHub.Services.Base
         {
             lock (locker)
             {
-                return Videos.Contains(item);
+                return videos.Contains(item);
             }
         }
 
@@ -334,15 +171,7 @@ namespace VidHub.Services.Base
         {
             lock (locker)
             {
-                Videos.CopyTo(array, arrayIndex);
-            }
-        }
-
-        public bool Remove(Video item)
-        {
-            lock (locker)
-            {
-                return Videos.Remove(item);
+                videos.CopyTo(array, arrayIndex);
             }
         }
 
@@ -350,7 +179,7 @@ namespace VidHub.Services.Base
         {
             lock (locker)
             {
-                return Videos.GetEnumerator();
+                return videos.GetEnumerator();
             }
         }
 
@@ -358,38 +187,31 @@ namespace VidHub.Services.Base
         {
             lock (locker)
             {
-                return ((IEnumerable)Videos).GetEnumerator();
+                return ((IEnumerable)videos).GetEnumerator();
             }
         }
 
-        public void Dispose()
-        {
-            healthCheckTask.Dispose();
-            updateNotificationTask.Dispose();
-            periodicUpdateTask.Dispose();
-        }
-
-        public IList<BarNotification> GetDisplayNotifications()
+        public void Insert(int index, Video item)
         {
             lock (locker)
             {
-                return [.. Notifications.Where(n => n.DisplayNotification && VidHubSettings.Instance.DisplayBarNotification(n))];
+                videos.Insert(index, item);
             }
         }
 
-        public IList<BarNotification> GetAllNotifications()
+        public bool Remove(Video item)
         {
             lock (locker)
             {
-                return [.. Notifications];
+                return videos.Remove(item);
             }
         }
-        public void AddNotification(BarNotification notification)
+
+        public void RemoveAt(int index)
         {
             lock (locker)
             {
-                Notifications.Add(notification);
-                Update(UpdateType.UpdateVideoCollection);
+                videos.RemoveAt(index);
             }
         }
     }

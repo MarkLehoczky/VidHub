@@ -1,17 +1,8 @@
 ﻿namespace VidHub.Core.Streams
 {
-    public class MediaStream
+    public class MediaStream(IDictionary<string, string> metadata) : MetadataSource(metadata)
     {
-        public IDictionary<string, string> Metadata { get; init; }
-
-        private MediaStream()
-        {
-            Metadata = new Dictionary<string, string>();
-        }
-
-        public MediaStream(IDictionary<string, string> metadata)
-        {
-            Metadata = metadata;
-        }
+        public string Codec => Metadata.TryGetValue("codec_name", out string? value) ? value : "n/a";
+        public string DetailedCodec => Metadata.TryGetValue("codec_long_name", out string? value) ? value : "n/a";
     }
 }

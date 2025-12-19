@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VidHub.Core;
-using VidHub.Services.Logics.Interfaces;
+using VidHub.Services.Logics;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 using Windows.System;
@@ -60,7 +60,7 @@ namespace VidHub.WinUI.UserControls
 
         private void HandlePastedFiles(IEnumerable<IStorageItem> items)
         {
-            _ = Platform.Context.Host.GetService<IVideoLoadService>().LoadItems(items, true);
+            _ = Platform.Environment.Context.Host.GetService<IVideoLoadService>().LoadItems(items, true);
         }
 
         private void TextTrimmingChanged(TextBlock sender, IsTextTrimmedChangedEventArgs args)

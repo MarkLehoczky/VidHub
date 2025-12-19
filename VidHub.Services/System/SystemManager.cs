@@ -1,35 +1,14 @@
-﻿using Microsoft.Toolkit.Uwp.Notifications;
-using VidHub.Core.Manager;
-using VidHub.Core.Notifications.System;
-using VidHub.Core.Settings;
-using VidHub.Platform;
+﻿using VidHub.Core.Utilities;
+using VidHub.Platform.Environment;
 using VidHub.Platform.Windows;
 using VidHub.Platform.Windows.Taskbar.Enums;
-using VidHub.Services.System.Interfaces;
-using Windows.UI.Notifications;
 
 namespace VidHub.Services.System
 {
-    public class SystemManager(IVidHubSettings settings) : ISystemManager
+    public class SystemManager : ISystemManager
     {
         private readonly TaskbarManager taskbar = new();
 
-
-        public void DisplayToast(SystemNotification notification)
-        {
-            if (!settings.DisplaySystemNotification(notification))
-            {
-                return;
-            }
-
-            ToastContentBuilder content = new();
-            content.AddText(notification.Title);
-            content.AddText(notification.Message);
-            _ = content.GetToastContent();
-
-            ToastNotification toast = new(content.GetXml());
-            ToastNotificationManager.CreateToastNotifier().Show(toast);
-        }
 
         public void FlashWindow()
         {
