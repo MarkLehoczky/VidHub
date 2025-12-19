@@ -1,97 +1,15 @@
-﻿using VidHub.Core.Settings;
-using VidHub.Core.Utilities.Helper;
-using VidHub.Platform;
-using VidHub.Services.Base.Interfaces;
-using VidHub.Services.Connectors.Base.Interfaces;
-using VidHub.Services.Logics.Interfaces;
+﻿using VidHub.Core.Models;
+using VidHub.Core.Settings;
+using VidHub.Core.Utilities;
+using VidHub.Platform.Environment;
+using VidHub.Services.Base;
+using VidHub.Services.Logics;
 using Windows.Storage;
 
 namespace VidHub.Services.Connectors.Base
 {
-    public class TitleBarConnector(IVideoService vs, IVidHubSettings settings, IVideoLoadService load) : ServiceTemplate(vs), ITitleBarConnector
+    public class TitleBarConnector(IVideoService vs, IVidHubSettings settings, IVideoLoadService load) : ConnectorTemplate(vs), ITitleBarConnector
     {
-        public bool DisplayDates
-        {
-            get => settings.Display.DisplayDates;
-            set
-            {
-                settings.Display.DisplayDates = value;
-                vs.Update(UpdateSection.VIDEOCOLLECTION);
-            }
-        }
-        public bool DisplayDurations
-        {
-            get => settings.Display.DisplayDurations;
-            set
-            {
-                settings.Display.DisplayDurations = value;
-                vs.Update(UpdateSection.VIDEOCOLLECTION);
-            }
-        }
-        public bool DisplayHealths
-        {
-            get => settings.Display.DisplayHealths;
-            set
-            {
-                settings.Display.DisplayHealths = value;
-                vs.Update(UpdateSection.VIDEOCOLLECTION);
-            }
-        }
-        public bool DisplayTitles
-        {
-            get => settings.Display.DisplayTitles;
-            set
-            {
-                settings.Display.DisplayTitles = value;
-                vs.Update(UpdateSection.VIDEOCOLLECTION);
-            }
-        }
-        public bool UseCacheLoading
-        {
-            get => settings.Performance.UseCacheLoading;
-            set
-            {
-                settings.Performance.UseCacheLoading = value;
-                vs.Update(UpdateSection.VIDEOCOLLECTION);
-            }
-        }
-        public bool UseCaseSensitiveSearch
-        {
-            get => settings.SidePanel.UseCaseSensitiveSearch;
-            set
-            {
-                settings.SidePanel.UseCaseSensitiveSearch = value;
-                vs.Update(UpdateSection.VIDEOCOLLECTION);
-            }
-        }
-        public bool UseConcurrentLoading
-        {
-            get => settings.Performance.UseConcurrentLoading;
-            set
-            {
-                settings.Performance.UseConcurrentLoading = value;
-                vs.Update(UpdateSection.VIDEOCOLLECTION);
-            }
-        }
-        public bool UseRealTimeSearch
-        {
-            get => settings.SidePanel.UseRealTimeSearch;
-            set
-            {
-                settings.SidePanel.UseRealTimeSearch = value;
-                vs.Update(UpdateSections.SIDEPANEL);
-                vs.Update(UpdateSection.VIDEOCOLLECTION);
-            }
-        }
-        public bool UseSearchSuggestions
-        {
-            get => settings.SidePanel.UseSearchSuggestions;
-            set
-            {
-                settings.SidePanel.UseSearchSuggestions = value;
-                vs.Update(UpdateSection.VIDEOCOLLECTION);
-            }
-        }
         public bool OpenedSidePanel
         {
             get => settings.General.OpenedSidePanel;
@@ -106,6 +24,88 @@ namespace VidHub.Services.Connectors.Base
             get => settings.General.KeepSidePanelSettings;
             set => settings.General.KeepSidePanelSettings = value;
         }
+        public bool UseRealTimeSearch
+        {
+            get => settings.SidePanel.UseRealTimeSearch;
+            set
+            {
+                settings.SidePanel.UseRealTimeSearch = value;
+                vs.Update(UpdateSections.SIDEPANEL);
+                vs.Update(UpdateSection.VIDEOCOLLECTION);
+            }
+        }
+        public bool UseCaseSensitiveSearch
+        {
+            get => settings.SidePanel.UseCaseSensitiveSearch;
+            set
+            {
+                settings.SidePanel.UseCaseSensitiveSearch = value;
+                vs.Update(UpdateSection.VIDEOCOLLECTION);
+            }
+        }
+        public bool UseSearchSuggestions
+        {
+            get => settings.SidePanel.UseSearchSuggestions;
+            set
+            {
+                settings.SidePanel.UseSearchSuggestions = value;
+                vs.Update(UpdateSection.VIDEOCOLLECTION);
+            }
+        }
+        
+        public bool DisplayDates
+        {
+            get => settings.Display.DisplayDate;
+            set
+            {
+                settings.Display.DisplayDate = value;
+                vs.Update(UpdateSection.VIDEOCOLLECTION);
+            }
+        }
+        public bool DisplayDurations
+        {
+            get => settings.Display.DisplayDuration;
+            set
+            {
+                settings.Display.DisplayDuration = value;
+                vs.Update(UpdateSection.VIDEOCOLLECTION);
+            }
+        }
+        public bool DisplayHealths
+        {
+            get => settings.Display.DisplayHealth;
+            set
+            {
+                settings.Display.DisplayHealth = value;
+                vs.Update(UpdateSection.VIDEOCOLLECTION);
+            }
+        }
+        public bool DisplayTitles
+        {
+            get => settings.Display.DisplayTitle;
+            set
+            {
+                settings.Display.DisplayTitle = value;
+                vs.Update(UpdateSection.VIDEOCOLLECTION);
+            }
+        }
+
+        public bool UseCacheLoading
+        {
+            get => settings.Performance.UseCacheLoading;
+            set => settings.Performance.UseCacheLoading = value;
+        }
+        public bool UseConcurrentLoading
+        {
+            get => settings.Performance.UseConcurrentLoading;
+            set => settings.Performance.UseConcurrentLoading = value;
+        }
+        public bool UseContentHash
+        {
+            get => settings.General.UseFileContentHash;
+            set => settings.General.UseFileContentHash = value;
+        }
+
         public bool DisplayInformationalSystemNotification
         {
             get => settings.Notifications.DisplayInformationalSystemNotification;
@@ -126,6 +126,7 @@ namespace VidHub.Services.Connectors.Base
             get => settings.Notifications.DisplayErrorSystemNotification;
             set => settings.Notifications.DisplayErrorSystemNotification = value;
         }
+
         public bool DisplayInformationalBarNotification
         {
             get => settings.Notifications.DisplayInformationalBarNotification;
@@ -149,97 +150,91 @@ namespace VidHub.Services.Connectors.Base
 
         public bool DisabledHealthCheck
         {
-            get => settings.VideoHealth.Type == VideoHealthCheckType.NONE;
+            get => settings.Health.Type == HealthType.NONE;
             set
             {
                 if (value)
                 {
-                    settings.VideoHealth.Type = VideoHealthCheckType.NONE;
+                    settings.Health.Type = HealthType.NONE;
                 }
             }
         }
         public bool ExistenceHealthCheck
         {
-            get => settings.VideoHealth.Type == VideoHealthCheckType.EXISTENCECHECK;
+            get => settings.Health.Type == HealthType.EXISTENCECHECK;
             set
             {
                 if (value)
                 {
-                    settings.VideoHealth.Type = VideoHealthCheckType.EXISTENCECHECK;
+                    settings.Health.Type = HealthType.EXISTENCECHECK;
                 }
             }
         }
         public bool QuickHealthCheck
         {
-            get => settings.VideoHealth.Type == VideoHealthCheckType.QUICKCHECK;
+            get => settings.Health.Type == HealthType.QUICKCHECK;
             set
             {
                 if (value)
                 {
-                    settings.VideoHealth.Type = VideoHealthCheckType.QUICKCHECK;
+                    settings.Health.Type = HealthType.QUICKCHECK;
                 }
             }
         }
         public bool FullHealthCheck
         {
-            get => settings.VideoHealth.Type == VideoHealthCheckType.FULLCHECK;
+            get => settings.Health.Type == HealthType.FULLCHECK;
             set
             {
                 if (value)
                 {
-                    settings.VideoHealth.Type = VideoHealthCheckType.FULLCHECK;
+                    settings.Health.Type = HealthType.FULLCHECK;
                 }
             }
         }
 
-        public async Task CustomizeVideoDisplayingAsync()
+
+        public async Task Import()
         {
-            await Context.Window.OpenDisplayFormatModal();
+            await load.Import();
+        }
+        public async Task Export()
+        {
+            await load.Export();
         }
 
-        public async Task CustomizeVideoLoadingAsync()
+        public async Task LoadFiles()
         {
-            await Context.Window.OpenTitleFutureFormatModal();
+            await load.LoadFiles();
         }
-
-        public async Task CustomizeVideoPreviewImageAsync()
+        public async Task LoadFolders(bool includeSubfolders)
         {
-            await Context.Window.OpenPreviewImageFormatModal();
+            await load.LoadFolders(includeSubfolders);
         }
-
-        public async Task ExportCollectionAsync()
-        {
-            await load.ExportCollectionAsync();
-        }
-
-        public async Task ImportCollectionAsync()
-        {
-            await load.ImportCollectionAsync();
-        }
-
-        public async Task LoadFilesAsync()
-        {
-            await load.LoadFilesAsync();
-        }
-
-        public async Task LoadFoldersAsync(bool includeSubfolders)
-        {
-            await load.LoadFoldersAsync(includeSubfolders);
-        }
-
         public async Task LoadItems(IEnumerable<IStorageItem> items, bool includeSubfolders)
         {
             await load.LoadItems(items, includeSubfolders);
         }
 
-        public async Task OpenLicensesModalAsync()
+        public async Task OpenLicensesDialog()
         {
-            await Context.Window.OpenLicenseModal();
+            await Context.Window.OpenLicensesDialog();
         }
-
-        public async Task OpenVersionsModalAsync()
+        public async Task OpenDisplayFormatDialog()
         {
-            await Context.Window.OpenVersionModal();
+            await Context.Window.OpenDisplayFormatDialog();
+        }
+        public async Task OpenPassiveTitleFormatDialog()
+        {
+            await Context.Window.OpenPassiveTitleFormatDialog();
+        }
+        public async Task OpenPreviewImageFormatDialog()
+        {
+            await Context.Window.OpenPreviewImageFormatDialog();
+        }
+        public async Task OpenVersionsDialog()
+        {
+            await Context.Window.OpenVersionsDialog();
         }
     }
 }

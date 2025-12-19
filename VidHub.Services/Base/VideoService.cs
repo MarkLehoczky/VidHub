@@ -5,16 +5,14 @@ using VidHub.Core.Data;
 using VidHub.Core.Notifications;
 using VidHub.Core.Settings;
 using VidHub.Core.Utilities;
-using VidHub.Core.Utilities.Helper;
-using VidHub.Platform;
-using VidHub.Services.Base.Interfaces;
+using VidHub.Platform.Environment;
 
 namespace VidHub.Services.Base
 {
     public class VideoService : IVideoService
     {
         private readonly object locker = new();
-        private readonly RecurringActionManager recurringActionManager = new();
+        private readonly RecurrenceManager recurringActionManager = new();
         private event Action<IEnumerable<UpdateSection>>? UpdateEvent;
 
         private readonly IList<Video> videos = [];
@@ -26,10 +24,10 @@ namespace VidHub.Services.Base
 
         public VideoService()
         {
-            notifications.Add(NotificationData.HealthyVideosNotification(videos));
             notifications.Add(NotificationData.NotCheckedVideosNotification(videos));
-            notifications.Add(NotificationData.UnhealthyVideosNotification(videos));
             notifications.Add(NotificationData.MediumCacheSizeNotification());
+            notifications.Add(NotificationData.HealthyVideosNotification(videos));
+            notifications.Add(NotificationData.UnhealthyVideosNotification(videos));
             notifications.Add(NotificationData.LargeCacheSizeNotification());
             notifications.Add(NotificationData.FFmpegNotInstalledNotification());
 
@@ -39,13 +37,42 @@ namespace VidHub.Services.Base
         }
 
 
+        public IList<BarNotification> GetAllNotifications()
+        {
+            lock (locker)
+            {
+                return [.. notifications];
+            }
+        }
+        public IList<Video> GetAllVideos()
+        {
+            lock (locker)
+            {
+                return [.. videos];
+            }
+        }
+        public IList<BarNotification> GetDisplayedNotifications()
+        {
+            lock (locker)
+            {
+                return [.. notifications.Where(n => n.Display && VidHubSettings.Instance.DisplayNotification(n))];
+            }
+        }
+        public IList<Video> GetDisplayedVideos()
+        {
+            lock (locker)
+            {
+                return [.. videos.Where(Predicate).Order(Comparer)];
+            }
+        }
+
+
         private void PeriodicDisplayUpdate()
         {
             Debug.WriteLine("Periodic Display Update");
             try { Update(UpdateSections.ALL); }
             catch { }
         }
-
         private void PeriodicHealthCheck()
         {
             Debug.WriteLine("Periodic Health Check");
@@ -56,10 +83,9 @@ namespace VidHub.Services.Base
             }
             foreach (Video video in snapshot)
             {
-                video.HealthCheck();
+                video.CheckHealth();
             }
         }
-
         private void PeriodicNotificationUpdate()
         {
             Debug.WriteLine("Periodic Notification Update");
@@ -77,38 +103,6 @@ namespace VidHub.Services.Base
         }
 
 
-        public IList<BarNotification> GetAllNotifications()
-        {
-            lock (locker)
-            {
-                return [.. notifications];
-            }
-        }
-
-        public IList<Video> GetAllVideos()
-        {
-            lock (locker)
-            {
-                return [.. videos];
-            }
-        }
-
-        public IList<Video> GetDisplayedVideos()
-        {
-            lock (locker)
-            {
-                return [.. videos.Where(Predicate).Order(Comparer)];
-            }
-        }
-
-        public IList<BarNotification> GetDisplayedNotifications()
-        {
-            lock (locker)
-            {
-                return [.. notifications.Where(n => n.Display && VidHubSettings.Instance.DisplayNotification(n))];
-            }
-        }
-
         public void SubscribeToUpdateEvent(Action<IEnumerable<UpdateSection>> action)
         {
             lock (locker)
@@ -116,7 +110,6 @@ namespace VidHub.Services.Base
                 UpdateEvent += action;
             }
         }
-
         public void UnsubscribeFromUpdateEvent(Action<IEnumerable<UpdateSection>> action)
         {
             lock (locker)
@@ -124,7 +117,6 @@ namespace VidHub.Services.Base
                 UpdateEvent -= action;
             }
         }
-
         public void Update(IEnumerable<UpdateSection> sections)
         {
             lock (locker)
@@ -136,7 +128,6 @@ namespace VidHub.Services.Base
         {
             Update(sections.AsEnumerable());
         }
-
 
 
         public Video this[int index] { get => videos[index]; set => videos[index] = value; }

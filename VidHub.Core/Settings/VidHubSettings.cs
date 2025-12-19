@@ -1,8 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.RegularExpressions;
 using VidHub.Core.Notifications;
-using VidHub.Core.Settings.Models;
-using VidHub.Platform;
+using VidHub.Platform.Environment;
 
 namespace VidHub.Core.Settings
 {
@@ -13,10 +12,10 @@ namespace VidHub.Core.Settings
         public GeneralSettings General { get; set; } = new GeneralSettings();
         public DisplaySettings Display { get; set; } = new DisplaySettings();
         public NotificationSettings Notifications { get; set; } = new NotificationSettings();
-        public VideoHealthSettings VideoHealth { get; set; } = new VideoHealthSettings();
+        public HealthSettings Health { get; set; } = new HealthSettings();
         public PerformanceSettings Performance { get; set; } = new PerformanceSettings();
         public SidePanelSettings SidePanel { get; set; } = new SidePanelSettings();
-        public ModalSettings Modals { get; set; } = new ModalSettings();
+        public DialogSettings Dialogs { get; set; } = new DialogSettings();
 
 
         public bool DisplayNotification(BaseNotification notification)
@@ -99,15 +98,15 @@ namespace VidHub.Core.Settings
 
         public TimeSpan GetPreviewImageTime(Video video)
         {
-            return video.DefaultVideoStream != null && video.DefaultVideoStream.Duration > TimeSpan.Zero
-                ? GetPreviewImageTime(video.DefaultVideoStream.Duration)
+            return video.Metadata.DefaultVideoStream != null && video.Metadata.DefaultVideoStream.Duration > TimeSpan.Zero
+                ? GetPreviewImageTime(video.Metadata.DefaultVideoStream.Duration)
                 : GetPreviewImageTime(video.Duration);
         }
         public TimeSpan GetPreviewImageTime(TimeSpan duration)
         {
-            return Modals.PreviewImageFormat.RelativePosition
-                ? duration * Modals.PreviewImageFormat.RelativeTime
-                : duration > Modals.PreviewImageFormat.FixedTime ? Modals.PreviewImageFormat.FixedTime : duration;
+            return Dialogs.PreviewImageFormat.RelativePosition
+                ? duration * Dialogs.PreviewImageFormat.RelativeTime
+                : duration > Dialogs.PreviewImageFormat.FixedTime ? Dialogs.PreviewImageFormat.FixedTime : duration;
         }
 
         public void CustomizeVideoTitle(ref Video video)
@@ -116,42 +115,46 @@ namespace VidHub.Core.Settings
         }
         public string GetCustomizedVideoTitle(Video video)
         {
-            return GetCustomizedVideoTitle(video, Modals.TitleFormat.UseRegex);
+            return GetCustomizedVideoTitle(video, Dialogs.TitleFormat.UseRegex);
         }
         public string GetCustomizedVideoTitle(Video video, bool useRegex)
         {
-            string path = Path.GetDirectoryName(video.FilePath) + Path.DirectorySeparatorChar;
-            string date = video.Date.ToString("yyyy-MM-dd");
-            string filename = Path.GetFileNameWithoutExtension(video.FilePath);
-            string metadata = $"({video.DefaultVideoStream?.Codec})_[{video.DefaultVideoStream?.Width}x{video.DefaultVideoStream?.Height}_{video.DefaultVideoStream?.Framerate.Item1 / video.DefaultVideoStream?.Framerate.Item2}fps_{video.DefaultVideoStream?.Bitrate / 1048576}Mbps_{video.DefaultAudioStream?.ChannelLayout}]";
-            string extension = Path.GetExtension(video.FilePath);
             string newTitle = "";
-            if (Modals.TitleFormat.IncludePath)
+            if (Dialogs.TitleFormat.IncludePath)
             {
+                string path = Path.GetDirectoryName(video.FilePath) + Path.DirectorySeparatorChar;
                 newTitle += path;
             }
-            if (Modals.TitleFormat.IncludeDate)
+            if (Dialogs.TitleFormat.IncludeDate)
             {
+                string date = video.Date.ToString("yyyy-MM-dd");
                 newTitle += date;
             }
-            if (Modals.TitleFormat.IncludeFilename)
+            if (Dialogs.TitleFormat.IncludeFilename)
             {
-                newTitle += Modals.TitleFormat.IncludeDate ? $"_{filename}" : filename;
+                string filename = Path.GetFileNameWithoutExtension(video.FilePath);
+                newTitle += Dialogs.TitleFormat.IncludeDate ? $"_{filename}" : filename;
             }
-            if (Modals.TitleFormat.IncludeMetadata)
+            if (Dialogs.TitleFormat.IncludeMetadata && video.Metadata.DefaultVideoStream is not null)
             {
-                newTitle += Modals.TitleFormat.IncludeDate || Modals.TitleFormat.IncludeFilename ? $"_{metadata}" : metadata;
+                string codec = video.Metadata.DefaultVideoStream.Codec;
+                string size = $"{video.Metadata.DefaultVideoStream.Width}x{video.Metadata.DefaultVideoStream.Height}";
+                double fps = Math.Round(video.Metadata.DefaultVideoStream.Framerate.Item1 / (double)video.Metadata.DefaultVideoStream.Framerate.Item2);
+                string channel = video.Metadata.DefaultAudioStream?.ChannelLayout ?? "silent";
+                string metadata = $"({codec})_[{size}_{fps}fps_{channel}]";
+                newTitle += Dialogs.TitleFormat.IncludeDate || Dialogs.TitleFormat.IncludeFilename ? $"_{metadata}" : metadata;
             }
-            if (Modals.TitleFormat.IncludeExtension)
+            if (Dialogs.TitleFormat.IncludeExtension)
             {
+                string extension = Path.GetExtension(video.FilePath);
                 newTitle += extension;
             }
             if (useRegex)
             {
                 try
                 {
-                    Regex regex = new(Modals.TitleFormat.RegexPattern);
-                    newTitle = regex.Replace(newTitle, Modals.TitleFormat.RegexReplacement);
+                    Regex regex = new(Dialogs.TitleFormat.RegexPattern);
+                    newTitle = regex.Replace(newTitle, Dialogs.TitleFormat.RegexReplacement);
                 }
                 catch { }
             }
@@ -173,9 +176,9 @@ namespace VidHub.Core.Settings
                     General = settings.General;
                     Display = settings.Display;
                     Notifications = settings.Notifications;
-                    VideoHealth = settings.VideoHealth;
+                    Health = settings.Health;
                     Performance = settings.Performance;
-                    Modals = settings.Modals;
+                    Dialogs = settings.Dialogs;
                     if (General.KeepSidePanelSettings)
                     {
                         SidePanel = settings.SidePanel;

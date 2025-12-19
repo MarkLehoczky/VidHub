@@ -1,16 +1,16 @@
 ﻿using System.Collections;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using VidHub.Core.Models;
 using VidHub.Core.Settings;
-using VidHub.Core.Streams;
-using VidHub.Core.Utilities;
-using VidHub.Core.Utilities.Helper;
+using VidHub.Core.Utilities.Internal;
 using Windows.Storage;
 
 namespace VidHub.Core
 {
-    public class Video : FocusableObject, IComparable, IComparable<Video>, IComparer, IComparer<Video>, IEqualityComparer<Video>, IEquatable<Video>
+    public class Video : FocusableObject, ICloneable, IComparable, IComparable<Video>, IComparer, IComparer<Video>, IEqualityComparer<Video>, IEquatable<Video>
     {
         private static int IDProvider = 0;
 
@@ -24,31 +24,19 @@ namespace VidHub.Core
         private TimeSpan duration;
         private string previewImagePath;
         private string filePath;
-        private IEnumerable<VideoStream> videoStreams;
-        private IEnumerable<AudioStream> audioStreams;
-        private IEnumerable<SubtitleStream> subtitleStreams;
-        private IEnumerable<MediaStream> unknownStreams;
-        private FormatStream formatStream;
-        private DetailedVideoState healthState;
+        private VideoMetadata metadata;
+        private DetailedHealth health;
         private bool loadingFinished;
 
-        [JsonIgnore] public int ID { get => id; set => SetFocusedProperty(ref id, value); }
-        public string Hash { get => hash; set => SetFocusedProperty(ref hash, value); }
+        [JsonIgnore] public int ID { get => id; private set => SetFocusedProperty(ref id, value); }
+        [JsonIgnore] public string Hash { get => hash; private set => SetFocusedProperty(ref hash, value); }
         public string Title { get => title; set => SetFocusedProperty(ref title, value); }
         public DateTime Date { get => date; set => SetFocusedProperty(ref date, value); }
         public TimeSpan Duration { get => duration; set => SetFocusedProperty(ref duration, value); }
         public string PreviewImagePath { get => previewImagePath; set => SetFocusedProperty(ref previewImagePath, value); }
         public string FilePath { get => filePath; set => SetFocusedProperty(ref filePath, value); }
-
-        public FormatStream FormatStream { get => formatStream; set => SetFocusedProperty(ref formatStream, value); }
-        public IEnumerable<VideoStream> VideoStreams { get => videoStreams; set => SetFocusedProperty(ref videoStreams, value); }
-        public IEnumerable<AudioStream> AudioStreams { get => audioStreams; set => SetFocusedProperty(ref audioStreams, value); }
-        public IEnumerable<SubtitleStream> SubtitleStreams { get => subtitleStreams; set => SetFocusedProperty(ref subtitleStreams, value); }
-        public IEnumerable<MediaStream> UnknownStreams { get => unknownStreams; set => SetFocusedProperty(ref unknownStreams, value); }
-        [JsonIgnore] public VideoStream? DefaultVideoStream => VideoStreams.FirstOrDefault(s => s.IsDefault) ?? VideoStreams.FirstOrDefault();
-        [JsonIgnore] public AudioStream? DefaultAudioStream => AudioStreams.FirstOrDefault(s => s.IsDefault) ?? AudioStreams.FirstOrDefault();
-
-        public DetailedVideoState HealthState { get => healthState; set => SetFocusedProperty(ref healthState, value); }
+        public VideoMetadata Metadata { get => metadata; set => SetFocusedProperty(ref metadata, value); }
+        public DetailedHealth Health { get => health; set => SetFocusedProperty(ref health, value); }
         public bool LoadingFinished { get => loadingFinished; set => SetFocusedProperty(ref loadingFinished, value); }
 
 
@@ -62,12 +50,8 @@ namespace VidHub.Core
             duration = TimeSpan.Zero;
             previewImagePath = string.Empty;
             filePath = string.Empty;
-            formatStream = new FormatStream(new Dictionary<string, string>());
-            videoStreams = [];
-            audioStreams = [];
-            subtitleStreams = [];
-            unknownStreams = [];
-            healthState = new DetailedVideoState();
+            metadata = new VideoMetadata();
+            health = new DetailedHealth();
             loadingFinished = false;
         }
         public Video(string file) : this()
@@ -80,26 +64,54 @@ namespace VidHub.Core
         public Video(StorageFile file) : this(file.Path) { }
 
 
+        public void CheckHealth()
+        {
+            if (VidHubSettings.Instance.Health.Type is HealthType.NONE)
+            {
+                return;
+            }
+            if (VidHubSettings.Instance.Health.Type is HealthType.EXISTENCECHECK)
+            {
+                Health = File.Exists(FilePath) ? HealthState.HEALTHY : HealthState.FILENOTFOUND;
+                return;
+            }
+            if (!File.Exists(FilePath))
+            {
+                Health = HealthState.FILENOTFOUND;
+                return;
+            }
+
+            Health = HealthState.INPROGRESS;
+            VideoProcessor processor = new(this);
+            Health = processor.HealthCheck();
+        }
+
         public void Load()
         {
             if (LoadCache())
             {
                 Title = VidHubSettings.Instance.GetCustomizedVideoTitle(this);
+                return;
             }
-            else
-            {
-                foreach (Action action in LoadActions())
-                {
-                    try { action(); }
-                    catch { }
-                }
-            }
+            VideoProcessor processor = new(this);
+            Metadata = processor.ProcessMetadata();
+            Title = VidHubSettings.Instance.GetCustomizedVideoTitle(this);
+            Date = Metadata.Format is not null && Metadata.Format.CreationTime != DateTime.MinValue
+                ? Metadata.Format.CreationTime
+                : File.GetLastWriteTime(FilePath);
+            Duration = Metadata.DefaultVideoStream is not null && Metadata.DefaultVideoStream.Duration != TimeSpan.Zero
+                ? Metadata.DefaultVideoStream.Duration
+                : Metadata.Format is not null
+                    ? Metadata.Format.Duration
+                    : TimeSpan.Zero;
+            ProcessPreviewImage();
             SaveCache();
         }
 
+
         private bool LoadCache()
         {
-            string cacheDirectory = Path.Combine(Path.GetTempPath(), "VidHub", "Cache");
+            string cacheDirectory = Path.Combine(Path.GetTempPath(), "VidHub", "Data");
             string cachePath = Path.Combine(cacheDirectory, Hash + ".json");
             if (!VidHubSettings.Instance.Performance.UseCacheLoading || !File.Exists(cachePath))
             {
@@ -118,54 +130,13 @@ namespace VidHub.Core
             Duration = video.Duration;
             PreviewImagePath = video.PreviewImagePath;
             FilePath = video.FilePath;
-            FormatStream = video.FormatStream;
-            VideoStreams = video.VideoStreams;
-            AudioStreams = video.AudioStreams;
-            SubtitleStreams = video.SubtitleStreams;
-            UnknownStreams = video.UnknownStreams;
+            Metadata = video.Metadata;
 
-            return !string.IsNullOrEmpty(PreviewImagePath) || ProcessPreviewImage();
+            return !string.IsNullOrEmpty(PreviewImagePath);
         }
-
-        private List<Action> LoadActions()
-        {
-            VideoProcessor metadataProcessor = new(this);
-
-            return [
-                () => Title = Path.GetFileNameWithoutExtension(FilePath),
-                () => FormatStream = metadataProcessor.GetFormatStream(),
-                () => VideoStreams = metadataProcessor.GetVideoStreams(),
-                () => AudioStreams = metadataProcessor.GetAudioStreams(),
-                () => SubtitleStreams = metadataProcessor.GetSubtitleStreams(),
-                () => UnknownStreams = metadataProcessor.GetUnknownStreams(),
-                () => Title = VidHubSettings.Instance.GetCustomizedVideoTitle(this),
-                () => Date = FormatStream.CreationTime != DateTime.MinValue ? FormatStream.CreationTime : File.GetLastWriteTime(FilePath),
-                () => Duration = DefaultVideoStream is not null && DefaultVideoStream.Duration != TimeSpan.Zero ? DefaultVideoStream.Duration : FormatStream.Duration,
-                () => ProcessPreviewImage()
-            ];
-        }
-
-        public bool ProcessPreviewImage()
-        {
-            try
-            {
-                VideoProcessor processor = new(this);
-                if (processor.ProcessPreviewImage(out string? extractedImagePath) && extractedImagePath is not null)
-                {
-                    PreviewImagePath = extractedImagePath;
-                    return true;
-                }
-                return false;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
         private void SaveCache()
         {
-            string cacheDirectory = Path.Combine(Path.GetTempPath(), "VidHub", "Cache");
+            string cacheDirectory = Path.Combine(Path.GetTempPath(), "VidHub", "Data");
             string cachePath = Path.Combine(cacheDirectory, Hash + ".json");
 
             JsonSerializerOptions jsonOptions = new()
@@ -180,28 +151,27 @@ namespace VidHub.Core
             File.WriteAllText(cachePath, JsonSerializer.Serialize(this, jsonOptions));
         }
 
-        public void HealthCheck()
+        private bool ProcessPreviewImage()
         {
-            if (VidHubSettings.Instance.VideoHealth.Type is VideoHealthCheckType.NONE)
-            {
-                return;
-            }
-            if (VidHubSettings.Instance.VideoHealth.Type is VideoHealthCheckType.EXISTENCECHECK)
-            {
-                HealthState = File.Exists(FilePath) ? VideoHealth.HEALTHY : VideoHealth.FILENOTFOUND;
-                return;
-            }
-            if (!File.Exists(FilePath))
-            {
-                HealthState = VideoHealth.FILENOTFOUND;
-                return;
-            }
-
-            HealthState = VideoHealth.INPROGRESS;
             VideoProcessor processor = new(this);
-            HealthState = processor.HealthCheck();
+            bool result = processor.ProcessPreviewImage(out string? extractedImagePath);
+            PreviewImagePath = extractedImagePath ?? string.Empty;
+            return result;
         }
 
+
+        protected override bool SetFocusedProperty<T>([NotNullIfNotNull(nameof(newValue))] ref T field, T newValue, [CallerMemberName] string? propertyName = null)
+        {
+            bool result = base.SetFocusedProperty(ref field, newValue, propertyName);
+            SaveCache();
+            return result;
+        }
+
+
+        public object Clone()
+        {
+            return MemberwiseClone();
+        }
 
         public int CompareTo(object? obj)
         {
@@ -211,7 +181,6 @@ namespace VidHub.Core
         {
             return other is null ? 1 : Comparer<int>.Default.Compare(ID, other.ID);
         }
-
         public int Compare(object? x, object? y)
         {
             return ReferenceEquals(x, y)

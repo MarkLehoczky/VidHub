@@ -1,24 +1,46 @@
 ﻿using System.Collections.Concurrent;
 using System.Data;
 using VidHub.Core.Settings;
-using VidHub.Core.Utilities.Helper;
-using VidHub.Core.Utilities.Internal;
 using Windows.Storage;
 
 namespace VidHub.Core.Utilities
 {
+    internal class CollectSource(IEnumerable<string> items, bool includeSubfolders, WrapActions<string> collectActions, WrapActions<string> loadActions)
+    {
+        public IEnumerable<string> Items { get; } = items;
+        public bool IncludeSubfolders { get; } = includeSubfolders;
+        public WrapActions<string> CollectActions { get; } = collectActions;
+        public WrapActions<string> LoadActions { get; } = loadActions;
+    }
+
+
+    internal class LoadSource(string file, WrapActions<string> loadActions)
+    {
+        public string File { get; } = file;
+        public WrapActions<string> LoadActions { get; } = loadActions;
+
+        public void PreActionInvoke()
+        {
+            LoadActions.PreAction(File);
+        }
+        public void PostActionInvoke()
+        {
+            LoadActions.PostAction(File);
+        }
+    }
+
+
     public class LoadingManager
     {
         private readonly object locker = new();
-        private readonly ConcurrentQueue<QueueCollectItem> collectQueue = new();
-        private readonly ConcurrentQueue<QueueLoadItem> loadQueue = new();
+        private readonly ConcurrentQueue<CollectSource> collectQueue = new();
+        private readonly ConcurrentQueue<LoadSource> loadQueue = new();
         private int loadedFileCount = 0;
         private int totalFileCount = 0;
 
 
         public event Action? CollectingFinished;
         public event Action? LoadingFinished;
-
         public bool IsActive => IsCollecting || IsLoading;
         public bool IsCollecting { get; private set; } = false;
         public bool IsLoading { get; private set; } = false;
@@ -28,12 +50,18 @@ namespace VidHub.Core.Utilities
 
         public LoadingManager()
         {
+            CollectingFinished += () =>
+            {
+                IsCollecting = false;
+            };
             LoadingFinished += () =>
             {
+                IsLoading = false;
                 loadedFileCount = 0;
                 totalFileCount = 0;
             };
         }
+
 
         public async Task QueueVideoCollecting(IEnumerable<IStorageItem> items, bool includeSubfolders, WrapActions<string> collectActions, WrapActions<string> loadActions)
         {
@@ -41,8 +69,17 @@ namespace VidHub.Core.Utilities
         }
         public async Task QueueVideoCollecting(IEnumerable<string> items, bool includeSubfolders, WrapActions<string> collectActions, WrapActions<string> loadActions)
         {
-            collectQueue.Enqueue(new QueueCollectItem(items, includeSubfolders, collectActions, loadActions));
-            if (!IsCollecting)
+            bool shouldStartProcessing;
+            collectQueue.Enqueue(new CollectSource(items, includeSubfolders, collectActions, loadActions));
+            lock (locker)
+            {
+                shouldStartProcessing = IsCollecting;
+                if (!IsCollecting)
+                {
+                    IsCollecting = true;
+                }
+            }
+            if (!shouldStartProcessing)
             {
                 await ProcessNextCollecting();
             }
@@ -51,7 +88,7 @@ namespace VidHub.Core.Utilities
         private async Task QueueVideoLoading(string file, WrapActions<string> loadActions)
         {
             bool shouldStartProcessing;
-            loadQueue.Enqueue(new QueueLoadItem(file, loadActions));
+            loadQueue.Enqueue(new LoadSource(file, loadActions));
             lock (locker)
             {
                 shouldStartProcessing = IsLoading;
@@ -69,9 +106,8 @@ namespace VidHub.Core.Utilities
 
         private async Task ProcessNextCollecting()
         {
-            while (collectQueue.TryDequeue(out QueueCollectItem? currentCollectQueue) && currentCollectQueue is not null)
+            while (collectQueue.TryDequeue(out CollectSource? currentCollectQueue) && currentCollectQueue is not null)
             {
-                IsCollecting = true;
                 IEnumerable<string> files = currentCollectQueue.Items.Where(File.Exists);
                 IEnumerable<string> folders = currentCollectQueue.Items.Where(Directory.Exists);
 
@@ -99,30 +135,27 @@ namespace VidHub.Core.Utilities
             }
 
             CollectingFinished?.Invoke();
-            IsCollecting = false;
-            return;
         }
 
         private async Task ProcessNextLoading()
         {
-            while (loadQueue.TryDequeue(out QueueLoadItem? currentLoadQueue) && currentLoadQueue is not null)
+            while (loadQueue.TryDequeue(out LoadSource? currentLoadQueue) && currentLoadQueue is not null)
             {
-                IsLoading = true;
                 if (VidHubSettings.Instance.Performance.UseConcurrentLoading)
                 {
-                    List<QueueLoadItem> batch = [currentLoadQueue];
+                    List<LoadSource> batch = [currentLoadQueue];
                     for (int i = 1; i < (Environment.ProcessorCount * 3); i++)
                     {
-                        if (loadQueue.TryDequeue(out QueueLoadItem? nextLoadQueue) && nextLoadQueue is not null)
+                        if (loadQueue.TryDequeue(out LoadSource? nextLoadQueue) && nextLoadQueue is not null)
                         {
                             batch.Add(nextLoadQueue);
                         }
                     }
-                    _ = Parallel.ForEach(batch, new ParallelOptions() { MaxDegreeOfParallelism = Environment.ProcessorCount }, loadItem =>
+                    _ = Parallel.ForEach(batch, new ParallelOptions() { MaxDegreeOfParallelism = Environment.ProcessorCount }, currentLoad =>
                     {
-                        loadItem.PreActionInvoke();
+                        currentLoad.PreActionInvoke();
                         _ = Interlocked.Increment(ref loadedFileCount);
-                        loadItem.PostActionInvoke();
+                        currentLoad.PostActionInvoke();
                     });
                 }
                 else
@@ -137,8 +170,6 @@ namespace VidHub.Core.Utilities
             {
                 LoadingFinished?.Invoke();
             }
-            IsLoading = false;
-            return;
         }
 
         private IEnumerable<string> CollectFiles(string folder)

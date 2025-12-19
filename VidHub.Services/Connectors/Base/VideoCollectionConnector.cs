@@ -2,10 +2,9 @@
 using VidHub.Core;
 using VidHub.Core.Notifications;
 using VidHub.Core.Settings;
-using VidHub.Platform;
-using VidHub.Services.Base.Interfaces;
-using VidHub.Services.Connectors.Base.Interfaces;
-using VidHub.Services.Logics.Interfaces;
+using VidHub.Platform.Environment;
+using VidHub.Services.Base;
+using VidHub.Services.Logics;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 using Windows.Storage.Streams;
@@ -13,21 +12,32 @@ using Windows.System;
 
 namespace VidHub.Services.Connectors.Base
 {
-    public class VideoCollectionConnector(IVideoService vs, IVidHubSettings settings, IVideoCollectionService service) : ServiceTemplate(vs), IVideoCollectionConnector
+    public class VideoCollectionConnector(IVideoService vs, IVidHubSettings settings, IVideoCollectionService service) : ConnectorTemplate(vs), IVideoCollectionConnector
     {
-        public bool DisplayDates => settings.Display.DisplayDates;
-        public bool DisplayDurations => settings.Display.DisplayDurations;
-        public bool DisplayHealths => settings.Display.DisplayHealths;
-        public bool DisplayTitles => settings.Display.DisplayTitles;
+        public bool DisplayDates => settings.Display.DisplayDate;
+        public bool DisplayDurations => settings.Display.DisplayDuration;
+        public bool DisplayHealths => settings.Display.DisplayHealth;
+        public bool DisplayTitles => settings.Display.DisplayTitle;
 
-        public double PreviewImageWidth => settings.Modals.DisplayFormat.PreviewImageWidth;
-        public double PreviewImageHeight => settings.Modals.DisplayFormat.PreviewImageHeight;
+        public double PreviewImageWidth => settings.Dialogs.DisplayFormat.PreviewImageWidth;
+        public double PreviewImageHeight => settings.Dialogs.DisplayFormat.PreviewImageHeight;
 
-        public ObservableCollection<Video> DisplayedVideos => service.DisplayedVideos;
         public ObservableCollection<BarNotification> DisplayedNotifications => service.DisplayedNotifications;
+        public ObservableCollection<Video> DisplayedVideos => service.DisplayedVideos;
 
 
-        public async Task CopyFileAsync(Video video)
+        public async Task Open(Video video)
+        {
+            StorageFile file = await StorageFile.GetFileFromPathAsync(video.FilePath);
+            _ = await Launcher.LaunchFileAsync(file);
+        }
+        public async Task OpenFileExplorer(Video video)
+        {
+            StorageFolder folder = await StorageFolder.GetFolderFromPathAsync(Path.GetDirectoryName(video.FilePath) ?? string.Empty);
+            _ = await Launcher.LaunchFolderAsync(folder);
+        }
+
+        public async Task CopyFile(Video video)
         {
             StorageFile file = await StorageFile.GetFileFromPathAsync(video.FilePath);
 
@@ -41,8 +51,7 @@ namespace VidHub.Services.Connectors.Base
 
             Clipboard.SetContent(data);
         }
-
-        public async Task CopyFilePathAsync(Video video)
+        public async Task CopyFilePath(Video video)
         {
             await Task.Run(() =>
             {
@@ -57,8 +66,7 @@ namespace VidHub.Services.Connectors.Base
                 Clipboard.SetContent(data);
             });
         }
-
-        public async Task CopyPreviewImageAsync(Video video)
+        public async Task CopyPreviewImage(Video video)
         {
             StorageFile file = await StorageFile.GetFileFromPathAsync(video.PreviewImagePath);
 
@@ -73,26 +81,14 @@ namespace VidHub.Services.Connectors.Base
             Clipboard.SetContent(data);
         }
 
-        public async Task OpenAsync(Video video)
+        public async Task Rename(Video video)
         {
-            StorageFile file = await StorageFile.GetFileFromPathAsync(video.FilePath);
-            _ = await Launcher.LaunchFileAsync(file);
+            await Context.Window.OpenRenameDialog(video);
         }
 
-        public async Task OpenFileExplorerAsync(Video video)
-        {
-            StorageFolder folder = await StorageFolder.GetFolderFromPathAsync(Path.GetDirectoryName(video.FilePath) ?? string.Empty);
-            _ = await Launcher.LaunchFolderAsync(folder);
-        }
-
-        public async Task RemoveVideoAsync(Video video)
+        public async Task Remove(Video video)
         {
             _ = await Task.Run(() => vs.Remove(video));
-        }
-
-        public async Task RenameAsync(Video video)
-        {
-            await Context.Window.OpenVideoRenameModal(video);
         }
     }
 }

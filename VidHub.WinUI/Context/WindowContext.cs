@@ -3,15 +3,17 @@ using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Threading.Tasks;
 using VidHub.Core;
-using VidHub.Platform.Interfaces;
-using VidHub.Services.Base.Interfaces;
-using VidHub.WinUI.UserControls.Modals;
+using VidHub.Platform.Environment;
+using VidHub.Services.Base;
+using VidHub.WinUI.UserControls.Dialogs;
 using WinRT.Interop;
 
 namespace VidHub.WinUI.Context
 {
     public class WindowContext(Window window) : IWindowContext
     {
+        private bool hasOpenDialog = false;
+
         public nint HWND => WindowNative.GetWindowHandle(window);
         public bool IsActive { get; set; }
 
@@ -26,11 +28,16 @@ namespace VidHub.WinUI.Context
             catch { return false; }
         }
 
-        public async Task OpenDisplayFormatModal()
+        public async Task OpenDisplayFormatDialog()
         {
+            if (hasOpenDialog)
+            {
+                return;
+            }
+
             _ = TryEnqueue(async () =>
             {
-                VideoDisplayCustomizationUserControl content = new();
+                DisplayFormatUserControl content = new();
                 ContentDialog dialog = new()
                 {
                     Title = "FORMAT VIDEO COLLECTION",
@@ -39,12 +46,19 @@ namespace VidHub.WinUI.Context
                     Content = content,
                     XamlRoot = window.Content.XamlRoot
                 };
+                hasOpenDialog = true;
+                dialog.CloseButtonClick += (_, _) => hasOpenDialog = false;
                 _ = await dialog.ShowAsync();
             });
         }
 
-        public async Task OpenLicenseModal()
+        public async Task OpenLicensesDialog()
         {
+            if (hasOpenDialog)
+            {
+                return;
+            }
+
             _ = TryEnqueue(async () =>
             {
                 LicensesUserControl content = new();
@@ -56,15 +70,22 @@ namespace VidHub.WinUI.Context
                     Content = content,
                     XamlRoot = window.Content.XamlRoot
                 };
+                hasOpenDialog = true;
+                dialog.CloseButtonClick += (_, _) => hasOpenDialog = false;
                 _ = await dialog.ShowAsync();
             });
         }
 
-        public async Task OpenPreviewImageFormatModal()
+        public async Task OpenPreviewImageFormatDialog()
         {
+            if (hasOpenDialog)
+            {
+                return;
+            }
+
             _ = TryEnqueue(async () =>
             {
-                VideoPreviewImageCustomizationUserControl content = new();
+                PreviewImageFormatUserControl content = new();
                 ContentDialog dialog = new()
                 {
                     Title = "FORMAT PREVIEW IMAGES",
@@ -73,15 +94,22 @@ namespace VidHub.WinUI.Context
                     Content = content,
                     XamlRoot = window.Content.XamlRoot
                 };
+                hasOpenDialog = true;
+                dialog.CloseButtonClick += (_, _) => hasOpenDialog = false;
                 _ = await dialog.ShowAsync();
             });
         }
 
-        public async Task OpenTitleFutureFormatModal()
+        public async Task OpenPassiveTitleFormatDialog()
         {
+            if (hasOpenDialog)
+            {
+                return;
+            }
+
             _ = TryEnqueue(async () =>
             {
-                VideoTitleFormatCustomizationUserControl content = new(false);
+                TitleFormatUserControl content = new(false);
                 ContentDialog dialog = new()
                 {
                     Title = "FORMAT TITLES",
@@ -90,15 +118,22 @@ namespace VidHub.WinUI.Context
                     Content = content,
                     XamlRoot = window.Content.XamlRoot
                 };
+                hasOpenDialog = true;
+                dialog.CloseButtonClick += (_, _) => hasOpenDialog = false;
                 _ = await dialog.ShowAsync();
             });
         }
 
-        public async Task OpenTitleFormatModal()
+        public async Task OpenActiveTitleFormatDialog()
         {
+            if (hasOpenDialog)
+            {
+                return;
+            }
+
             _ = TryEnqueue(async () =>
             {
-                VideoTitleFormatCustomizationUserControl content = new(true);
+                TitleFormatUserControl content = new(true);
                 ContentDialog dialog = new()
                 {
                     Title = "FORMAT TITLES",
@@ -107,9 +142,11 @@ namespace VidHub.WinUI.Context
                     Content = content,
                     XamlRoot = window.Content.XamlRoot
                 };
+                hasOpenDialog = true;
+                dialog.CloseButtonClick += (_, _) => hasOpenDialog = false;
                 dialog.CloseButtonClick += (_, _) =>
                 {
-                    foreach (Video video in Platform.Context.Host.GetService<IVideoService>())
+                    foreach (Video video in Platform.Environment.Context.Host.GetService<IVideoService>())
                     {
                         video.LoadingFinished = true;
                     }
@@ -118,8 +155,13 @@ namespace VidHub.WinUI.Context
             });
         }
 
-        public async Task OpenVersionModal()
+        public async Task OpenVersionsDialog()
         {
+            if (hasOpenDialog)
+            {
+                return;
+            }
+
             _ = TryEnqueue(async () =>
             {
                 VersionsUserControl content = new();
@@ -131,12 +173,19 @@ namespace VidHub.WinUI.Context
                     Content = content,
                     XamlRoot = window.Content.XamlRoot
                 };
+                hasOpenDialog = true;
+                dialog.CloseButtonClick += (_, _) => hasOpenDialog = false;
                 _ = await dialog.ShowAsync();
             });
         }
 
-        public async Task OpenVideoRenameModal(object obj)
+        public async Task OpenRenameDialog(object obj)
         {
+            if (hasOpenDialog)
+            {
+                return;
+            }
+
             _ = TryEnqueue(async () =>
             {
                 if (obj == null || obj is not Video video)
@@ -152,6 +201,8 @@ namespace VidHub.WinUI.Context
                     Content = content,
                     XamlRoot = window.Content.XamlRoot
                 };
+                hasOpenDialog = true;
+                dialog.CloseButtonClick += (_, _) => hasOpenDialog = false;
                 _ = await dialog.ShowAsync();
             });
         }

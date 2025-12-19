@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using VidHub.Platform.Interfaces;
+using VidHub.Platform.Environment;
 
 namespace VidHub.WinUI.Context
 {

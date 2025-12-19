@@ -2,10 +2,9 @@
 using System.Collections.ObjectModel;
 using VidHub.Core;
 using VidHub.Core.Notifications;
-using VidHub.Core.Utilities.Helper;
-using VidHub.Platform;
-using VidHub.Services.Connectors.Base.Interfaces;
-using VidHub.ViewModels.Base;
+using VidHub.Core.Utilities;
+using VidHub.Platform.Environment;
+using VidHub.Services.Connectors.Base;
 
 namespace VidHub.ViewModels
 {
@@ -14,56 +13,55 @@ namespace VidHub.ViewModels
         public VideoCollectionViewModel() : this(Context.Host.GetService<IVideoCollectionConnector>()) { }
 
 
+        public ObservableCollection<BarNotification> Notifications => connector.DisplayedNotifications;
         public ObservableCollection<Video> Videos => connector.DisplayedVideos;
+
         public bool DisplayTitles => connector.DisplayTitles;
         public bool DisplayDates => connector.DisplayDates;
         public bool DisplayDurations => connector.DisplayDurations;
         public bool DisplayHealths => connector.DisplayHealths;
+        
         public double PreviewImageWidth => connector.PreviewImageWidth;
         public double PreviewImageHeight => connector.PreviewImageHeight;
-        public ObservableCollection<BarNotification> Notifications => connector.DisplayedNotifications;
 
 
         [RelayCommand]
         private async Task OpenAsync(Video video)
         {
-            await connector.OpenAsync(video);
+            await connector.Open(video);
         }
-
         [RelayCommand]
         private async Task OpenFileExplorerAsync(Video video)
         {
-            await connector.OpenFileExplorerAsync(video);
-        }
-
-        [RelayCommand]
-        private async Task RenameAsync(Video video)
-        {
-            await connector.RenameAsync(video);
+            await connector.OpenFileExplorer(video);
         }
 
         [RelayCommand]
         private async Task CopyFileAsync(Video video)
         {
-            await connector.CopyFileAsync(video);
+            await connector.CopyFile(video);
         }
-
         [RelayCommand]
         private async Task CopyFilePathAsync(Video video)
         {
-            await connector.CopyFilePathAsync(video);
+            await connector.CopyFilePath(video);
         }
-
         [RelayCommand]
         private async Task CopyPreviewImageAsync(Video video)
         {
-            await connector.CopyPreviewImageAsync(video);
+            await connector.CopyPreviewImage(video);
         }
 
         [RelayCommand]
-        private async Task RemoveVideoAsync(Video video)
+        private async Task RenameAsync(Video video)
         {
-            await connector.RemoveVideoAsync(video);
+            await connector.Rename(video);
+        }
+        
+        [RelayCommand]
+        private async Task RemoveAsync(Video video)
+        {
+            await connector.Remove(video);
         }
 
 

@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
+using VidHub.Core.Models;
 using VidHub.Core.Notifications;
-using VidHub.Core.Utilities.Helper;
 
 namespace VidHub.Core.Data
 {
@@ -53,19 +53,28 @@ namespace VidHub.Core.Data
             };
         }
 
-        public static BarNotification HealthyVideosNotification(IList<Video> videos)
+        public static BarNotification MediumCacheSizeNotification()
         {
-            return new BarNotification()
+            return new BarNotification
             {
-                Title = "All Videos Passed Health Check",
-                Details = "All loaded videos are healthy based on the set health level.",
-                Severity = NotificationSeverity.SUCCESS,
+                Title = "Large Cache Size",
+                Details = "The application's cache data has reached more than 1 GB",
+                Severity = NotificationSeverity.INFORMATIONAL,
                 IsClosable = true,
-                DisplayCondition = () =>
+                DisplayCondition = () => new DirectoryInfo(Path.Combine(Path.GetTempPath(), "VidHub")).EnumerateFiles("*", SearchOption.AllDirectories).Sum(file => file.Length) > Math.Pow(1024, 3),
+                Button = new CustomActionNotificationButton
                 {
-                    lock (new object())
+                    Label = "Clear Cache",
+                    Details = "Clears cached files to recover disk space. With cache loading enabled, all previously cached videos has to be extracted again.",
+                    CustomAction = async () =>
                     {
-                        return videos.Count > 0 && videos.All(video => video.HealthState.State is VideoHealth.HEALTHY or VideoHealth.INPROGRESS);
+                        await Task.Run(() =>
+                        {
+                            foreach (string item in Directory.GetFiles(Path.Combine(Path.GetTempPath(), "VidHub"), "*", SearchOption.AllDirectories))
+                            {
+                                File.Delete(item);
+                            }
+                        });
                     }
                 }
             };
@@ -98,33 +107,6 @@ namespace VidHub.Core.Data
             };
         }
 
-        public static BarNotification MediumCacheSizeNotification()
-        {
-            return new BarNotification
-            {
-                Title = "Large Cache Size",
-                Details = "The application's cache data has reached more than 1 GB",
-                Severity = NotificationSeverity.INFORMATIONAL,
-                IsClosable = true,
-                DisplayCondition = () => new DirectoryInfo(Path.Combine(Path.GetTempPath(), "VidHub")).EnumerateFiles("*", SearchOption.AllDirectories).Sum(file => file.Length) > Math.Pow(1024, 3),
-                Button = new CustomActionNotificationButton
-                {
-                    Label = "Clear Cache",
-                    Details = "Clears cached files to recover disk space. With cache loading enabled, all previously cached videos has to be extracted again.",
-                    CustomAction = async () =>
-                    {
-                        await Task.Run(() =>
-                        {
-                            foreach (string item in Directory.GetFiles(Path.Combine(Path.GetTempPath(), "VidHub"), "*", SearchOption.AllDirectories))
-                            {
-                                File.Delete(item);
-                            }
-                        });
-                    }
-                }
-            };
-        }
-
         public static BarNotification NotCheckedVideosNotification(IList<Video> videos)
         {
             return new BarNotification()
@@ -137,7 +119,25 @@ namespace VidHub.Core.Data
                 {
                     lock (new object())
                     {
-                        return videos.Count > 0 && videos.Any(video => video.HealthState.State == VideoHealth.NOTCHECKED);
+                        return videos.Count > 0 && videos.Any(video => video.Health.State == HealthState.NOTCHECKED);
+                    }
+                }
+            };
+        }
+
+        public static BarNotification HealthyVideosNotification(IList<Video> videos)
+        {
+            return new BarNotification()
+            {
+                Title = "All Videos Passed Health Check",
+                Details = "All loaded videos are healthy based on the set health level.",
+                Severity = NotificationSeverity.SUCCESS,
+                IsClosable = true,
+                DisplayCondition = () =>
+                {
+                    lock (new object())
+                    {
+                        return videos.Count > 0 && videos.All(video => video.Health.State is HealthState.HEALTHY or HealthState.INPROGRESS);
                     }
                 }
             };
@@ -156,10 +156,10 @@ namespace VidHub.Core.Data
                     lock (new object())
                     {
                         return videos.Count > 0 && videos.Any(video =>
-                            video.HealthState.State is VideoHealth.FILENOTFOUND
-                            or VideoHealth.SERIOUSCORRUPTION
-                            or VideoHealth.CRITICALCORRUPTION
-                            or VideoHealth.UNKNOWNERROR);
+                            video.Health.State is HealthState.FILENOTFOUND
+                            or HealthState.SERIOUSCORRUPTION
+                            or HealthState.CRITICALCORRUPTION
+                            or HealthState.UNKNOWNERROR);
                     }
                 }
             };

@@ -1,17 +1,16 @@
 ﻿using VidHub.Core.Notifications;
-using VidHub.Core.Settings.Models;
 
 namespace VidHub.Core.Settings
 {
     public interface IVidHubSettings
     {
+        DialogSettings Dialogs { get; set; }
         DisplaySettings Display { get; set; }
         GeneralSettings General { get; set; }
-        ModalSettings Modals { get; set; }
+        HealthSettings Health { get; set; }
         NotificationSettings Notifications { get; set; }
         PerformanceSettings Performance { get; set; }
         SidePanelSettings SidePanel { get; set; }
-        VideoHealthSettings VideoHealth { get; set; }
 
         void CustomizeVideoTitle(ref Video video);
         bool DisplayNotification(BarNotification notification);

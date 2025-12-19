@@ -1,8 +1,7 @@
 ﻿using VidHub.Core;
 using VidHub.Core.Settings;
-using VidHub.Core.Utilities.Helper;
-using VidHub.Services.Base.Interfaces;
-using VidHub.Services.Logics.Interfaces;
+using VidHub.Core.Utilities;
+using VidHub.Services.Base;
 
 namespace VidHub.Services.Logics
 {
@@ -52,6 +51,7 @@ namespace VidHub.Services.Logics
             set
             {
                 settings.SidePanel.FilterDate = value;
+                service.Update(UpdateSection.FILTERPANEL);
                 UpdateDisplayedVideos();
             }
         }
@@ -80,6 +80,7 @@ namespace VidHub.Services.Logics
             set
             {
                 settings.SidePanel.FilterDuration = value;
+                service.Update(UpdateSection.FILTERPANEL);
                 UpdateDisplayedVideos();
             }
         }

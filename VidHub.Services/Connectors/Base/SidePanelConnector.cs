@@ -1,11 +1,10 @@
 ﻿using VidHub.Core.Settings;
-using VidHub.Services.Base.Interfaces;
-using VidHub.Services.Connectors.Base.Interfaces;
-using VidHub.Services.Logics.Interfaces;
+using VidHub.Services.Base;
+using VidHub.Services.Logics;
 
 namespace VidHub.Services.Connectors.Base
 {
-    public class SidePanelConnector(IVideoService vs, IVidHubSettings settings, IVideoLoadService load, IVideoOrganizerService organize) : ServiceTemplate(vs), ISidePanelConnector
+    public class SidePanelConnector(IVideoService vs, IVidHubSettings settings, IVideoLoadService load, IVideoOrganizerService organize) : ConnectorTemplate(vs), ISidePanelConnector
     {
         public bool OpenedSidePanel => settings.General.OpenedSidePanel;
         public string? SortBy { get => organize.SortBy; set => organize.SortBy = value; }

@@ -1,7 +1,6 @@
-﻿using VidHub.Core.Utilities.Helper;
-using VidHub.Platform;
-using VidHub.Services.Connectors.Base.Interfaces;
-using VidHub.ViewModels.Base;
+﻿using VidHub.Core.Utilities;
+using VidHub.Platform.Environment;
+using VidHub.Services.Connectors.Base;
 
 namespace VidHub.ViewModels
 {
@@ -63,7 +62,6 @@ namespace VidHub.ViewModels
             set => connector.MaxDuration = value;
         }
 
-
         public string TransferDescription => connector.TransferDescription;
         public bool HasActiveTransfer => connector.HasActiveTransfer;
         public int LoadedCount => connector.LoadedFileCount;
@@ -82,6 +80,12 @@ namespace VidHub.ViewModels
             {
                 OnPropertyChanged(nameof(OpenPanel));
                 OnPropertyChanged(nameof(UseRealTimeSearch));
+                OnPropertyChanged(nameof(FilterDate));
+                OnPropertyChanged(nameof(StartDate));
+                OnPropertyChanged(nameof(EndDate));
+                OnPropertyChanged(nameof(FilterDuration));
+                OnPropertyChanged(nameof(MinDuration));
+                OnPropertyChanged(nameof(MaxDuration));
             }
             if (sections.Contains(UpdateSection.LOADPANEL))
             {

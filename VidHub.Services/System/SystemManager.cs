@@ -1,8 +1,7 @@
 ﻿using VidHub.Core.Utilities;
-using VidHub.Platform;
+using VidHub.Platform.Environment;
 using VidHub.Platform.Windows;
 using VidHub.Platform.Windows.Taskbar.Enums;
-using VidHub.Services.System.Interfaces;
 
 namespace VidHub.Services.System
 {

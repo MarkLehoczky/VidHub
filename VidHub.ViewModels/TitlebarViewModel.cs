@@ -1,9 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using VidHub.Core.Data;
-using VidHub.Core.Utilities.Helper;
-using VidHub.Platform;
-using VidHub.Services.Connectors.Base.Interfaces;
-using VidHub.ViewModels.Base;
+using VidHub.Core.Utilities;
+using VidHub.Platform.Environment;
+using VidHub.Services.Connectors.Base;
 
 namespace VidHub.ViewModels
 {
@@ -85,6 +84,11 @@ namespace VidHub.ViewModels
             get => connector.UseConcurrentLoading;
             set => connector.UseConcurrentLoading = value;
         }
+        public bool UseContentHash
+        {
+            get => connector.UseContentHash;
+            set => connector.UseContentHash = value;
+        }
 
         public bool DisplayTitles
         {
@@ -128,17 +132,14 @@ namespace VidHub.ViewModels
             set => connector.UseSearchSuggestions = value;
         }
 
-
         public string Version => VersionData.CurrentVersion;
-        public string License => ApplicationLicenseData.ShortCopyright;
-
+        public string License => ApplicationLicenseData.Copyright;
 
 
         private bool CanOpenSidePanel()
         {
             return !connector.OpenedSidePanel;
         }
-
         private bool CanCloseSidePanel()
         {
             return connector.OpenedSidePanel;
@@ -147,31 +148,31 @@ namespace VidHub.ViewModels
         [RelayCommand(AllowConcurrentExecutions = true)]
         private async Task LoadFilesAsync()
         {
-            await connector.LoadFilesAsync();
+            await connector.LoadFiles();
         }
 
         [RelayCommand(AllowConcurrentExecutions = true)]
         private async Task LoadSingleFolderAsync()
         {
-            await connector.LoadFoldersAsync(false);
+            await connector.LoadFolders(false);
         }
 
         [RelayCommand(AllowConcurrentExecutions = true)]
         private async Task LoadAllFolderAsync()
         {
-            await connector.LoadFoldersAsync(true);
+            await connector.LoadFolders(true);
         }
 
         [RelayCommand]
-        private async Task ImportCollectionAsync()
+        private async Task ImportAsync()
         {
-            await connector.ImportCollectionAsync();
+            await connector.Import();
         }
 
         [RelayCommand]
-        private async Task ExportCollectionAsync()
+        private async Task ExportAsync()
         {
-            await connector.ExportCollectionAsync();
+            await connector.Export();
         }
 
 
@@ -192,33 +193,33 @@ namespace VidHub.ViewModels
         }
 
         [RelayCommand]
-        private async Task CustomizeVideoDisplayingAsync()
+        private async Task OpenDisplayFormatDialogAsync()
         {
-            await connector.CustomizeVideoDisplayingAsync();
+            await connector.OpenDisplayFormatDialog();
         }
 
         [RelayCommand]
-        private async Task CustomizeVideoLoadingAsync()
+        private async Task OpenPassiveTitleFormatDialogAsync()
         {
-            await connector.CustomizeVideoLoadingAsync();
+            await connector.OpenPassiveTitleFormatDialog();
         }
 
         [RelayCommand]
-        private async Task CustomizeThumbnailAsync()
+        private async Task OpenPreviewImageFormatDialogAsync()
         {
-            await connector.CustomizeVideoPreviewImageAsync();
+            await connector.OpenPreviewImageFormatDialog();
         }
 
         [RelayCommand]
-        private async Task OpenVersionsModalAsync()
+        private async Task OpenVersionsDialogAsync()
         {
-            await connector.OpenVersionsModalAsync();
+            await connector.OpenVersionsDialog();
         }
 
         [RelayCommand]
-        private async Task OpenLicensesModalAsync()
+        private async Task OpenLicensesDialogAsync()
         {
-            await connector.OpenLicensesModalAsync();
+            await connector.OpenLicensesDialog();
         }
 
 

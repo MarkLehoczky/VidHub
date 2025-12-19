@@ -1,9 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using VidHub.Core;
 using VidHub.Core.Notifications;
-using VidHub.Core.Utilities.Helper;
-using VidHub.Services.Base.Interfaces;
-using VidHub.Services.Logics.Interfaces;
+using VidHub.Core.Utilities;
+using VidHub.Services.Base;
 
 namespace VidHub.Services.Logics
 {

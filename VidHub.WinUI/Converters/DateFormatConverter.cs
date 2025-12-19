@@ -13,7 +13,7 @@ namespace VidHub.WinUI.Converters
                 DateTime date = (DateTime)value;
                 try
                 {
-                    return date.ToString(VidHubSettings.Instance.Modals.DisplayFormat.DateFormat);
+                    return date.ToString(VidHubSettings.Instance.Dialogs.DisplayFormat.DateFormat);
                 }
                 catch
                 {

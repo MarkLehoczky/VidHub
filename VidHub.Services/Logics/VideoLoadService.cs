@@ -2,11 +2,9 @@
 using VidHub.Core.Notifications;
 using VidHub.Core.Settings;
 using VidHub.Core.Utilities;
-using VidHub.Core.Utilities.Helper;
-using VidHub.Platform;
-using VidHub.Services.Base.Interfaces;
-using VidHub.Services.Logics.Interfaces;
-using VidHub.Services.System.Interfaces;
+using VidHub.Platform.Environment;
+using VidHub.Services.Base;
+using VidHub.Services.System;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
@@ -15,14 +13,23 @@ namespace VidHub.Services.Logics
 {
     public class VideoLoadService(IVideoService service, IVidHubSettings settings, ISystemManager system) : IVideoLoadService
     {
+        private bool initializedLoadingManager = false;
         private readonly LoadingManager manager = new();
+        private Action<string> LoadVideo => file =>
+        {
+            Video video = new(file);
+            video.Load();
+            service.Add(video);
+        };
+        private Action<string> UpdateUI => _ =>
+        {
+            system.SetTaskbar(manager);
+            service.Update(UpdateSections.ALL);
+        };
 
         public bool HasActiveTransfer => manager.IsActive;
-
         public int LoadedFileCount => manager.LoadedFileCount;
-
         public int TotalFileCount => manager.TotalFileCount;
-
         public string TransferDescription => !manager.IsActive
             ? "No active loading..."
             : manager.IsCollecting
@@ -30,7 +37,7 @@ namespace VidHub.Services.Logics
                 : "Loading videos";
 
 
-        public async Task ExportCollectionAsync()
+        public async Task Export()
         {
             InitLoadingManager();
             StorageFile? file = await FileSaver("Export");
@@ -41,7 +48,7 @@ namespace VidHub.Services.Logics
             }
         }
 
-        public async Task ImportCollectionAsync()
+        public async Task Import()
         {
             InitLoadingManager();
             StorageFile? file = await SingleFileOpener("Import");
@@ -76,7 +83,7 @@ namespace VidHub.Services.Logics
             }
         }
 
-        public async Task LoadFilesAsync()
+        public async Task LoadFiles()
         {
             InitLoadingManager();
             IReadOnlyList<StorageFile> files = await MultiFileOpener("Load");
@@ -92,7 +99,7 @@ namespace VidHub.Services.Logics
             }
         }
 
-        public async Task LoadFoldersAsync(bool includeSubfolders)
+        public async Task LoadFolders(bool includeSubfolders)
         {
             InitLoadingManager();
             StorageFolder? folder = await FolderOpener("Load");
@@ -184,24 +191,6 @@ namespace VidHub.Services.Logics
             return files.Where(f => fileTypeFilters.Contains(f.FileType, StringComparer.OrdinalIgnoreCase));
         }
 
-
-        private Action<string> LoadVideo => file =>
-        {
-            Video video = new(file);
-            video.Load();
-            service.Add(video);
-        };
-
-        private Action<string> UpdateUI => _ =>
-        {
-            system.SetTaskbar(manager);
-            service.Update(UpdateSections.SIDEPANEL);
-            service.Update(UpdateSection.VIDEOCOLLECTION);
-        };
-
-
-        private bool initializedLoadingManager = false;
-
         private void InitLoadingManager()
         {
             if (initializedLoadingManager)
@@ -212,7 +201,7 @@ namespace VidHub.Services.Logics
             initializedLoadingManager = true;
             manager.LoadingFinished += async () =>
             {
-                if (!settings.Modals.TitleFormat.HideTitleCustomization)
+                if (!settings.Dialogs.TitleFormat.HideTitleFormatDialog)
                 {
                     _ = Context.Window;
                 }
@@ -225,9 +214,9 @@ namespace VidHub.Services.Logics
                 notification.Display();
                 service.Update(UpdateSections.SIDEPANEL);
                 service.Update(UpdateSection.VIDEOCOLLECTION);
-                if (!settings.Modals.TitleFormat.HideTitleCustomization)
+                if (!settings.Dialogs.TitleFormat.HideTitleFormatDialog)
                 {
-                    await Context.Window.OpenTitleFormatModal();
+                    await Context.Window.OpenActiveTitleFormatDialog();
                 }
             };
         }

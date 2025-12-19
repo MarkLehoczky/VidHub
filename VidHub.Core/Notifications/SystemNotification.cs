@@ -12,10 +12,7 @@ namespace VidHub.Core.Notifications
             {
                 return;
             }
-            ToastContentBuilder content = new();
-            _ = content.AddText(Title);
-            _ = content.AddText(Details);
-            _ = content.GetToastContent();
+            ToastContent content = new ToastContentBuilder().AddText(Title).AddText(Details).GetToastContent();
             ToastNotification toast = new(content.GetXml());
             ToastNotificationManager.CreateToastNotifier().Show(toast);
         }

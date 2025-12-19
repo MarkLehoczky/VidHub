@@ -4,17 +4,12 @@ using Microsoft.UI.Xaml;
 using System;
 using VidHub.Core.Settings;
 using VidHub.Services.Base;
-using VidHub.Services.Base.Interfaces;
 using VidHub.Services.Connectors.Base;
-using VidHub.Services.Connectors.Base.Interfaces;
-using VidHub.Services.Connectors.Modals;
-using VidHub.Services.Connectors.Modals.Interfaces;
+using VidHub.Services.Connectors.Dialogs;
 using VidHub.Services.Logics;
-using VidHub.Services.Logics.Interfaces;
 using VidHub.Services.System;
-using VidHub.Services.System.Interfaces;
 using VidHub.ViewModels;
-using VidHub.ViewModels.Modals;
+using VidHub.ViewModels.Dialogs;
 using VidHub.WinUI.Context;
 
 namespace VidHub.WinUI
@@ -26,7 +21,7 @@ namespace VidHub.WinUI
         public App()
         {
             InitializeComponent();
-            Platform.Context.Host = new HostContext(Host.CreateDefaultBuilder()
+            Platform.Environment.Context.Host = new HostContext(Host.CreateDefaultBuilder()
                 .ConfigureServices(services =>
                 {
                     _ = services.AddSingleton<IVideoService, VideoService>();
@@ -38,15 +33,15 @@ namespace VidHub.WinUI
                     _ = services.AddSingleton<IVideoCollectionConnector, VideoCollectionConnector>();
                     _ = services.AddSingleton<ISidePanelConnector, SidePanelConnector>();
                     _ = services.AddSingleton<ITitleBarConnector, TitleBarConnector>();
-                    _ = services.AddSingleton<IVideoDisplayCustomizationConnector, VideoDisplayCustomizationConnector>();
-                    _ = services.AddSingleton<IVideoTitleFormatCustomizationConnector, VideoTitleFormatCustomizationConnector>();
-                    _ = services.AddSingleton<IVideoPreviewImageCustomizationConnector, VideoPreviewImageCustomizationConnector>();
+                    _ = services.AddSingleton<IDisplayFormatConnector, DisplayFormatConnector>();
+                    _ = services.AddSingleton<ITitleFormatConnector, PassiveTitleFormatConnector>();
+                    _ = services.AddSingleton<IPreviewImageFormatConnector, PreviewImageFormatConnector>();
                     _ = services.AddTransient<TitleBarViewModel>();
                     _ = services.AddTransient<SidePanelViewModel>();
                     _ = services.AddTransient<VideoCollectionViewModel>();
-                    _ = services.AddTransient<VideoDisplayCustomizationViewModel>();
-                    _ = services.AddTransient<VideoTitleFormatCustomizationViewModel>();
-                    _ = services.AddTransient<VideoPreviewImageCustomizationViewModel>();
+                    _ = services.AddTransient<DisplayFormatViewModel>();
+                    _ = services.AddTransient<TitleFormatViewModel>();
+                    _ = services.AddTransient<PreviewImageFormatViewModel>();
                     _ = services.AddTransient<RenameViewModel>();
                 })
                 .Build());
@@ -56,8 +51,8 @@ namespace VidHub.WinUI
         {
             _window = new MainWindow();
             _window.Activate();
-            Platform.Context.Window = new WindowContext(_window);
-            _window.Activated += (s, e) => Platform.Context.Window.IsActive = e.WindowActivationState != WindowActivationState.Deactivated;
+            Platform.Environment.Context.Window = new WindowContext(_window);
+            _window.Activated += (s, e) => Platform.Environment.Context.Window.IsActive = e.WindowActivationState != WindowActivationState.Deactivated;
             AppDomain.CurrentDomain.ProcessExit += (_, _) => VidHubSettings.Instance.Save();
         }
     }
