@@ -116,7 +116,7 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <InfoBar IsOpen="{Binding Display}" Title="{Binding Title}" Message="{Binding Details}" Severity="{Binding Severity, Converter={StaticResource TransformSeverityType}}" IsClosable="{Binding IsClosable}" ActionButton="{Binding Button, Converter={StaticResource TransformNotificationButton}}">
+                    <InfoBar IsOpen="{Binding Display}" Title="{Binding Title}" Message="{Binding Details}" Severity="{Binding Severity, Converter={StaticResource TransfromSeverity}}" IsClosable="{Binding IsClosable}" ActionButton="{Binding Button, Converter={StaticResource TransformButton}}">
                     </InfoBar>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
