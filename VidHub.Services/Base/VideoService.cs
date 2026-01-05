@@ -24,10 +24,10 @@ namespace VidHub.Services.Base
 
         public VideoService()
         {
-            notifications.Add(NotificationData.NotCheckedVideosNotification(videos));
+            notifications.Add(NotificationData.NotCheckedVideosNotification(GetAllVideos));
             notifications.Add(NotificationData.MediumCacheSizeNotification());
             notifications.Add(NotificationData.HealthyVideosNotification(videos));
-            notifications.Add(NotificationData.UnhealthyVideosNotification(videos));
+            notifications.Add(NotificationData.UnhealthyVideosNotification(GetAllVideos));
             notifications.Add(NotificationData.LargeCacheSizeNotification());
             notifications.Add(NotificationData.FFmpegNotInstalledNotification());
 

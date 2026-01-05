@@ -107,7 +107,7 @@ namespace VidHub.Core.Data
             };
         }
 
-        public static BarNotification NotCheckedVideosNotification(IList<Video> videos)
+        public static BarNotification NotCheckedVideosNotification(Func<IList<Video>> recieveVideos)
         {
             return new BarNotification()
             {
@@ -117,10 +117,8 @@ namespace VidHub.Core.Data
                 IsClosable = true,
                 DisplayCondition = () =>
                 {
-                    lock (new object())
-                    {
-                        return videos.Count > 0 && videos.Any(video => video.Health.State == HealthState.NOTCHECKED);
-                    }
+                    IList<Video> videos = recieveVideos?.Invoke() ?? [];
+                    return videos.Count > 0 && videos.Any(video => video.Health.State == HealthState.NOTCHECKED);
                 }
             };
         }
@@ -143,7 +141,7 @@ namespace VidHub.Core.Data
             };
         }
 
-        public static BarNotification UnhealthyVideosNotification(IList<Video> videos)
+        public static BarNotification UnhealthyVideosNotification(Func<IList<Video>> recieveVideos)
         {
             return new BarNotification()
             {
@@ -153,14 +151,12 @@ namespace VidHub.Core.Data
                 IsClosable = true,
                 DisplayCondition = () =>
                 {
-                    lock (new object())
-                    {
-                        return videos.Count > 0 && videos.Any(video =>
+                    IList<Video> videos = recieveVideos?.Invoke() ?? [];
+                    return videos.Count > 0 && videos.Any(video =>
                             video.Health.State is HealthState.FILENOTFOUND
                             or HealthState.SERIOUSCORRUPTION
                             or HealthState.CRITICALCORRUPTION
                             or HealthState.UNKNOWNERROR);
-                    }
                 }
             };
         }
