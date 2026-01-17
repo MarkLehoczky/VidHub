@@ -6,5 +6,7 @@
         public bool DisplayDuration { get; set; } = true;
         public bool DisplayTitle { get; set; } = true;
         public bool DisplayDate { get; set; } = true;
+        public bool DisplayResolution { get; set; } = false;
+        public bool DisplayFramerate { get; set; } = false;
     }
 }

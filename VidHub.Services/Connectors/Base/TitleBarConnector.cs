@@ -71,12 +71,30 @@ namespace VidHub.Services.Connectors.Base
                 vs.Update(UpdateSection.VIDEOCOLLECTION);
             }
         }
+        public bool DisplayFramerates
+        {
+            get => settings.Display.DisplayFramerate;
+            set
+            {
+                settings.Display.DisplayFramerate = value;
+                vs.Update(UpdateSection.VIDEOCOLLECTION);
+            }
+        }
         public bool DisplayHealths
         {
             get => settings.Display.DisplayHealth;
             set
             {
                 settings.Display.DisplayHealth = value;
+                vs.Update(UpdateSection.VIDEOCOLLECTION);
+            }
+        }
+        public bool DisplayResolutions
+        {
+            get => settings.Display.DisplayResolution;
+            set
+            {
+                settings.Display.DisplayResolution = value;
                 vs.Update(UpdateSection.VIDEOCOLLECTION);
             }
         }
