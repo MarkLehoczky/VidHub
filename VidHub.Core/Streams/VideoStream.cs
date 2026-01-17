@@ -19,6 +19,9 @@
         public int Numerator { get; set; } = numerator;
         public int Denominator { get; set; } = denominator;
 
+        public double Value => Denominator != 0 ? (double)Numerator / Denominator : 0;
+
+
         public Framerate() : this(0, 0) { }
 
         public override string ToString()
@@ -29,7 +32,7 @@
 
         public static implicit operator double(Framerate framerate)
         {
-            return framerate.Denominator != 0 ? ((double)framerate.Numerator / framerate.Denominator) : 0;
+            return framerate.Value;
         }
     }
 
@@ -74,5 +77,7 @@
         public int Bitrate => Metadata.TryGetValue("bit_rate", out string? value) && int.TryParse(value, out int result) ? result : 0;
         public int FrameCount => Metadata.TryGetValue("nb_frames", out string? value) && int.TryParse(value, out int result) ? result : 0;
         public bool IsDefault => Metadata.TryGetValue("disposition.default", out string? value) && value == "1";
+
+        public int Resolution => Width * Height;
     }
 }

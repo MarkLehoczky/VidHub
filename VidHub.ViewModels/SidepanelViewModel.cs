@@ -1,4 +1,5 @@
-﻿using VidHub.Core.Utilities;
+﻿using CommunityToolkit.Mvvm.Input;
+using VidHub.Core.Utilities;
 using VidHub.Platform.Environment;
 using VidHub.Services.Connectors.Base;
 
@@ -17,6 +18,7 @@ namespace VidHub.ViewModels
             get => connector.SortBy;
             set => connector.SortBy = value;
         }
+        public string Orientation => connector.Orientation == "ASC" ? "▲" : "▼";
 
         public string SearchText
         {
@@ -73,12 +75,19 @@ namespace VidHub.ViewModels
             connector.UpdateSearchText();
         }
 
+        [RelayCommand]
+        public void ChangeOrientation()
+        {
+            connector.ChangeOrientation();
+        }
+
 
         public override void Update(IEnumerable<UpdateSection> sections)
         {
             if (sections.Contains(UpdateSection.FILTERPANEL))
             {
                 OnPropertyChanged(nameof(OpenPanel));
+                OnPropertyChanged(nameof(Orientation));
                 OnPropertyChanged(nameof(UseRealTimeSearch));
                 OnPropertyChanged(nameof(FilterDate));
                 OnPropertyChanged(nameof(StartDate));

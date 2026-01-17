@@ -6,6 +6,7 @@ namespace VidHub.Services.Connectors.Base
     {
         bool OpenedSidePanel { get; }
         string? SortBy { get; set; }
+        string Orientation { get; set; }
         string SearchText { get; set; }
         bool UseRealTimeSearch { get; }
         bool FilterDate { get; set; }
@@ -19,6 +20,7 @@ namespace VidHub.Services.Connectors.Base
         int TotalFileCount { get; }
         string TransferDescription { get; }
 
+        void ChangeOrientation();
         IEnumerable<string> GetSearchSuggestions();
         IEnumerable<string> GetSortOptions();
         void UpdateSearchText();

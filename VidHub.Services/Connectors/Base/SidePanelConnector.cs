@@ -8,6 +8,7 @@ namespace VidHub.Services.Connectors.Base
     {
         public bool OpenedSidePanel => settings.General.OpenedSidePanel;
         public string? SortBy { get => organize.SortBy; set => organize.SortBy = value; }
+        public string Orientation { get => organize.Orientation; set => organize.Orientation = value; }
         public string SearchText { get => organize.SearchText; set => organize.SearchText = value; }
         public bool UseRealTimeSearch => settings.SidePanel.UseRealTimeSearch;
 
@@ -24,6 +25,11 @@ namespace VidHub.Services.Connectors.Base
         public int TotalFileCount => load.TotalFileCount;
         public string TransferDescription => load.TransferDescription;
 
+
+        public void ChangeOrientation()
+        {
+            organize.Orientation = organize.Orientation == "ASC" ? "DESC" : "ASC";
+        }
 
         public IEnumerable<string> GetSortOptions()
         {

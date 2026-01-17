@@ -3,6 +3,7 @@
     public class SidePanelSettings
     {
         public string? SortBy { get; set; } = null;
+        public string Orientation { get; set; } = "ASC";
         public bool UseRealTimeSearch { get; set; } = true;
         public bool UseCaseSensitiveSearch { get; set; } = true;
         public bool UseSearchSuggestions { get; set; } = true;

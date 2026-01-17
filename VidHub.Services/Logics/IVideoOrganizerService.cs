@@ -7,6 +7,7 @@
         bool FilterDuration { get; set; }
         TimeSpan? MaxDuration { get; set; }
         TimeSpan? MinDuration { get; set; }
+        string Orientation { get; set; }
         string SearchText { get; set; }
         string? SortBy { get; set; }
         DateTimeOffset? StartDate { get; set; }
