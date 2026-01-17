@@ -1,10 +1,44 @@
 ﻿namespace VidHub.Core.Streams
 {
+    public class AspectRatio(int width, int height)
+    {
+        public int Width { get; set; } = width;
+        public int Height { get; set; } = height;
+
+        public AspectRatio() : this(0, 0) { }
+
+        public override string ToString()
+        {
+            return Width > 0 && Height > 0 ? $"{Width}:{Height}" : "n/a";
+        }
+    }
+
+
+    public class Framerate(int numerator, int denominator)
+    {
+        public int Numerator { get; set; } = numerator;
+        public int Denominator { get; set; } = denominator;
+
+        public Framerate() : this(0, 0) { }
+
+        public override string ToString()
+        {
+            return Numerator > 0 && Denominator > 0 ? $"{Numerator / Denominator:0} fps" : "n/a";
+        }
+
+
+        public static implicit operator double(Framerate framerate)
+        {
+            return framerate.Denominator != 0 ? ((double)framerate.Numerator / framerate.Denominator) : 0;
+        }
+    }
+
+
     public class VideoStream(IDictionary<string, string> metadata) : MediaStream(metadata)
     {
         public int Width => Metadata.TryGetValue("width", out string? value) && int.TryParse(value, out int result) ? result : 0;
         public int Height => Metadata.TryGetValue("height", out string? value) && int.TryParse(value, out int result) ? result : 0;
-        public Tuple<int, int> AspectRatio
+        public AspectRatio AspectRatio
         {
             get
             {
@@ -13,13 +47,13 @@
                     string[] parts = value.Split(':');
                     if (parts.Length == 2 && int.TryParse(parts[0], out int a) && int.TryParse(parts[1], out int b))
                     {
-                        return new Tuple<int, int>(a, b);
+                        return new AspectRatio(a, b);
                     }
                 }
-                return new Tuple<int, int>(0, 0);
+                return new AspectRatio();
             }
         }
-        public Tuple<int, int> Framerate
+        public Framerate Framerate
         {
             get
             {
@@ -28,10 +62,10 @@
                     string[] parts = value.Split('/');
                     if (parts.Length == 2 && int.TryParse(parts[0], out int num) && int.TryParse(parts[1], out int den))
                     {
-                        return new Tuple<int, int>(num, den);
+                        return new Framerate(num, den);
                     }
                 }
-                return new Tuple<int, int>(0, 1);
+                return new Framerate();
             }
         }
         public TimeSpan Duration => Metadata.TryGetValue("duration", out string? value) && double.TryParse(value, out double durationSeconds)

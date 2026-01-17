@@ -139,7 +139,7 @@ namespace VidHub.Core.Settings
             {
                 string codec = video.Metadata.DefaultVideoStream.Codec;
                 string size = $"{video.Metadata.DefaultVideoStream.Width}x{video.Metadata.DefaultVideoStream.Height}";
-                double fps = Math.Round(video.Metadata.DefaultVideoStream.Framerate.Item1 / (double)video.Metadata.DefaultVideoStream.Framerate.Item2);
+                double fps = Math.Round(video.Metadata.DefaultVideoStream.Framerate);
                 string channel = video.Metadata.DefaultAudioStream?.ChannelLayout ?? "silent";
                 string metadata = $"({codec})_[{size}_{fps}fps_{channel}]";
                 newTitle += Dialogs.TitleFormat.IncludeDate || Dialogs.TitleFormat.IncludeFilename ? $"_{metadata}" : metadata;

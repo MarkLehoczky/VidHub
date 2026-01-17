@@ -18,6 +18,11 @@
         <converter:HealthColorConverter x:Key="HealthColor" />
         <converter:NotificationButtonConverter x:Key="TransformButton" />
         <converter:PreviewImagePlaceholderConverter x:Key="PlaceholderFallback" />
+        <converter:VideoResolutionTextConverter x:Key="ResolutionText" />
+        <converter:VideoResolutionColorConverter x:Key="ResolutionColor" />
+        <converter:VideoFramerateTextConverter x:Key="FramerateText" />
+        <converter:VideoFramerateColorConverter x:Key="FramerateColor" />
+        
     </UserControl.Resources>
 
     <UserControl.DataContext>
@@ -97,6 +102,13 @@
 
                                     <FontIcon Glyph="&#xf136;" Foreground="{ThemeResource ApplicationPageBackgroundThemeBrush}" Opacity="0.8" Visibility="{Binding ElementName=videocollection, Path=DataContext.DisplayHealths}" FontFamily="Segoe Fluent Icons" Margin="4" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
                                     <FontIcon Glyph="{Binding Health.State, Converter={StaticResource HealthIcon}}" Foreground="{Binding Health.State, Converter={StaticResource HealthColor}}" ToolTipService.ToolTip="{Binding Health.Details}" Visibility="{Binding ElementName=videocollection, Path=DataContext.DisplayHealths}" FontFamily="Segoe Fluent Icons" Margin="4" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
+
+                                    <Border Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Opacity="0.8" Visibility="{Binding ElementName=videocollection, Path=DataContext.DisplayDurations}" BorderThickness="0" CornerRadius="10" Margin="4" HorizontalAlignment="Left" VerticalAlignment="Top" >
+                                        <TextBlock Text="{Binding Metadata.DefaultVideoStream, Converter={StaticResource ResolutionText}}" Foreground="{Binding Metadata.DefaultVideoStream, Converter={StaticResource ResolutionColor}}" ToolTipService.ToolTip="Resolution is calculated from the pixel dimensions" FontFamily="Consolas" Margin="6 2" />
+                                    </Border>
+                                    <Border Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Opacity="0.8" Visibility="{Binding ElementName=videocollection, Path=DataContext.DisplayDurations}" BorderThickness="0" CornerRadius="10" Margin="4" HorizontalAlignment="Right" VerticalAlignment="Top" >
+                                        <TextBlock Text="{Binding Metadata.DefaultVideoStream, Converter={StaticResource FramerateText}}" Foreground="{Binding Metadata.DefaultVideoStream, Converter={StaticResource FramerateColor}}" FontFamily="Consolas" Margin="6 2" />
+                                    </Border>
                                 </Grid>
                             </Grid>
 
