@@ -2,8 +2,6 @@
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using VidHub.Core.Streams;
 
 namespace VidHub.WinUI.Converters
@@ -14,7 +12,7 @@ namespace VidHub.WinUI.Converters
         {
             if (value is VideoStream stream && stream != null)
             {
-                return stream.ConvertResolution(new Dictionary<string, string>
+                return stream.ConvertResolution<string>(new()
                 {
                     { "8K", "8K UHD" },
                     { "4K", "4K UHD" },
@@ -23,7 +21,7 @@ namespace VidHub.WinUI.Converters
                     { "720p", "720p" },
                     { "480p", "480p" },
                     { "low", "Low" },
-                });
+                }) ?? "n/a";
             }
             return "n/a";
         }
@@ -41,7 +39,7 @@ namespace VidHub.WinUI.Converters
         {
             if (value is VideoStream stream && stream != null)
             {
-                return stream.ConvertResolution(new Dictionary<string, SolidColorBrush>
+                return stream.ConvertResolution<SolidColorBrush>(new()
                 {
                     { "8K", new SolidColorBrush(Colors.DeepSkyBlue) },
                     { "4K", new SolidColorBrush(Colors.DodgerBlue) },
@@ -50,9 +48,9 @@ namespace VidHub.WinUI.Converters
                     { "720p", new SolidColorBrush(Colors.DarkGoldenrod) },
                     { "480p", new SolidColorBrush(Colors.Sienna) },
                     { "low", new SolidColorBrush(Colors.DarkRed) },
-                });
+                }) ?? new SolidColorBrush(Colors.DimGray);
             }
-            return "n/a";
+            return new SolidColorBrush(Colors.DimGray);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

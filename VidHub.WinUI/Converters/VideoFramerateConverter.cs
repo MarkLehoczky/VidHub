@@ -31,7 +31,7 @@ namespace VidHub.WinUI.Converters
         {
             if (value is VideoStream stream && stream != null)
             {
-                return stream.ConvertFramerate(new Dictionary<string, SolidColorBrush>
+                return stream.ConvertFramerate<SolidColorBrush>(new()
                 {
                     { "120", new SolidColorBrush(Colors.DeepSkyBlue) },
                     { "90", new SolidColorBrush(Colors.DodgerBlue) },
@@ -40,7 +40,7 @@ namespace VidHub.WinUI.Converters
                     { "23", new SolidColorBrush(Colors.DarkGoldenrod) },
                     { "12", new SolidColorBrush(Colors.Sienna) },
                     { "low", new SolidColorBrush(Colors.DarkRed) },
-                });
+                }) ?? new SolidColorBrush(Colors.DimGray);
             }
             return new SolidColorBrush(Colors.DimGray);
         }

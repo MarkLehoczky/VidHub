@@ -27,7 +27,7 @@ namespace VidHub.WinUI.Converters
             }
             return "n/a";
         }
-        public static T? ConvertFramerate<T>(this VideoStream stream, IReadOnlyDictionary<string, T?> dictionary)
+        public static T? ConvertFramerate<T>(this VideoStream stream, Dictionary<string, T?> dictionary)
         {
             return dictionary.GetValueOrDefault(stream.FindFramerate(), default);
         }
@@ -53,7 +53,7 @@ namespace VidHub.WinUI.Converters
             }
             return "n/a";
         }
-        public static T? ConvertResolution<T>(this VideoStream stream, IReadOnlyDictionary<string, T?> dictionary)
+        public static T? ConvertResolution<T>(this VideoStream stream, Dictionary<string, T?> dictionary)
         {
             return dictionary.GetValueOrDefault(stream.FindResolution(), default);
         }
