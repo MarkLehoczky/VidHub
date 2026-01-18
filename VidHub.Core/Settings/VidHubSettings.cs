@@ -93,6 +93,77 @@ namespace VidHub.Core.Settings
                 }
             }
 
+            List<bool> resolutionSettings =
+            [
+                SidePanel.DisplayMaximumResolutionVideos,
+                SidePanel.DisplayLargeResolutionVideos,
+                SidePanel.DisplayMediumResolutionVideos,
+                SidePanel.DisplayLowResolutionVideos,
+                SidePanel.DisplayMinimumResolutionVideos
+            ];
+            if (resolutionSettings.Any(s => s))
+            {
+                if (video.Metadata.DefaultVideoStream != null)
+                {
+                    bool matchingResolution = true;
+                    matchingResolution &= video.Metadata.DefaultVideoStream.Resolution.Definition switch
+                    {
+                        "8K UHD" => SidePanel.DisplayMaximumResolutionVideos,
+                        "4K UHD" => SidePanel.DisplayMaximumResolutionVideos,
+                        "1440p" => SidePanel.DisplayLargeResolutionVideos,
+                        "1080p" => SidePanel.DisplayMediumResolutionVideos,
+                        "720p" => SidePanel.DisplayLowResolutionVideos,
+                        "480p" => SidePanel.DisplayMinimumResolutionVideos,
+                        "Low" => SidePanel.DisplayMinimumResolutionVideos,
+                        _ => false,
+                    };
+                    if (!matchingResolution)
+                    {
+                        return false;
+                    }
+                }
+                else 
+                {
+                    return false;
+                }
+            }
+
+            List<bool> framerateSettings =
+            [
+                SidePanel.DisplayMaximumFramerateVideos,
+                SidePanel.DisplayLargeFramerateVideos,
+                SidePanel.DisplayMediumFramerateVideos,
+                SidePanel.DisplayLowFramerateVideos,
+                SidePanel.DisplayMinimumFramerateVideos
+            ];
+            if (framerateSettings.Any(s => s))
+            {
+                if (video.Metadata.DefaultVideoStream != null)
+                {
+                    bool matchingFramerate = true;
+                    matchingFramerate &= video.Metadata.DefaultVideoStream.Framerate.Definition switch
+                    {
+                        "240fps" => SidePanel.DisplayMaximumFramerateVideos,
+                        "120fps" => SidePanel.DisplayMaximumFramerateVideos,
+                        "90fps" => SidePanel.DisplayLargeFramerateVideos,
+                        "60fps" => SidePanel.DisplayLargeFramerateVideos,
+                        "30fps" => SidePanel.DisplayMediumFramerateVideos,
+                        "24fps" => SidePanel.DisplayLowFramerateVideos,
+                        "12fps" => SidePanel.DisplayLowFramerateVideos,
+                        "Low" => SidePanel.DisplayMinimumFramerateVideos,
+                        _ => false,
+                    };
+                    if (!matchingFramerate)
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
             return !SidePanel.MaxDuration.HasValue || video.Duration <= SidePanel.MaxDuration.Value;
         }
 
@@ -139,7 +210,7 @@ namespace VidHub.Core.Settings
             {
                 string codec = video.Metadata.DefaultVideoStream.Codec;
                 string size = $"{video.Metadata.DefaultVideoStream.Width}x{video.Metadata.DefaultVideoStream.Height}";
-                double fps = Math.Round(video.Metadata.DefaultVideoStream.Framerate);
+                double fps = Math.Round(video.Metadata.DefaultVideoStream.Framerate.Value);
                 string channel = video.Metadata.DefaultAudioStream?.ChannelLayout ?? "silent";
                 string metadata = $"({codec})_[{size}_{fps}fps_{channel}]";
                 newTitle += Dialogs.TitleFormat.IncludeDate || Dialogs.TitleFormat.IncludeFilename ? $"_{metadata}" : metadata;

@@ -64,6 +64,18 @@ namespace VidHub.ViewModels
             set => connector.MaxDuration = value;
         }
 
+
+        public bool DisplayMaximumResolutionVideos { get => connector.DisplayMaximumResolutionVideos; set => connector.DisplayMaximumResolutionVideos = value; }
+        public bool DisplayLargeResolutionVideos { get => connector.DisplayLargeResolutionVideos; set => connector.DisplayLargeResolutionVideos = value; }
+        public bool DisplayMediumResolutionVideos { get => connector.DisplayMediumResolutionVideos; set => connector.DisplayMediumResolutionVideos = value; }
+        public bool DisplayLowResolutionVideos { get => connector.DisplayLowResolutionVideos; set => connector.DisplayLowResolutionVideos = value; }
+        public bool DisplayMinimumResolutionVideos { get => connector.DisplayMinimumResolutionVideos; set => connector.DisplayMinimumResolutionVideos = value; }
+        public bool DisplayMaximumFramerateVideos { get => connector.DisplayMaximumFramerateVideos; set => connector.DisplayMaximumFramerateVideos = value; }
+        public bool DisplayLargeFramerateVideos { get => connector.DisplayLargeFramerateVideos; set => connector.DisplayLargeFramerateVideos = value; }
+        public bool DisplayMediumFramerateVideos { get => connector.DisplayMediumFramerateVideos; set => connector.DisplayMediumFramerateVideos = value; }
+        public bool DisplayLowFramerateVideos { get => connector.DisplayLowFramerateVideos; set => connector.DisplayLowFramerateVideos = value; }
+        public bool DisplayMinimumFramerateVideos { get => connector.DisplayMinimumFramerateVideos; set => connector.DisplayMinimumFramerateVideos = value; }
+
         public string TransferDescription => connector.TransferDescription;
         public bool HasActiveTransfer => connector.HasActiveTransfer;
         public int LoadedCount => connector.LoadedFileCount;

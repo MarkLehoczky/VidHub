@@ -14,7 +14,7 @@ namespace VidHub.Services.Logics
                 { "Title", Comparer<Video>.Create((x, y) => string.Compare(x.Title, y.Title, StringComparison.OrdinalIgnoreCase)) },
                 { "Date", Comparer<Video>.Create((x, y) => DateTime.Compare(x.Date, y.Date)) },
                 { "Duration", Comparer<Video>.Create((x, y) => TimeSpan.Compare(x.Duration, y.Duration)) },
-                { "Resolution", Comparer<Video>.Create((x, y) => x.Metadata.DefaultVideoStream?.Resolution.CompareTo(y.Metadata.DefaultVideoStream?.Resolution ?? 0) ?? 0) },
+                { "Resolution", Comparer<Video>.Create((x, y) => x.Metadata.DefaultVideoStream?.Resolution.Value.CompareTo(y.Metadata.DefaultVideoStream?.Resolution.Value ?? 0) ?? 0) },
                 { "Framerate", Comparer<Video>.Create((x, y) => x.Metadata.DefaultVideoStream?.Framerate.Value.CompareTo(y.Metadata.DefaultVideoStream?.Framerate.Value ?? 0) ?? 0) },
             };
 
@@ -109,6 +109,98 @@ namespace VidHub.Services.Logics
             set
             {
                 settings.SidePanel.MaxDuration = value;
+                UpdateDisplayedVideos();
+            }
+        }
+
+
+        public bool DisplayMaximumResolutionVideos
+        {
+            get => settings.SidePanel.DisplayMaximumResolutionVideos;
+            set
+            {
+                settings.SidePanel.DisplayMaximumResolutionVideos = value;
+                UpdateDisplayedVideos();
+            }
+        }
+        public bool DisplayLargeResolutionVideos
+        {
+            get => settings.SidePanel.DisplayLargeResolutionVideos;
+            set
+            {
+                settings.SidePanel.DisplayLargeResolutionVideos = value;
+                UpdateDisplayedVideos();
+            }
+        }
+        public bool DisplayMediumResolutionVideos
+        {
+            get => settings.SidePanel.DisplayMediumResolutionVideos;
+            set
+            {
+                settings.SidePanel.DisplayMediumResolutionVideos = value;
+                UpdateDisplayedVideos();
+            }
+        }
+        public bool DisplayLowResolutionVideos
+        {
+            get => settings.SidePanel.DisplayLowResolutionVideos;
+            set
+            {
+                settings.SidePanel.DisplayLowResolutionVideos = value;
+                UpdateDisplayedVideos();
+            }
+        }
+        public bool DisplayMinimumResolutionVideos
+        {
+            get => settings.SidePanel.DisplayMinimumResolutionVideos;
+            set
+            {
+                settings.SidePanel.DisplayMinimumResolutionVideos = value;
+                UpdateDisplayedVideos();
+            }
+        }
+        public bool DisplayMaximumFramerateVideos
+        {
+            get => settings.SidePanel.DisplayMaximumFramerateVideos;
+            set
+            {
+                settings.SidePanel.DisplayMaximumFramerateVideos = value;
+                UpdateDisplayedVideos();
+            }
+        }
+        public bool DisplayLargeFramerateVideos
+        {
+            get => settings.SidePanel.DisplayLargeFramerateVideos;
+            set
+            {
+                settings.SidePanel.DisplayLargeFramerateVideos = value;
+                UpdateDisplayedVideos();
+            }
+        }
+        public bool DisplayMediumFramerateVideos
+        {
+            get => settings.SidePanel.DisplayMediumFramerateVideos;
+            set
+            {
+                settings.SidePanel.DisplayMediumFramerateVideos = value;
+                UpdateDisplayedVideos();
+            }
+        }
+        public bool DisplayLowFramerateVideos
+        {
+            get => settings.SidePanel.DisplayLowFramerateVideos;
+            set
+            {
+                settings.SidePanel.DisplayLowFramerateVideos = value;
+                UpdateDisplayedVideos();
+            }
+        }
+        public bool DisplayMinimumFramerateVideos
+        {
+            get => settings.SidePanel.DisplayMinimumFramerateVideos;
+            set
+            {
+                settings.SidePanel.DisplayMinimumFramerateVideos = value;
                 UpdateDisplayedVideos();
             }
         }
