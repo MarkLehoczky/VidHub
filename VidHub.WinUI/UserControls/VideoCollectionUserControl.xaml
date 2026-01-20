@@ -39,7 +39,7 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Grid Margin="10">
+                        <Grid Width="{Binding ElementName=videocollection, Path=DataContext.PreviewImageWidth}" Margin="10">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*" />
                                 <RowDefinition Height="Auto" />
@@ -86,7 +86,7 @@
                                 </MenuFlyout>
                             </Grid.ContextFlyout>
 
-                            <Grid Width="{Binding ElementName=videocollection, Path=DataContext.PreviewImageWidth}" Height="{Binding ElementName=videocollection, Path=DataContext.PreviewImageHeight}" Grid.Row="0">
+                            <Grid Height="{Binding ElementName=videocollection, Path=DataContext.PreviewImageHeight}" Grid.Row="0">
                                 <Grid HorizontalAlignment="Center" VerticalAlignment="Bottom">
                                     <Border BorderThickness="0" CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center">
                                         <Image Source="{Binding PreviewImagePath, Converter={StaticResource PlaceholderFallback}}" Stretch="Uniform" DoubleTapped="OpenVideo" />
