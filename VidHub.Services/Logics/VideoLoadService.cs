@@ -212,6 +212,7 @@ namespace VidHub.Services.Logics
                     Severity = NotificationSeverity.SUCCESS
                 };
                 notification.Display();
+                system.SetTaskbar(manager);
                 service.Update(UpdateSections.SIDEPANEL);
                 service.Update(UpdateSection.VIDEOCOLLECTION);
                 if (!settings.Dialogs.TitleFormat.HideTitleFormatDialog)

@@ -52,11 +52,9 @@ namespace VidHub.Core.Utilities
         {
             CollectingFinished += () =>
             {
-                IsCollecting = false;
             };
             LoadingFinished += () =>
             {
-                IsLoading = false;
                 loadedFileCount = 0;
                 totalFileCount = 0;
             };
@@ -134,6 +132,7 @@ namespace VidHub.Core.Utilities
                 }
             }
 
+            IsCollecting = false;
             CollectingFinished?.Invoke();
         }
 
@@ -168,6 +167,7 @@ namespace VidHub.Core.Utilities
 
             if (!IsCollecting)
             {
+                IsLoading = false;
                 LoadingFinished?.Invoke();
             }
         }
