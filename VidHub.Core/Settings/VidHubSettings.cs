@@ -2,6 +2,8 @@
 using System.Text.RegularExpressions;
 using VidHub.Core.Notifications;
 using VidHub.Platform.Environment;
+using static VidHub.Core.Streams.Framerate;
+using static VidHub.Core.Streams.Resolution;
 
 namespace VidHub.Core.Settings
 {
@@ -60,13 +62,9 @@ namespace VidHub.Core.Settings
         }
         public bool ValidVideo(Video video)
         {
-            StringComparison searchComparison = SidePanel.UseCaseSensitiveSearch
-                ? StringComparison.Ordinal
-                : StringComparison.OrdinalIgnoreCase;
-
             if (!string.IsNullOrEmpty(SidePanel.SearchText))
             {
-                if (!video.Title.Contains(SidePanel.SearchText, searchComparison))
+                if (!video.Title.Contains(SidePanel.SearchText, SearchComparison()))
                 {
                     return false;
                 }
@@ -78,11 +76,10 @@ namespace VidHub.Core.Settings
                 {
                     return false;
                 }
-            }
-
-            if (SidePanel.EndDate.HasValue && video.Date > SidePanel.EndDate.Value)
-            {
-                return false;
+                if (SidePanel.EndDate.HasValue && video.Date > SidePanel.EndDate.Value)
+                {
+                    return false;
+                }
             }
 
             if (SidePanel.FilterDuration)
@@ -91,80 +88,71 @@ namespace VidHub.Core.Settings
                 {
                     return false;
                 }
-            }
-
-            List<bool> resolutionSettings =
-            [
-                SidePanel.DisplayMaximumResolutionVideos,
-                SidePanel.DisplayLargeResolutionVideos,
-                SidePanel.DisplayMediumResolutionVideos,
-                SidePanel.DisplayLowResolutionVideos,
-                SidePanel.DisplayMinimumResolutionVideos
-            ];
-            if (resolutionSettings.Any(s => s))
-            {
-                if (video.Metadata.DefaultVideoStream != null)
-                {
-                    bool matchingResolution = true;
-                    matchingResolution &= video.Metadata.DefaultVideoStream.Resolution.Definition switch
-                    {
-                        "8K UHD" => SidePanel.DisplayMaximumResolutionVideos,
-                        "4K UHD" => SidePanel.DisplayMaximumResolutionVideos,
-                        "1440p" => SidePanel.DisplayLargeResolutionVideos,
-                        "1080p" => SidePanel.DisplayMediumResolutionVideos,
-                        "720p" => SidePanel.DisplayLowResolutionVideos,
-                        "480p" => SidePanel.DisplayMinimumResolutionVideos,
-                        "Low" => SidePanel.DisplayMinimumResolutionVideos,
-                        _ => false,
-                    };
-                    if (!matchingResolution)
-                    {
-                        return false;
-                    }
-                }
-                else 
+                if (SidePanel.MaxDuration.HasValue && video.Duration > SidePanel.MaxDuration.Value)
                 {
                     return false;
                 }
             }
 
-            List<bool> framerateSettings =
-            [
-                SidePanel.DisplayMaximumFramerateVideos,
-                SidePanel.DisplayLargeFramerateVideos,
-                SidePanel.DisplayMediumFramerateVideos,
-                SidePanel.DisplayLowFramerateVideos,
-                SidePanel.DisplayMinimumFramerateVideos
-            ];
-            if (framerateSettings.Any(s => s))
+            bool filterResolution = SidePanel.DisplayMaximumResolutionVideos
+                || SidePanel.DisplayLargeResolutionVideos
+                || SidePanel.DisplayMediumResolutionVideos
+                || SidePanel.DisplayLowResolutionVideos
+                || SidePanel.DisplayMinimumResolutionVideos;
+            if (filterResolution)
             {
-                if (video.Metadata.DefaultVideoStream != null)
+                if (video.Metadata.DefaultVideoStream == null)
                 {
-                    bool matchingFramerate = true;
-                    matchingFramerate &= video.Metadata.DefaultVideoStream.Framerate.Definition switch
-                    {
-                        "240fps" => SidePanel.DisplayMaximumFramerateVideos,
-                        "120fps" => SidePanel.DisplayMaximumFramerateVideos,
-                        "90fps" => SidePanel.DisplayLargeFramerateVideos,
-                        "60fps" => SidePanel.DisplayLargeFramerateVideos,
-                        "30fps" => SidePanel.DisplayMediumFramerateVideos,
-                        "24fps" => SidePanel.DisplayLowFramerateVideos,
-                        "12fps" => SidePanel.DisplayLowFramerateVideos,
-                        "Low" => SidePanel.DisplayMinimumFramerateVideos,
-                        _ => false,
-                    };
-                    if (!matchingFramerate)
-                    {
-                        return false;
-                    }
+                    return false;
                 }
-                else
+                bool matchingResolution = video.Metadata.DefaultVideoStream.Resolution.Definition switch
+                {
+                    DefinedResolution.UHD8K => SidePanel.DisplayMaximumResolutionVideos,
+                    DefinedResolution.UHD4K => SidePanel.DisplayMaximumResolutionVideos,
+                    DefinedResolution.QHD => SidePanel.DisplayLargeResolutionVideos,
+                    DefinedResolution.FHD => SidePanel.DisplayMediumResolutionVideos,
+                    DefinedResolution.HD => SidePanel.DisplayLowResolutionVideos,
+                    DefinedResolution.SD => SidePanel.DisplayMinimumResolutionVideos,
+                    DefinedResolution.LOW => SidePanel.DisplayMinimumResolutionVideos,
+                    _ => false,
+                };
+                if (!matchingResolution)
                 {
                     return false;
                 }
             }
 
-            return !SidePanel.MaxDuration.HasValue || video.Duration <= SidePanel.MaxDuration.Value;
+            bool filterFramerate = SidePanel.DisplayMaximumFramerateVideos
+                || SidePanel.DisplayLargeFramerateVideos
+                || SidePanel.DisplayMediumFramerateVideos
+                || SidePanel.DisplayLowFramerateVideos
+                || SidePanel.DisplayMinimumFramerateVideos;
+            if (filterFramerate)
+            {
+                if (video.Metadata.DefaultVideoStream == null)
+                {
+                    return false;
+                }
+                bool matchingFramerate = video.Metadata.DefaultVideoStream.Framerate.Definition switch
+                {
+                    DefinedFramerate.FPS240 => SidePanel.DisplayMaximumFramerateVideos,
+                    DefinedFramerate.FPS120 => SidePanel.DisplayMaximumFramerateVideos,
+                    DefinedFramerate.FPS90 => SidePanel.DisplayLargeFramerateVideos,
+                    DefinedFramerate.FPS60 => SidePanel.DisplayLargeFramerateVideos,
+                    DefinedFramerate.FPS30 => SidePanel.DisplayMediumFramerateVideos,
+                    DefinedFramerate.FPS24 => SidePanel.DisplayLowFramerateVideos,
+                    DefinedFramerate.FPS20 => SidePanel.DisplayLowFramerateVideos,
+                    DefinedFramerate.FPS12 => SidePanel.DisplayMinimumFramerateVideos,
+                    DefinedFramerate.LOW => SidePanel.DisplayMinimumFramerateVideos,
+                    _ => false,
+                };
+                if (!matchingFramerate)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public TimeSpan GetPreviewImageTime(Video video)

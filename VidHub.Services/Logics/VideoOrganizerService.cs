@@ -1,4 +1,5 @@
-﻿using VidHub.Core;
+﻿using System.Diagnostics;
+using VidHub.Core;
 using VidHub.Core.Settings;
 using VidHub.Core.Utilities;
 using VidHub.Services.Base;
@@ -14,8 +15,18 @@ namespace VidHub.Services.Logics
                 { "Title", Comparer<Video>.Create((x, y) => string.Compare(x.Title, y.Title, StringComparison.OrdinalIgnoreCase)) },
                 { "Date", Comparer<Video>.Create((x, y) => DateTime.Compare(x.Date, y.Date)) },
                 { "Duration", Comparer<Video>.Create((x, y) => TimeSpan.Compare(x.Duration, y.Duration)) },
-                { "Resolution", Comparer<Video>.Create((x, y) => x.Metadata.DefaultVideoStream?.Resolution.Value.CompareTo(y.Metadata.DefaultVideoStream?.Resolution.Value ?? 0) ?? 0) },
-                { "Framerate", Comparer<Video>.Create((x, y) => x.Metadata.DefaultVideoStream?.Framerate.Value.CompareTo(y.Metadata.DefaultVideoStream?.Framerate.Value ?? 0) ?? 0) },
+                { "Resolution", Comparer<Video>.Create((x, y) =>
+                {
+                    int left = x.Metadata.DefaultVideoStream?.Resolution.Value ?? -1;
+                    int right = y.Metadata.DefaultVideoStream?.Resolution.Value ?? -1;
+                    return left.CompareTo(right);
+                }) },
+                { "Framerate", Comparer<Video>.Create((x, y) =>
+                {
+                    double left = x.Metadata.DefaultVideoStream?.Framerate.Value ?? -1;
+                    double right = y.Metadata.DefaultVideoStream?.Framerate.Value ?? -1;
+                    return left.CompareTo(right);
+                }) },
             };
 
 

@@ -72,7 +72,7 @@
                         <ToggleButton Content="120fps" IsChecked="{Binding DisplayMaximumFramerateVideos, Mode=TwoWay}" Margin="0 5 5 5" HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="0" />
                         <ToggleButton Content="60fps" IsChecked="{Binding DisplayLargeFramerateVideos, Mode=TwoWay}" Margin="5 5 5 5" HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="1" />
                         <ToggleButton Content="30fps" IsChecked="{Binding DisplayMediumFramerateVideos, Mode=TwoWay}" Margin="5 5 5 5" HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="2" />
-                        <ToggleButton Content="15fps" IsChecked="{Binding DisplayLowFramerateVideos, Mode=TwoWay}" Margin="5 5 5 5" HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="3" />
+                        <ToggleButton Content="20fps" IsChecked="{Binding DisplayLowFramerateVideos, Mode=TwoWay}" Margin="5 5 5 5" HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="3" />
                         <ToggleButton Content="Low" IsChecked="{Binding DisplayMinimumFramerateVideos, Mode=TwoWay}" Margin="5 5 0 5" HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="4" />
                     </Grid>
                 </StackPanel>
