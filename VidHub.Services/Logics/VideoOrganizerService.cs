@@ -1,4 +1,5 @@
-﻿using VidHub.Core;
+﻿using System.Diagnostics;
+using VidHub.Core;
 using VidHub.Core.Settings;
 using VidHub.Core.Utilities;
 using VidHub.Services.Base;
@@ -11,12 +12,21 @@ namespace VidHub.Services.Logics
         private readonly Dictionary<string, Comparer<Video>> sortOptions = new()
             {
                 { "Default", Comparer<Video>.Default },
-                { "▲ Title", Comparer<Video>.Create((x, y) => string.Compare(x.Title, y.Title, StringComparison.OrdinalIgnoreCase)) },
-                { "▼ Title", Comparer<Video>.Create((x, y) => string.Compare(y.Title, x.Title, StringComparison.OrdinalIgnoreCase)) },
-                { "▲ Date", Comparer<Video>.Create((x, y) => DateTime.Compare(x.Date, y.Date)) },
-                { "▼ Date", Comparer<Video>.Create((x, y) => DateTime.Compare(y.Date, x.Date)) },
-                { "▲ Duration", Comparer<Video>.Create((x, y) => TimeSpan.Compare(x.Duration, y.Duration)) },
-                { "▼ Duration", Comparer<Video>.Create((x, y) => TimeSpan.Compare(y.Duration, x.Duration)) }
+                { "Title", Comparer<Video>.Create((x, y) => string.Compare(x.Title, y.Title, StringComparison.OrdinalIgnoreCase)) },
+                { "Date", Comparer<Video>.Create((x, y) => DateTime.Compare(x.Date, y.Date)) },
+                { "Duration", Comparer<Video>.Create((x, y) => TimeSpan.Compare(x.Duration, y.Duration)) },
+                { "Resolution", Comparer<Video>.Create((x, y) =>
+                {
+                    int left = x.Metadata.DefaultVideoStream?.Resolution.Value ?? -1;
+                    int right = y.Metadata.DefaultVideoStream?.Resolution.Value ?? -1;
+                    return left.CompareTo(right);
+                }) },
+                { "Framerate", Comparer<Video>.Create((x, y) =>
+                {
+                    double left = x.Metadata.DefaultVideoStream?.Framerate.Value ?? -1;
+                    double right = y.Metadata.DefaultVideoStream?.Framerate.Value ?? -1;
+                    return left.CompareTo(right);
+                }) },
             };
 
 
@@ -26,6 +36,17 @@ namespace VidHub.Services.Logics
             set
             {
                 settings.SidePanel.SortBy = value;
+                UpdateDisplayedVideos();
+            }
+        }
+
+        public string Orientation
+        {
+            get => settings.SidePanel.Orientation;
+            set
+            {
+                settings.SidePanel.Orientation = value;
+                service.Update(UpdateSection.FILTERPANEL);
                 UpdateDisplayedVideos();
             }
         }
@@ -104,6 +125,98 @@ namespace VidHub.Services.Logics
         }
 
 
+        public bool DisplayMaximumResolutionVideos
+        {
+            get => settings.SidePanel.DisplayMaximumResolutionVideos;
+            set
+            {
+                settings.SidePanel.DisplayMaximumResolutionVideos = value;
+                UpdateDisplayedVideos();
+            }
+        }
+        public bool DisplayLargeResolutionVideos
+        {
+            get => settings.SidePanel.DisplayLargeResolutionVideos;
+            set
+            {
+                settings.SidePanel.DisplayLargeResolutionVideos = value;
+                UpdateDisplayedVideos();
+            }
+        }
+        public bool DisplayMediumResolutionVideos
+        {
+            get => settings.SidePanel.DisplayMediumResolutionVideos;
+            set
+            {
+                settings.SidePanel.DisplayMediumResolutionVideos = value;
+                UpdateDisplayedVideos();
+            }
+        }
+        public bool DisplayLowResolutionVideos
+        {
+            get => settings.SidePanel.DisplayLowResolutionVideos;
+            set
+            {
+                settings.SidePanel.DisplayLowResolutionVideos = value;
+                UpdateDisplayedVideos();
+            }
+        }
+        public bool DisplayMinimumResolutionVideos
+        {
+            get => settings.SidePanel.DisplayMinimumResolutionVideos;
+            set
+            {
+                settings.SidePanel.DisplayMinimumResolutionVideos = value;
+                UpdateDisplayedVideos();
+            }
+        }
+        public bool DisplayMaximumFramerateVideos
+        {
+            get => settings.SidePanel.DisplayMaximumFramerateVideos;
+            set
+            {
+                settings.SidePanel.DisplayMaximumFramerateVideos = value;
+                UpdateDisplayedVideos();
+            }
+        }
+        public bool DisplayLargeFramerateVideos
+        {
+            get => settings.SidePanel.DisplayLargeFramerateVideos;
+            set
+            {
+                settings.SidePanel.DisplayLargeFramerateVideos = value;
+                UpdateDisplayedVideos();
+            }
+        }
+        public bool DisplayMediumFramerateVideos
+        {
+            get => settings.SidePanel.DisplayMediumFramerateVideos;
+            set
+            {
+                settings.SidePanel.DisplayMediumFramerateVideos = value;
+                UpdateDisplayedVideos();
+            }
+        }
+        public bool DisplayLowFramerateVideos
+        {
+            get => settings.SidePanel.DisplayLowFramerateVideos;
+            set
+            {
+                settings.SidePanel.DisplayLowFramerateVideos = value;
+                UpdateDisplayedVideos();
+            }
+        }
+        public bool DisplayMinimumFramerateVideos
+        {
+            get => settings.SidePanel.DisplayMinimumFramerateVideos;
+            set
+            {
+                settings.SidePanel.DisplayMinimumFramerateVideos = value;
+                UpdateDisplayedVideos();
+            }
+        }
+
+
         public IEnumerable<string> GetSortOptions()
         {
             return sortOptions.Keys;
@@ -130,8 +243,14 @@ namespace VidHub.Services.Logics
 
         private void UpdateDisplayedVideos()
         {
+            var selectedComparer = sortOptions.TryGetValue(settings.SidePanel.SortBy ?? string.Empty, out Comparer<Video>? comparer) ? comparer : Comparer<Video>.Default;
+            var tempComparer = selectedComparer;
+            if (Orientation != "ASC")
+            {
+                selectedComparer = Comparer<Video>.Create((x, y) => tempComparer.Compare(y, x));
+            }
             service.Predicate = settings.ValidVideo;
-            service.Comparer = sortOptions.TryGetValue(settings.SidePanel.SortBy ?? string.Empty, out Comparer<Video>? comparer) ? comparer : Comparer<Video>.Default;
+            service.Comparer = selectedComparer;
             service.Update(UpdateSection.VIDEOCOLLECTION);
         }
     }

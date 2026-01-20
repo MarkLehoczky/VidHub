@@ -43,6 +43,8 @@
                 <ToggleMenuFlyoutItem Text="Display Video Date" IsChecked="{Binding DisplayDates, Mode=TwoWay}" />
                 <ToggleMenuFlyoutItem Text="Display Video Duration" IsChecked="{Binding DisplayDurations, Mode=TwoWay}" />
                 <ToggleMenuFlyoutItem Text="Display Video Health" IsChecked="{Binding DisplayHealths, Mode=TwoWay}" />
+                <ToggleMenuFlyoutItem Text="Display Video Resolution" IsChecked="{Binding DisplayResolutions, Mode=TwoWay}" />
+                <ToggleMenuFlyoutItem Text="Display Video Framerate" IsChecked="{Binding DisplayFramerates, Mode=TwoWay}" />
             </MenuBarItem>
             <MenuBarItem Title="Settings" Height="32" Margin="0">
                 <MenuFlyoutSubItem Text="Notifications">

@@ -1,14 +1,7 @@
 ﻿namespace VidHub.Core.Streams
 {
-    public class MetadataSource
+    public class MetadataSource(IDictionary<string, string> metadata)
     {
-        protected IDictionary<string, string> Metadata { get; set; } = new Dictionary<string, string>();
-
-
-        private MetadataSource() { }
-        public MetadataSource(IDictionary<string, string> metadata)
-        {
-            Metadata = metadata;
-        }
+        protected IDictionary<string, string> Metadata { get; set; } = metadata;
     }
 }

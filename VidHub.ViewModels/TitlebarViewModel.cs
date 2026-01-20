@@ -105,6 +105,16 @@ namespace VidHub.ViewModels
             get => connector.DisplayDurations;
             set => connector.DisplayDurations = value;
         }
+        public bool DisplayResolutions
+        {
+            get => connector.DisplayResolutions;
+            set => connector.DisplayResolutions = value;
+        }
+        public bool DisplayFramerates
+        {
+            get => connector.DisplayFramerates;
+            set => connector.DisplayFramerates = value;
+        }
         public bool DisplayHealths
         {
             get => connector.DisplayHealths;
