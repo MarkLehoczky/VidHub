@@ -2,28 +2,49 @@
 
 namespace VidHub.Core.Streams
 {
+    public enum DefinedFramerate
+    {
+        UNKNOWN,
+        LOW,
+        FPS12,
+        FPS20,
+        FPS24,
+        FPS30,
+        FPS60,
+        FPS90,
+        FPS120,
+        FPS240
+    }
+
+    public enum DefinedResolution
+    {
+        UNKNOWN,
+        LOW,
+        SD,
+        HD,
+        FHD,
+        QHD,
+        UHD4K,
+        UHD8K
+    }
+
+
+
     public class Framerate
     {
-        public enum DefinedFramerate
-        {
-            UNKNOWN,
-            LOW,
-            FPS12,
-            FPS20,
-            FPS24,
-            FPS30,
-            FPS60,
-            FPS90,
-            FPS120,
-            FPS240
-        }
-
         public int Numerator { get; set; }
         public int Denominator { get; set; }
         [JsonIgnore] public double Value { get; set; }
         [JsonIgnore] public DefinedFramerate Definition { get; set; }
 
 
+        public Framerate()
+        {
+            Numerator = 0;
+            Denominator = 1;
+            Value = double.NaN;
+            Definition = DefinedFramerate.UNKNOWN;
+        }
         public Framerate(IDictionary<string, string> metadata)
         {
             if (metadata.TryGetValue("avg_frame_rate", out string? value))
@@ -34,46 +55,53 @@ namespace VidHub.Core.Streams
                     Numerator = num;
                     Denominator = den;
                 }
-                else
-                {
-                    Numerator = 0;
-                    Denominator = 1;
-                }
             }
-            else
-            {
-                Numerator = 0;
-                Denominator = 1;
-            }
-            Value = Denominator != 0 ? (double)Numerator / Denominator : -1;
+            Value = Denominator != 0 ? (double)Numerator / Denominator : double.NaN;
+            Definition = GetDefinition(Value);
+        }
 
-            if (Value >= 240.0)
+
+        public static DefinedFramerate GetDefinition(double framerate)
+        {
+            if (framerate >= 240.0)
             {
-                Definition = DefinedFramerate.FPS240;
+                return DefinedFramerate.FPS240;
             }
-            else if (Value >= 120.0)
+            else if (framerate >= 120.0)
             {
-                Definition = DefinedFramerate.FPS120;
+                return DefinedFramerate.FPS120;
             }
-            else if (Value >= 90.0)
+            else if (framerate >= 90.0)
             {
-                Definition = DefinedFramerate.FPS90;
+                return DefinedFramerate.FPS90;
             }
-            else if (Value >= 60.0)
+            else if (framerate >= 60.0)
             {
-                Definition = DefinedFramerate.FPS60;
+                return DefinedFramerate.FPS60;
             }
-            else if (Value >= 30.0)
+            else if (framerate >= 30.0)
             {
-                Definition = DefinedFramerate.FPS30;
+                return DefinedFramerate.FPS30;
+            }
+            else if (framerate >= 24.0)
+            {
+                return DefinedFramerate.FPS30;
+            }
+            else if (framerate >= 20.0)
+            {
+                return DefinedFramerate.FPS20;
+            }
+            else if (framerate >= 12.0)
+            {
+                return DefinedFramerate.FPS12;
+            }
+            else if (framerate > 0.0)
+            {
+                return DefinedFramerate.LOW;
             }
             else
             {
-                Definition = Value >= 24.0
-                    ? DefinedFramerate.FPS24
-                    : Value >= 20.0
-                    ? DefinedFramerate.FPS20
-                    : Value >= 12.0 ? DefinedFramerate.FPS12 : Value > 0.0 ? DefinedFramerate.LOW : DefinedFramerate.UNKNOWN;
+                return DefinedFramerate.UNKNOWN;
             }
         }
 
@@ -90,24 +118,19 @@ namespace VidHub.Core.Streams
 
     public class Resolution
     {
-        public enum DefinedResolution
-        {
-            UNKNOWN,
-            LOW,
-            SD,
-            HD,
-            FHD,
-            QHD,
-            UHD4K,
-            UHD8K
-        }
-
         public int Width { get; set; }
         public int Height { get; set; }
         [JsonIgnore] public int Value { get; set; }
         [JsonIgnore] public DefinedResolution Definition { get; set; }
 
 
+        public Resolution()
+        {
+            Width = 0;
+            Height = 0;
+            Value = 0;
+            Definition = DefinedResolution.UNKNOWN;
+        }
         public Resolution(IDictionary<string, string> metadata)
         {
             Width = metadata.TryGetValue("width", out string? widthString) && int.TryParse(widthString, out int widthPixel)
@@ -117,26 +140,43 @@ namespace VidHub.Core.Streams
                 ? heightPixel
                 : 0;
             Value = Width * Height;
+            Definition = GetDefinition(Value);
+        }
 
-            if (Value >= 7680 * 4320)
+
+        public static DefinedResolution GetDefinition(int resolution)
+        {
+            if (resolution >= 7680 * 4320)
             {
-                Definition = DefinedResolution.UHD8K;
+                return DefinedResolution.UHD8K;
             }
-            else if (Value >= 3840 * 2160)
+            else if (resolution >= 3840 * 2160)
             {
-                Definition = DefinedResolution.UHD4K;
+                return DefinedResolution.UHD4K;
             }
-            else if (Value >= 2560 * 1440)
+            else if (resolution >= 2560 * 1440)
             {
-                Definition = DefinedResolution.QHD;
+                return DefinedResolution.QHD;
+            }
+            else if (resolution >= 1920 * 1080)
+            {
+                return DefinedResolution.FHD;
+            }
+            else if (resolution >= 1280 * 720)
+            {
+                return DefinedResolution.HD;
+            }
+            else if (resolution >= 720 * 480)
+            {
+                return DefinedResolution.SD;
+            }
+            else if (resolution > 0)
+            {
+                return DefinedResolution.LOW;
             }
             else
             {
-                Definition = Value >= 1920 * 1080
-                    ? DefinedResolution.FHD
-                    : Value >= 1280 * 720
-                    ? DefinedResolution.HD
-                    : Value >= 720 * 480 ? DefinedResolution.SD : Value > 0 ? DefinedResolution.LOW : DefinedResolution.UNKNOWN;
+                return DefinedResolution.UNKNOWN;
             }
         }
 
@@ -159,24 +199,29 @@ namespace VidHub.Core.Streams
 
     public class VideoStream(IDictionary<string, string> metadata) : MediaStream(metadata)
     {
-        public int Width { get; set; } = metadata.TryGetValue("width", out string? value) && int.TryParse(value, out int widthPixel)
-            ? widthPixel
+        public int Width { get; set; } = metadata.TryGetValue("width", out string? value) && int.TryParse(value, out int result)
+            ? result
             : 0;
-        public int Height { get; set; } = metadata.TryGetValue("height", out string? value) && int.TryParse(value, out int heightPixel)
-            ? heightPixel
+        public int Height { get; set; } = metadata.TryGetValue("height", out string? value) && int.TryParse(value, out int result)
+            ? result
             : 0;
-        public TimeSpan Duration { get; set; } = metadata.TryGetValue("duration", out string? value) && double.TryParse(value, out double durationSeconds)
-                ? TimeSpan.FromSeconds(durationSeconds)
-                : TimeSpan.Zero;
-        public int Bitrate { get; set; } = metadata.TryGetValue("bit_rate", out string? value) && int.TryParse(value, out int bitrateSeconds)
-                ? bitrateSeconds
-                : 0;
-        public int FrameCount { get; set; } = metadata.TryGetValue("nb_frames", out string? value) && int.TryParse(value, out int frameCount)
-                ? frameCount
-                : 0;
-        public string AspectRatio { get; set; } = metadata.TryGetValue("display_aspect_ratio", out string? value) ? value : "n/a";
+        public TimeSpan Duration { get; set; } = metadata.TryGetValue("duration", out string? value) && double.TryParse(value, out double result)
+            ? TimeSpan.FromSeconds(result)
+            : TimeSpan.Zero;
+        public int Bitrate { get; set; } = metadata.TryGetValue("bit_rate", out string? value) && int.TryParse(value, out int result)
+            ? result
+            : 0;
+        public int FrameCount { get; set; } = metadata.TryGetValue("nb_frames", out string? value) && int.TryParse(value, out int result)
+            ? result
+            : 0;
+        public string AspectRatio { get; set; } = metadata.TryGetValue("display_aspect_ratio", out string? value)
+            ? value
+            : "n/a";
         public bool IsDefault { get; set; } = metadata.TryGetValue("disposition.default", out string? value) && value == "1";
         public Framerate Framerate { get; set; } = new Framerate(metadata);
         public Resolution Resolution { get; set; } = new Resolution(metadata);
+
+
+        public VideoStream() : this(new Dictionary<string, string>()) { }
     }
 }

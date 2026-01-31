@@ -12,6 +12,17 @@ using Windows.Storage;
 
 namespace VidHub.Core
 {
+    internal class VideoTemplate
+    {
+        public string Title { get; set; } = string.Empty;
+        public DateTime Date { get; set; }
+        public TimeSpan Duration { get; set; }
+        public string PreviewImagePath { get; set; } = string.Empty;
+        public string FilePath { get; set; } = string.Empty;
+        public VideoMetadata Metadata { get; set; } = new();
+    }
+
+
     public class Video : FocusableObject, ICloneable, IComparable, IComparable<Video>, IComparer, IComparer<Video>, IEqualityComparer<Video>, IEquatable<Video>
     {
         private static int IDProvider = 0;
@@ -40,8 +51,8 @@ namespace VidHub.Core
         public string PreviewImagePath { get => previewImagePath; set => SetFocusedProperty(ref previewImagePath, value); }
         public string FilePath { get => filePath; set => SetFocusedProperty(ref filePath, value); }
         public VideoMetadata Metadata { get => metadata; set => SetFocusedProperty(ref metadata, value); }
-        public DetailedHealth Health { get => health; set => SetFocusedProperty(ref health, value); }
-        public bool LoadingFinished { get => loadingFinished; set => SetFocusedProperty(ref loadingFinished, value); }
+        [JsonIgnore] public DetailedHealth Health { get => health; set => SetFocusedProperty(ref health, value); }
+        [JsonIgnore] public bool LoadingFinished { get => loadingFinished; set => SetFocusedProperty(ref loadingFinished, value); }
 
 
         public Video()
@@ -138,23 +149,36 @@ namespace VidHub.Core
                 return false;
             }
 
-            string json = File.ReadAllText(cachePath);
-            Video? video = JsonSerializer.Deserialize<Video>(json);
-            if (video is null)
+            try
             {
-                logger.LogWarning("Cache deserialized to null for {CachePath}", cachePath);
+                string json = File.ReadAllText(cachePath);
+                JsonSerializerOptions jsonOptions = new()
+                {
+                    NumberHandling = JsonNumberHandling.AllowReadingFromString,
+                    PropertyNameCaseInsensitive = true,
+                };
+                VideoTemplate? video = JsonSerializer.Deserialize<VideoTemplate>(json, jsonOptions);
+                if (video is null)
+                {
+                    logger.LogWarning("Cache deserialized to null for {CachePath}", cachePath);
+                    return false;
+                }
+
+                title = video.Title;
+                date = video.Date;
+                duration = video.Duration;
+                previewImagePath = video.PreviewImagePath;
+                filePath = video.FilePath;
+                metadata = video.Metadata;
+
+                logger.LogDebug("Cache loaded for {Hash}, previewImagePresent={HasPreview}", Hash, !string.IsNullOrEmpty(PreviewImagePath));
+                return !string.IsNullOrEmpty(PreviewImagePath);
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "Exception while loading cache for {CachePath}", cachePath);
                 return false;
             }
-
-            Title = video.Title;
-            Date = video.Date;
-            Duration = video.Duration;
-            PreviewImagePath = video.PreviewImagePath;
-            FilePath = video.FilePath;
-            Metadata = video.Metadata;
-
-            logger.LogDebug("Cache loaded for {Hash}, previewImagePresent={HasPreview}", Hash, !string.IsNullOrEmpty(PreviewImagePath));
-            return !string.IsNullOrEmpty(PreviewImagePath);
         }
         private void SaveCache()
         {

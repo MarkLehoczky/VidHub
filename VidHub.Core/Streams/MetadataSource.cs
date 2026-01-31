@@ -2,6 +2,9 @@
 {
     public class MetadataSource(IDictionary<string, string> metadata)
     {
-        protected IDictionary<string, string> Metadata { get; set; } = metadata;
+        public IDictionary<string, string> Metadata { get; set; } = metadata;
+
+
+        public MetadataSource() : this(new Dictionary<string, string>()) { }
     }
 }

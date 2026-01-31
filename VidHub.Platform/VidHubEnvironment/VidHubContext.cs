@@ -8,9 +8,9 @@ namespace VidHub.Platform.VidHubEnvironment
         public static IHostContext Host { get; set; } = new HostContextTemplate();
         public static ILogger Logger { get; set; } = new LoggerFactory(
         [
-            new ConsoleLoggerProvider(LogLevel.Debug),
-            new LastRunFileLoggerProvider(LogLevel.Trace),
-            new PermanentFileLoggerProvider(LogLevel.Information),
+            //new ConsoleLoggerProvider(LogLevel.Debug),
+            //new LastRunFileLoggerProvider(LogLevel.Trace),
+            //new PermanentFileLoggerProvider(LogLevel.Information),
         ]).CreateLogger("VidHub.Logger");
     }
 }
