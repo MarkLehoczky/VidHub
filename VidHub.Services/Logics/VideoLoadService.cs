@@ -2,27 +2,32 @@
 using VidHub.Core.Notifications;
 using VidHub.Core.Settings;
 using VidHub.Core.Utilities;
-using VidHub.Platform.Environment;
 using VidHub.Services.Base;
 using VidHub.Services.System;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
+using Microsoft.Extensions.Logging;
+using VidHub.Platform.VidHubEnvironment;
 
 namespace VidHub.Services.Logics
 {
     public class VideoLoadService(IVideoService service, IVidHubSettings settings, ISystemManager system) : IVideoLoadService
     {
+        private readonly ILogger logger = VidHubContext.Logger;
         private bool initializedLoadingManager = false;
         private readonly LoadingManager manager = new();
         private Action<string> LoadVideo => file =>
         {
+            logger.LogTrace("LoadVideo action invoked for file={File}", file);
             Video video = new(file);
             video.Load();
             service.Add(video);
+            logger.LogDebug("Video loaded and added: {File}", file);
         };
         private Action<string> UpdateUI => _ =>
         {
+            logger.LogTrace("UpdateUI action invoked");
             system.SetTaskbar(manager);
             service.Update(UpdateSections.ALL);
         };
@@ -39,22 +44,31 @@ namespace VidHub.Services.Logics
 
         public async Task Export()
         {
+            logger.LogTrace("Export called");
             InitLoadingManager();
             StorageFile? file = await FileSaver("Export");
 
             if (file != null)
             {
+                logger.LogDebug("Exporting list to {Path}", file.Path);
                 await FileIO.WriteTextAsync(file, string.Join('\n', service.Select(v => v.FilePath)));
+                logger.LogInformation("Export completed to {Path}", file.Path);
+            }
+            else
+            {
+                logger.LogTrace("Export cancelled by user");
             }
         }
 
         public async Task Import()
         {
+            logger.LogTrace("Import called");
             InitLoadingManager();
             StorageFile? file = await SingleFileOpener("Import");
 
             if (file != null)
             {
+                logger.LogDebug("Importing from {Path}", file.Path);
                 await Task.Run(async () =>
                 {
                     await Task.Run(async () =>
@@ -63,14 +77,20 @@ namespace VidHub.Services.Logics
                         WrapActions<string> collectActions = new(WrapActions<string>.NoAction, UpdateUI);
                         WrapActions<string> loadActions = new(LoadVideo, UpdateUI);
                         await manager.QueueVideoCollecting(files, false, collectActions, loadActions);
+                        logger.LogInformation("Import enqueued {Count} items from {Path}", files.Count, file.Path);
                     });
 
                 });
+            }
+            else
+            {
+                logger.LogTrace("Import cancelled by user");
             }
         }
 
         public async Task LoadItems(IEnumerable<IStorageItem> items, bool includeSubfolders)
         {
+            logger.LogTrace("LoadItems called with includeSubfolders={Include} count={Count}", includeSubfolders, items?.Count() ?? 0);
             InitLoadingManager();
             if (items.Any())
             {
@@ -79,12 +99,18 @@ namespace VidHub.Services.Logics
                     WrapActions<string> collectActions = new(WrapActions<string>.NoAction, UpdateUI);
                     WrapActions<string> loadActions = new(LoadVideo, UpdateUI);
                     await manager.QueueVideoCollecting(items, includeSubfolders, collectActions, loadActions);
+                    logger.LogInformation("LoadItems enqueued {Count} items (includeSubfolders={Include})", items.Count(), includeSubfolders);
                 });
+            }
+            else
+            {
+                logger.LogTrace("LoadItems called with empty items");
             }
         }
 
         public async Task LoadFiles()
         {
+            logger.LogTrace("LoadFiles called");
             InitLoadingManager();
             IReadOnlyList<StorageFile> files = await MultiFileOpener("Load");
 
@@ -95,12 +121,18 @@ namespace VidHub.Services.Logics
                     WrapActions<string> collectActions = new(WrapActions<string>.NoAction, UpdateUI);
                     WrapActions<string> loadActions = new(LoadVideo, UpdateUI);
                     await manager.QueueVideoCollecting(files, false, collectActions, loadActions);
+                    logger.LogInformation("LoadFiles enqueued {Count} files", files.Count);
                 });
+            }
+            else
+            {
+                logger.LogTrace("LoadFiles selection cancelled or no files chosen");
             }
         }
 
         public async Task LoadFolders(bool includeSubfolders)
         {
+            logger.LogTrace("LoadFolders called includeSubfolders={Include}", includeSubfolders);
             InitLoadingManager();
             StorageFolder? folder = await FolderOpener("Load");
 
@@ -111,7 +143,12 @@ namespace VidHub.Services.Logics
                     WrapActions<string> collectActions = new(WrapActions<string>.NoAction, UpdateUI);
                     WrapActions<string> loadActions = new(LoadVideo, UpdateUI);
                     await manager.QueueVideoCollecting([folder], includeSubfolders, collectActions, loadActions);
+                    logger.LogInformation("LoadFolders enqueued folder {Folder} includeSubfolders={Include}", folder.Path, includeSubfolders);
                 });
+            }
+            else
+            {
+                logger.LogTrace("LoadFolders cancelled by user");
             }
         }
 
@@ -126,7 +163,7 @@ namespace VidHub.Services.Logics
             };
             picker.FileTypeFilter.Add(".vhc");
 
-            InitializeWithWindow.Initialize(picker, Context.Window.HWND);
+            InitializeWithWindow.Initialize(picker, VidHubContext.Window.HWND);
             return await picker.PickSingleFileAsync();
         }
 
@@ -143,7 +180,7 @@ namespace VidHub.Services.Logics
                 picker.FileTypeFilter.Add(filter);
             }
 
-            InitializeWithWindow.Initialize(picker, Context.Window.HWND);
+            InitializeWithWindow.Initialize(picker, VidHubContext.Window.HWND);
             return await picker.PickMultipleFilesAsync();
         }
 
@@ -156,7 +193,7 @@ namespace VidHub.Services.Logics
                 ViewMode = PickerViewMode.Thumbnail
             };
 
-            InitializeWithWindow.Initialize(picker, Context.Window.HWND);
+            InitializeWithWindow.Initialize(picker, VidHubContext.Window.HWND);
             return await picker.PickSingleFolderAsync();
         }
 
@@ -172,7 +209,7 @@ namespace VidHub.Services.Logics
             };
             picker.FileTypeChoices.Add("VidHub Collection", [".vhc"]);
 
-            InitializeWithWindow.Initialize(picker, Context.Window.HWND);
+            InitializeWithWindow.Initialize(picker, VidHubContext.Window.HWND);
             return await picker.PickSaveFileAsync();
         }
 
@@ -193,17 +230,20 @@ namespace VidHub.Services.Logics
 
         private void InitLoadingManager()
         {
+            logger.LogTrace("InitLoadingManager called, initializedLoadingManager={Initialized}", initializedLoadingManager);
             if (initializedLoadingManager)
             {
+                logger.LogTrace("InitLoadingManager already initialized, returning");
                 return;
             }
 
             initializedLoadingManager = true;
             manager.LoadingFinished += async () =>
             {
+                logger.LogDebug("LoadingFinished event handler invoked");
                 if (!settings.Dialogs.TitleFormat.HideTitleFormatDialog)
                 {
-                    _ = Context.Window;
+                    _ = VidHubContext.Window;
                 }
                 SystemNotification notification = new()
                 {
@@ -212,12 +252,13 @@ namespace VidHub.Services.Logics
                     Severity = NotificationSeverity.SUCCESS
                 };
                 notification.Display();
+                logger.LogDebug("Displayed loading finished notification");
                 system.SetTaskbar(manager);
                 service.Update(UpdateSections.SIDEPANEL);
                 service.Update(UpdateSection.VIDEOCOLLECTION);
                 if (!settings.Dialogs.TitleFormat.HideTitleFormatDialog)
                 {
-                    await Context.Window.OpenActiveTitleFormatDialog();
+                    await VidHubContext.Window.OpenActiveTitleFormatDialog();
                 }
             };
         }

@@ -1,21 +1,25 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using VidHub.Platform.Environment;
+using Microsoft.Extensions.Logging;
+using VidHub.Platform.VidHubEnvironment;
 
 namespace VidHub.Core.Utilities.Internal
 {
     public class FocusableObject : ObservableObject
     {
+        private readonly ILogger logger = VidHubContext.Logger;
+
         protected virtual bool SetFocusedProperty<T>([NotNullIfNotNull(nameof(newValue))] ref T field, T newValue, [CallerMemberName] string? propertyName = null)
         {
             if (EqualityComparer<T>.Default.Equals(field, newValue))
             {
+                logger.LogTrace("SetFocusedProperty no change for {Property}", propertyName);
                 return false;
             }
             try
             {
-                _ = Context.Window.TryEnqueue(() =>
+                _ = VidHubContext.Window.TryEnqueue(() =>
                 {
                     OnPropertyChanging(propertyName);
                 });
@@ -24,12 +28,13 @@ namespace VidHub.Core.Utilities.Internal
             field = newValue;
             try
             {
-                _ = Context.Window.TryEnqueue(() =>
+                _ = VidHubContext.Window.TryEnqueue(() =>
                 {
                     OnPropertyChanged(propertyName);
                 });
             }
             catch { }
+            logger.LogTrace("SetFocusedProperty changed {Property}", propertyName);
             return true;
         }
     }

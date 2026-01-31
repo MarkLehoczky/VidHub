@@ -3,6 +3,8 @@ using System.Globalization;
 using VidHub.Core.Models;
 using VidHub.Core.Settings;
 using VidHub.Core.Streams;
+using Microsoft.Extensions.Logging;
+using VidHub.Platform.VidHubEnvironment;
 
 namespace VidHub.Core.Utilities.Internal
 {
@@ -18,6 +20,7 @@ namespace VidHub.Core.Utilities.Internal
 
     internal class VideoProcessor(Video video)
     {
+        private readonly ILogger logger = VidHubContext.Logger;
         // TODO: Implement actual executable path finding
         private const string ffmpegPath = "ffmpeg";
         private const string ffprobePath = "ffprobe";
@@ -26,7 +29,12 @@ namespace VidHub.Core.Utilities.Internal
 
         public VideoMetadata ProcessMetadata()
         {
+            logger.LogTrace("ProcessMetadata entered for file={File}", video.FilePath);
             Dictionary<string, string> metadata = ExtractMetadata();
+            if (metadata == null || metadata.Count == 0)
+            {
+                logger.LogWarning("No metadata extracted for file={File}", video.FilePath);
+            }
             IEnumerable<IDictionary<string, string>> streams = metadata
                 .Where(kv => kv.Key.StartsWith("streams.stream"))
                 .GroupBy(kv => kv.Key[15..].Split('.')[0])
@@ -52,6 +60,8 @@ namespace VidHub.Core.Utilities.Internal
                     && !dict["codec_type"].Contains("subtitle", StringComparison.OrdinalIgnoreCase))
                 .Select(s => new MediaStream(s));
 
+            logger.LogDebug("Metadata parsed: videoStreams={VideoCount} audioStreams={AudioCount} subtitleStreams={SubtitleCount} unknownStreams={UnknownCount}", videoStreams.Count(), audioStreams.Count(), subtitleStreams.Count(), unknownStreams.Count());
+
             return new VideoMetadata
             {
                 Format = format,
@@ -68,12 +78,14 @@ namespace VidHub.Core.Utilities.Internal
         }
         public HealthState HealthCheck(HealthType type)
         {
+            logger.LogTrace("HealthCheck entered for file={File} with type={Type}", video.FilePath, type);
             HealthState state = HealthState.NOTCHECKED;
             try
             {
                 if (type == HealthType.QUICKCHECK)
                 {
                     timeout = TimeSpan.FromSeconds(5);
+                    logger.LogDebug("Quick check selected, timeout set to {Timeout}", timeout);
                     state = RunProcess(ffmpegPath, "-v", "fatal", "-i", video.FilePath, "-frames:v", "1", "-f", "null", "-").Failure
                         ? HealthState.CRITICALCORRUPTION
                         : RunProcess(ffmpegPath, "-v", "error", "-i", video.FilePath, "-frames:v", "1", "-f", "null", "-").Failure
@@ -85,6 +97,7 @@ namespace VidHub.Core.Utilities.Internal
                 else if (type == HealthType.FULLCHECK)
                 {
                     timeout = TimeSpan.FromMinutes(5);
+                    logger.LogDebug("Full check selected, timeout set to {Timeout}", timeout);
                     state = RunProcess(ffmpegPath, "-v", "fatal", "-i", video.FilePath, "-f", "null", "-").Failure
                         ? HealthState.CRITICALCORRUPTION
                         : RunProcess(ffmpegPath, "-v", "error", "-i", video.FilePath, "-f", "null", "-").Failure
@@ -94,52 +107,64 @@ namespace VidHub.Core.Utilities.Internal
                                 : HealthState.HEALTHY;
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                logger.LogError(ex, "Exception during HealthCheck for file={File}", video.FilePath);
                 state = HealthState.UNKNOWNERROR;
             }
             finally
             {
                 timeout = TimeSpan.FromSeconds(10);
+                logger.LogDebug("HealthCheck finished with state={State}", state);
             }
             return state;
         }
 
         public bool ExtractEmbeddedImage(out string? previewImagePath)
         {
+            logger.LogTrace("ExtractEmbeddedImage entered for file={File}", video.FilePath);
             string previewDirectory = Path.Combine(Path.GetTempPath(), "VidHub", "Previews");
             string previewPath = Path.Combine(previewDirectory, video.Hash + ".jpg");
             _ = Directory.CreateDirectory(previewDirectory);
 
             ProcessResult result = TryRunProcess(ffmpegPath, "-v", "error", "-y", "-i", video.FilePath, "-map", "0:v", "-map", "-0:V", "-c", "copy", previewPath);
             previewImagePath = File.Exists(previewPath) ? previewPath : null;
+            logger.LogDebug("ExtractEmbeddedImage result successful={Success} path={Path}", result.Successful, previewImagePath);
             return result.Successful && previewImagePath != null;
         }
         public bool GeneratePreviewImage(out string? previewImagePath)
         {
+            logger.LogTrace("GeneratePreviewImage entered for file={File}", video.FilePath);
             string previewDirectory = Path.Combine(Path.GetTempPath(), "VidHub", "Previews");
             string previewPath = Path.Combine(previewDirectory, video.Hash + ".jpg");
             _ = Directory.CreateDirectory(previewDirectory);
 
             ProcessResult result = TryRunProcess(ffmpegPath, "-v", "error", "-y", "-ss", VidHubSettings.Instance.GetPreviewImageTime(video).TotalSeconds.ToString(CultureInfo.InvariantCulture), "-i", video.FilePath, "-frames:v", "1", previewPath);
             previewImagePath = File.Exists(previewPath) ? previewPath : null;
+            logger.LogDebug("GeneratePreviewImage result successful={Success} path={Path}", result.Successful, previewImagePath);
             return result.Successful && previewImagePath != null;
         }
         public bool ProcessPreviewImage(out string? previewImagePath)
         {
-            return VidHubSettings.Instance.Dialogs.PreviewImageFormat.ExtractEmbeddedImage
+            logger.LogTrace("ProcessPreviewImage entered for file={File}", video.FilePath);
+            bool result = VidHubSettings.Instance.Dialogs.PreviewImageFormat.ExtractEmbeddedImage
                 ? ExtractEmbeddedImage(out previewImagePath) || GeneratePreviewImage(out previewImagePath)
                 : GeneratePreviewImage(out previewImagePath);
+            logger.LogDebug("ProcessPreviewImage overall result={Result} path={Path}", result, previewImagePath);
+            return result;
         }
 
 
         private Dictionary<string, string> ExtractMetadata()
         {
+            logger.LogTrace("ExtractMetadata entered for file={File}", video.FilePath);
             ProcessResult result = TryRunProcess(ffprobePath, "-v", "error", "-print_format", "flat", "-show_format", "-show_streams", video.FilePath);
             if (!result.Successful)
             {
-                return [];
+                logger.LogWarning("ffprobe failed for file={File}. Error={Error}", video.FilePath, result.StandardError);
+                return new Dictionary<string, string>();
             }
+            logger.LogDebug("ffprobe output length={Length}", result.StandardOutput?.Length ?? 0);
             return result.StandardOutput
                 .Split('\n')
                 .Select(line => line.Split('=', 2))
@@ -149,6 +174,7 @@ namespace VidHub.Core.Utilities.Internal
 
         private ProcessResult RunProcess(string executable, params string[] arguments)
         {
+            logger.LogTrace("RunProcess starting executable={Executable} args={ArgCount}", executable, arguments.Length);
             using Process process = new();
             process.StartInfo.FileName = executable;
             process.StartInfo.CreateNoWindow = true;
@@ -167,9 +193,11 @@ namespace VidHub.Core.Utilities.Internal
             if (!process.WaitForExit(timeout))
             {
                 process.Kill();
+                logger.LogWarning("Process {ProcessName} (pid={Pid}) timed out after {Timeout}", process.ProcessName, process.Id, timeout);
                 throw new TimeoutException($"Process `{process.ProcessName} [{process.Id}]` timed out after {process.TotalProcessorTime} ms.");
             }
 
+            logger.LogDebug("Process finished with exit code={ExitCode}", process.ExitCode);
             return new ProcessResult(process.ExitCode, outputTask.Result, errorTask.Result);
         }
         private ProcessResult TryRunProcess(string executable, params string[] arguments)
@@ -180,6 +208,7 @@ namespace VidHub.Core.Utilities.Internal
             }
             catch (Exception ex)
             {
+                logger.LogWarning(ex, "Process execution failed for executable={Executable}", executable);
                 return new ProcessResult(int.MinValue, $"`{ex.GetType().Name}` exception was thrown.", ex.Message);
             }
         }
