@@ -1,10 +1,9 @@
 ﻿using System.Text.Json.Serialization;
 using VidHub.Core.Streams;
-using VidHub.Core.Utilities.Internal;
 
 namespace VidHub.Core.Models
 {
-    public class VideoMetadata : FocusableObject
+    public class VideoMetadata
     {
         private VideoFormat? format = null;
         private IEnumerable<VideoStream> videoStreams = [];
@@ -12,13 +11,13 @@ namespace VidHub.Core.Models
         private IEnumerable<SubtitleStream> subtitleStreams = [];
         private IEnumerable<MediaStream> unknownStreams = [];
 
-        public VideoFormat? Format { get => format; set => SetFocusedProperty(ref format, value); }
+        public VideoFormat? Format { get => format; set => format = value; }
         public IEnumerable<VideoStream> VideoStreams
         {
             get => videoStreams;
             set
             {
-                _ = SetFocusedProperty(ref videoStreams, value);
+                videoStreams = value ?? [];
                 DefaultVideoStream = videoStreams.FirstOrDefault(s => s.IsDefault) ?? videoStreams.FirstOrDefault();
             }
         }
@@ -27,13 +26,16 @@ namespace VidHub.Core.Models
             get => audioStreams;
             set
             {
-                _ = SetFocusedProperty(ref audioStreams, value);
+                audioStreams = value ?? [];
                 DefaultAudioStream = audioStreams.FirstOrDefault(s => s.IsDefault) ?? audioStreams.FirstOrDefault();
             }
         }
-        public IEnumerable<SubtitleStream> SubtitleStreams { get => subtitleStreams; set => SetFocusedProperty(ref subtitleStreams, value); }
-        public IEnumerable<MediaStream> UnknownStreams { get => unknownStreams; set => SetFocusedProperty(ref unknownStreams, value); }
+        public IEnumerable<SubtitleStream> SubtitleStreams { get => subtitleStreams; set => subtitleStreams = value ?? []; }
+        public IEnumerable<MediaStream> UnknownStreams { get => unknownStreams; set => unknownStreams = value ?? []; }
+
         [JsonIgnore] public VideoStream? DefaultVideoStream { get; private set; } = null;
         [JsonIgnore] public AudioStream? DefaultAudioStream { get; private set; } = null;
+
+        public VideoMetadata() { }
     }
 }

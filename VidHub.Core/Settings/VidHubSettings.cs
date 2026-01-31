@@ -2,9 +2,8 @@
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using VidHub.Core.Notifications;
+using VidHub.Core.Streams;
 using VidHub.Platform.VidHubEnvironment;
-using static VidHub.Core.Streams.Framerate;
-using static VidHub.Core.Streams.Resolution;
 
 namespace VidHub.Core.Settings
 {
