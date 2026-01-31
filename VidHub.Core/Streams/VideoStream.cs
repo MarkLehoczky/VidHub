@@ -67,25 +67,13 @@ namespace VidHub.Core.Streams
             {
                 Definition = DefinedFramerate.FPS30;
             }
-            else if (Value >= 24.0)
-            {
-                Definition = DefinedFramerate.FPS24;
-            }
-            else if (Value >= 20.0)
-            {
-                Definition = DefinedFramerate.FPS20;
-            }
-            else if (Value >= 12.0)
-            {
-                Definition = DefinedFramerate.FPS12;
-            }
-            else if (Value > 0.0)
-            {
-                Definition = DefinedFramerate.LOW;
-            }
             else
             {
-                Definition = DefinedFramerate.UNKNOWN;
+                Definition = Value >= 24.0
+                    ? DefinedFramerate.FPS24
+                    : Value >= 20.0
+                    ? DefinedFramerate.FPS20
+                    : Value >= 12.0 ? DefinedFramerate.FPS12 : Value > 0.0 ? DefinedFramerate.LOW : DefinedFramerate.UNKNOWN;
             }
         }
 
@@ -142,25 +130,13 @@ namespace VidHub.Core.Streams
             {
                 Definition = DefinedResolution.QHD;
             }
-            else if (Value >= 1920 * 1080)
-            {
-                Definition = DefinedResolution.FHD;
-            }
-            else if (Value >= 1280 * 720)
-            {
-                Definition = DefinedResolution.HD;
-            }
-            else if (Value >= 720 * 480)
-            {
-                Definition = DefinedResolution.SD;
-            }
-            else if (Value > 0)
-            {
-                Definition = DefinedResolution.LOW;
-            }
             else
             {
-                Definition = DefinedResolution.UNKNOWN;
+                Definition = Value >= 1920 * 1080
+                    ? DefinedResolution.FHD
+                    : Value >= 1280 * 720
+                    ? DefinedResolution.HD
+                    : Value >= 720 * 480 ? DefinedResolution.SD : Value > 0 ? DefinedResolution.LOW : DefinedResolution.UNKNOWN;
             }
         }
 

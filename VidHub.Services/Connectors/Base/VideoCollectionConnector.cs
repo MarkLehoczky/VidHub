@@ -1,15 +1,15 @@
-﻿using System.Collections.ObjectModel;
+﻿using Microsoft.Extensions.Logging;
+using System.Collections.ObjectModel;
 using VidHub.Core;
 using VidHub.Core.Notifications;
 using VidHub.Core.Settings;
+using VidHub.Platform.VidHubEnvironment;
 using VidHub.Services.Base;
 using VidHub.Services.Logics;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.System;
-using Microsoft.Extensions.Logging;
-using VidHub.Platform.VidHubEnvironment;
 
 namespace VidHub.Services.Connectors.Base
 {

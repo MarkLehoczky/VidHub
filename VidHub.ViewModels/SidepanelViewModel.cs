@@ -1,14 +1,14 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using VidHub.Core.Utilities;
-using VidHub.Services.Connectors.Base;
 using Microsoft.Extensions.Logging;
+using VidHub.Core.Utilities;
 using VidHub.Platform.VidHubEnvironment;
+using VidHub.Services.Connectors.Base;
 
 namespace VidHub.ViewModels
 {
     public partial class SidePanelViewModel(ISidePanelConnector connector) : ViewModelTemplate(connector)
     {
-        private readonly ILogger logger = VidHubContext.Logger;
+        private new readonly ILogger logger = VidHubContext.Logger;
         public SidePanelViewModel() : this(VidHubContext.Host.GetService<ISidePanelConnector>()) { }
 
 

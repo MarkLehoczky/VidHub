@@ -1,9 +1,9 @@
-﻿using System.Diagnostics;
+﻿using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 using System.Globalization;
 using VidHub.Core.Models;
 using VidHub.Core.Settings;
 using VidHub.Core.Streams;
-using Microsoft.Extensions.Logging;
 using VidHub.Platform.VidHubEnvironment;
 
 namespace VidHub.Core.Utilities.Internal
@@ -162,7 +162,7 @@ namespace VidHub.Core.Utilities.Internal
             if (!result.Successful)
             {
                 logger.LogWarning("ffprobe failed for file={File}. Error={Error}", video.FilePath, result.StandardError);
-                return new Dictionary<string, string>();
+                return [];
             }
             logger.LogDebug("ffprobe output length={Length}", result.StandardOutput?.Length ?? 0);
             return result.StandardOutput

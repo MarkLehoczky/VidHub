@@ -11,7 +11,7 @@ namespace VidHub.Services.Connectors.Dialogs
         public int FixedMilliseconds { get => settings.Dialogs.PreviewImageFormat.FixedMilliseconds; set => settings.Dialogs.PreviewImageFormat.FixedMilliseconds = value; }
 
         public int RelativePercentage { get => settings.Dialogs.PreviewImageFormat.RelativePercentage; set => settings.Dialogs.PreviewImageFormat.RelativePercentage = value; }
-        
+
         public bool RelativePosition { get => settings.Dialogs.PreviewImageFormat.RelativePosition; set => settings.Dialogs.PreviewImageFormat.RelativePosition = value; }
         public bool ExtractEmbeddedImage { get => settings.Dialogs.PreviewImageFormat.ExtractEmbeddedImage; set => settings.Dialogs.PreviewImageFormat.ExtractEmbeddedImage = value; }
     }

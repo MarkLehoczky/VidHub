@@ -1,9 +1,9 @@
-﻿using System.Collections.Concurrent;
+﻿using Microsoft.Extensions.Logging;
+using System.Collections.Concurrent;
 using System.Data;
 using VidHub.Core.Settings;
-using Windows.Storage;
-using Microsoft.Extensions.Logging;
 using VidHub.Platform.VidHubEnvironment;
+using Windows.Storage;
 
 namespace VidHub.Core.Utilities
 {

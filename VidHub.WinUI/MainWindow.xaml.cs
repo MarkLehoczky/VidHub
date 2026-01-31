@@ -1,6 +1,6 @@
+using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using VidHub.Core.Settings;
-using Microsoft.Extensions.Logging;
 
 namespace VidHub.WinUI
 {

@@ -1,15 +1,15 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.Logging;
 using VidHub.Core.Data;
 using VidHub.Core.Utilities;
-using VidHub.Services.Connectors.Base;
-using Microsoft.Extensions.Logging;
 using VidHub.Platform.VidHubEnvironment;
+using VidHub.Services.Connectors.Base;
 
 namespace VidHub.ViewModels
 {
     public partial class TitleBarViewModel(ITitleBarConnector connector) : ViewModelTemplate(connector)
     {
-        private readonly ILogger logger = VidHubContext.Logger;
+        private new readonly ILogger logger = VidHubContext.Logger;
 
         public TitleBarViewModel() : this(VidHubContext.Host.GetService<ITitleBarConnector>()) { }
 

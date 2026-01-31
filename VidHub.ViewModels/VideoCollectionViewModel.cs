@@ -1,17 +1,17 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
 using VidHub.Core;
 using VidHub.Core.Notifications;
 using VidHub.Core.Utilities;
-using VidHub.Services.Connectors.Base;
-using Microsoft.Extensions.Logging;
 using VidHub.Platform.VidHubEnvironment;
+using VidHub.Services.Connectors.Base;
 
 namespace VidHub.ViewModels
 {
     public partial class VideoCollectionViewModel(IVideoCollectionConnector connector) : ViewModelTemplate(connector)
     {
-        private readonly ILogger logger = VidHubContext.Logger;
+        private new readonly ILogger logger = VidHubContext.Logger;
 
         public VideoCollectionViewModel() : this(VidHubContext.Host.GetService<IVideoCollectionConnector>()) { }
 
@@ -68,7 +68,7 @@ namespace VidHub.ViewModels
             logger.LogTrace("RenameAsync invoked for {File}", video.FilePath);
             await connector.Rename(video);
         }
-        
+
         [RelayCommand]
         private async Task RemoveAsync(Video video)
         {

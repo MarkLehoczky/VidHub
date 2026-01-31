@@ -1,10 +1,10 @@
-﻿using System.Collections.ObjectModel;
+﻿using Microsoft.Extensions.Logging;
+using System.Collections.ObjectModel;
 using VidHub.Core;
 using VidHub.Core.Notifications;
 using VidHub.Core.Utilities;
-using VidHub.Services.Base;
-using Microsoft.Extensions.Logging;
 using VidHub.Platform.VidHubEnvironment;
+using VidHub.Services.Base;
 
 namespace VidHub.Services.Logics
 {

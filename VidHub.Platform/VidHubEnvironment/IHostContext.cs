@@ -1,4 +1,4 @@
-﻿namespace VidHub.Platform.VidHubEnvironment
+namespace VidHub.Platform.VidHubEnvironment
 {
     public interface IHostContext
     {

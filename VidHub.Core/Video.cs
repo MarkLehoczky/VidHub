@@ -121,7 +121,7 @@ namespace VidHub.Core
                     ? Metadata.Format.Duration
                     : TimeSpan.Zero;
             logger.LogDebug("Computed Date={Date} Duration={Duration} for {File}", Date, Duration, FilePath);
-            ProcessPreviewImage();
+            _ = ProcessPreviewImage();
             SaveCache();
             logger.LogInformation("Load completed for {File}", FilePath);
         }

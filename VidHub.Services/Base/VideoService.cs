@@ -1,12 +1,10 @@
-﻿using System.Collections;
-using System.Diagnostics;
+﻿using Microsoft.Extensions.Logging;
+using System.Collections;
 using VidHub.Core;
 using VidHub.Core.Data;
 using VidHub.Core.Notifications;
 using VidHub.Core.Settings;
 using VidHub.Core.Utilities;
-using Microsoft.Extensions.Logging;
-using System.Linq;
 using VidHub.Platform.VidHubEnvironment;
 
 namespace VidHub.Services.Base

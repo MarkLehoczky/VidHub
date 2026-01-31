@@ -1,8 +1,8 @@
-﻿using VidHub.Core.Utilities;
+﻿using Microsoft.Extensions.Logging;
+using VidHub.Core.Utilities;
+using VidHub.Platform.VidHubEnvironment;
 using VidHub.Platform.Windows;
 using VidHub.Platform.Windows.Taskbar.Enums;
-using Microsoft.Extensions.Logging;
-using VidHub.Platform.VidHubEnvironment;
 
 namespace VidHub.Services.System
 {

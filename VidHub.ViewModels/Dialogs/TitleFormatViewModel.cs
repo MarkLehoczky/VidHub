@@ -1,13 +1,13 @@
-﻿using VidHub.Core.Utilities;
-using VidHub.Services.Connectors.Dialogs;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using VidHub.Core.Utilities;
 using VidHub.Platform.VidHubEnvironment;
+using VidHub.Services.Connectors.Dialogs;
 
 namespace VidHub.ViewModels.Dialogs
 {
     public partial class TitleFormatViewModel(ITitleFormatConnector connector) : ViewModelTemplate(connector)
     {
-        private readonly ILogger logger = VidHubContext.Logger;
+        private new readonly ILogger logger = VidHubContext.Logger;
         public ITitleFormatConnector Connector { get; set; } = connector;
 
         public TitleFormatViewModel() : this(VidHubContext.Host.GetService<ITitleFormatConnector>())
