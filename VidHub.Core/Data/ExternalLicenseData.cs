@@ -40,6 +40,12 @@ namespace VidHub.Core.Data
             License = "MIT License",
             Hyperlink = "https://github.com/dotnet/runtime?tab=MIT-1-ov-file#",
         };
+        public static ExternalLicense Microsoft_Extensions_Logging => new()
+        {
+            Module = "Microsoft.Extensions.Logging",
+            License = "MIT License",
+            Hyperlink = "https://github.com/dotnet/runtime?tab=MIT-1-ov-file#",
+        };
         public static ExternalLicense Microsoft_Toolkit_Uwp_Notifications => new()
         {
             Module = "Microsoft.Toolkit.Uwp.Notifications",

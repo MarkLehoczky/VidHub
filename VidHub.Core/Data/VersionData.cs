@@ -4,7 +4,39 @@ namespace VidHub.Core.Data
 {
     public class VersionData
     {
-        public static string CurrentVersion => "VidHub 0.5.0";
+        public static string CurrentVersion => "VidHub 0.6.0";
+        public static VersionInformation Version_0_6_0 => new()
+        {
+            Version = "0.6.0",
+            ReleaseDate = new DateTime(2026, 02, 01),
+            NewFeatures = [
+                "Implemented licensing modal",
+                "Implemented verioning modal",
+                "Implemented periodic video health check",
+                "Extended periodic video health check with selectable depth",
+                "New notification based on video collection health",
+                "New notification for large cache size",
+                "Implemented framerate- and resolution displaying",
+                "Added framerate- and resolution based filtering options",
+                "Configured framerate- and resolution display optional setting",
+                "Improved and extended existing ordering element",
+            ],
+            BugFixes = [
+                "Handle potential displathing exceptions",
+                "Fixed parallel loading instance initialization issue",
+                "Fixed long video title overstretching issue",
+                "Fixed taskbar unfinished loading state",
+                "Fixed stuck cache loading state",
+            ],
+            InternalChanges = [
+                "Detailed logging implementation",
+                "Improved video loading logic",
+                "Code cleanup",
+                "Updated license year",
+                "Reorganize update handling",
+                "Update README.md",
+            ],
+        };
         public static VersionInformation Version_0_5_0 => new()
         {
             Version = "0.5.0",

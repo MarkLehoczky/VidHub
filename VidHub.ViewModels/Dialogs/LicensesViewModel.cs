@@ -18,6 +18,7 @@ namespace VidHub.ViewModels.Dialogs
             ExternalLicenseData.CommunityToolkit_Mvvm,
             ExternalLicenseData.Microsoft_Extensions_DependencyInjection,
             ExternalLicenseData.Microsoft_Extensions_Hosting,
+            ExternalLicenseData.Microsoft_Extensions_Logging,
             ExternalLicenseData.Microsoft_Toolkit_Uwp_Notifications,
             ExternalLicenseData.Microsoft_Windows_SDK_BuildTools,
             ExternalLicenseData.Microsoft_WindowsAppSDK,
