@@ -25,24 +25,58 @@
                 <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
 
-            <StackPanel Grid.Row="0">
-                <ComboBox x:Name="searchbox" SelectedItem="{Binding SortBy, Mode=TwoWay}" ItemsSource="{Binding SortOptions}" PlaceholderText="Sort by" Margin="0 0 0 5" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" />
-                <AutoSuggestBox Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding SearchSuggestions}"  QueryIcon="{Binding UseRealTimeSearch, Converter={StaticResource SearchIcon}}" MaxWidth="{Binding ActualWidth, ElementName=searchbox}" QuerySubmitted="UpdateTextFilter" MaxSuggestionListHeight="206" PlaceholderText="Search for a title" Margin="0 5 0 5" HorizontalAlignment="Stretch" />
+            <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" Grid.Row="0">
+                <StackPanel>
+                    <Grid x:Name="sidepanel" HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="auto" />
+                        </Grid.ColumnDefinitions>
+                        <ComboBox SelectedItem="{Binding SortBy, Mode=TwoWay}" ItemsSource="{Binding SortOptions}" PlaceholderText="Sort by" Margin="0 0 5 5" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Grid.Column="0" />
+                        <Button Content="{Binding Orientation}" Command="{Binding ChangeOrientationCommand}" Margin="5 0 0 5" Grid.Column="1" />
+                    </Grid>
+                    <AutoSuggestBox Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding SearchSuggestions}"  QueryIcon="{Binding UseRealTimeSearch, Converter={StaticResource SearchIcon}}" MaxWidth="{Binding ActualWidth, ElementName=sidepanel}" QuerySubmitted="UpdateTextFilter" MaxSuggestionListHeight="206" PlaceholderText="Search for a title" Margin="0 5 0 5" HorizontalAlignment="Stretch" />
 
-                <Grid HorizontalAlignment="Stretch">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
-                    <ToggleButton Content="FILTER DATE" IsChecked="{Binding FilterDate, Mode=TwoWay}" Margin="0 5 5 5" HorizontalAlignment="Stretch" Grid.Column="0" />
-                    <ToggleButton Content="FILTER DURATION" IsChecked="{Binding FilterDuration, Mode=TwoWay}" Margin="5 5 0 5" HorizontalAlignment="Stretch" Grid.Column="1" />
-                </Grid>
+                    <Grid HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <ToggleButton Content="FILTER DATE" IsChecked="{Binding FilterDate, Mode=TwoWay}" Margin="0 5 5 5" HorizontalAlignment="Stretch" Grid.Column="0" />
+                        <ToggleButton Content="FILTER DURATION" IsChecked="{Binding FilterDuration, Mode=TwoWay}" Margin="5 5 0 5" HorizontalAlignment="Stretch" Grid.Column="1" />
+                    </Grid>
 
-                <DatePicker Header="Start date" SelectedDate="{Binding StartDate, Mode=TwoWay}" IsEnabled="{Binding FilterDate}" Margin="0 10 0 5" HorizontalAlignment="Stretch" />
-                <DatePicker Header="End date" SelectedDate="{Binding EndDate, Mode=TwoWay}" IsEnabled="{Binding FilterDate}" Margin="0 5 0 10" HorizontalAlignment="Stretch" />
-                <TimePicker Header="Minimum duration" SelectedTime="{Binding MinDuration, Mode=TwoWay}" IsEnabled="{Binding FilterDuration}" ClockIdentifier="24HourClock" Margin="0 10 0 5" HorizontalAlignment="Stretch" />
-                <TimePicker Header="Maximum duration" SelectedTime="{Binding MaxDuration, Mode=TwoWay}" IsEnabled="{Binding FilterDuration}" ClockIdentifier="24HourClock" Margin="0 5 0 0" HorizontalAlignment="Stretch" />
-            </StackPanel>
+                    <DatePicker Header="Start date" SelectedDate="{Binding StartDate, Mode=TwoWay}" IsEnabled="{Binding FilterDate}" Margin="0 10 0 5" HorizontalAlignment="Stretch" />
+                    <DatePicker Header="End date" SelectedDate="{Binding EndDate, Mode=TwoWay}" IsEnabled="{Binding FilterDate}" Margin="0 5 0 10" HorizontalAlignment="Stretch" />
+                    <TimePicker Header="Minimum duration" SelectedTime="{Binding MinDuration, Mode=TwoWay}" IsEnabled="{Binding FilterDuration}" ClockIdentifier="24HourClock" Margin="0 10 0 5" HorizontalAlignment="Stretch" />
+                    <TimePicker Header="Maximum duration" SelectedTime="{Binding MaxDuration, Mode=TwoWay}" IsEnabled="{Binding FilterDuration}" ClockIdentifier="24HourClock" Margin="0 5 0 10" HorizontalAlignment="Stretch" />
+
+                    <Grid Margin="0 5 0 10" HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <ToggleButton Content="2160p" IsChecked="{Binding DisplayMaximumResolutionVideos, Mode=TwoWay}" Margin="0 5 5 5" HorizontalAlignment="Stretch" Grid.Row="0" Grid.Column="0" />
+                        <ToggleButton Content="1440p" IsChecked="{Binding DisplayLargeResolutionVideos, Mode=TwoWay}" Margin="5 5 5 5" HorizontalAlignment="Stretch" Grid.Row="0" Grid.Column="1" />
+                        <ToggleButton Content="1080p" IsChecked="{Binding DisplayMediumResolutionVideos, Mode=TwoWay}" Margin="5 5 5 5" HorizontalAlignment="Stretch" Grid.Row="0" Grid.Column="2" />
+                        <ToggleButton Content="720p" IsChecked="{Binding DisplayLowResolutionVideos, Mode=TwoWay}" Margin="5 5 5 5" HorizontalAlignment="Stretch" Grid.Row="0" Grid.Column="3" />
+                        <ToggleButton Content="Low" IsChecked="{Binding DisplayMinimumResolutionVideos, Mode=TwoWay}" Margin="5 5 0 5" HorizontalAlignment="Stretch" Grid.Row="0" Grid.Column="4" />
+
+                        <ToggleButton Content="120fps" IsChecked="{Binding DisplayMaximumFramerateVideos, Mode=TwoWay}" Margin="0 5 5 5" HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="0" />
+                        <ToggleButton Content="60fps" IsChecked="{Binding DisplayLargeFramerateVideos, Mode=TwoWay}" Margin="5 5 5 5" HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="1" />
+                        <ToggleButton Content="30fps" IsChecked="{Binding DisplayMediumFramerateVideos, Mode=TwoWay}" Margin="5 5 5 5" HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="2" />
+                        <ToggleButton Content="20fps" IsChecked="{Binding DisplayLowFramerateVideos, Mode=TwoWay}" Margin="5 5 5 5" HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="3" />
+                        <ToggleButton Content="Low" IsChecked="{Binding DisplayMinimumFramerateVideos, Mode=TwoWay}" Margin="5 5 0 5" HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="4" />
+                    </Grid>
+                </StackPanel>
+            </ScrollViewer>
 
             <Border Visibility="{Binding HasActiveTransfer}" Background="{ThemeResource ControlFillColorDefaultBrush}" BorderBrush="{ThemeResource ControlElevationBorderBrush}" CornerRadius="{ThemeResource ControlCornerRadius}" BorderThickness="1" Padding="10" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Grid.Row="1">
                 <StackPanel>

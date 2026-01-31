@@ -1,11 +1,15 @@
 ﻿using VidHub.Core.Settings;
 using VidHub.Core.Utilities;
 using VidHub.Services.Base;
+using Microsoft.Extensions.Logging;
+using VidHub.Platform.VidHubEnvironment;
 
 namespace VidHub.Services.Connectors.Dialogs
 {
     public class DisplayFormatConnector(IVideoService vs, IVidHubSettings settings) : ConnectorTemplate(vs), IDisplayFormatConnector
     {
+        private readonly ILogger logger = VidHubContext.Logger;
+
         public string DateFormat
         {
             get => settings.Dialogs.DisplayFormat.DateFormat;
@@ -13,6 +17,7 @@ namespace VidHub.Services.Connectors.Dialogs
             {
                 settings.Dialogs.DisplayFormat.DateFormat = value;
                 vs.Update(UpdateSection.VIDEOCOLLECTION);
+                logger.LogDebug("DateFormat set to {Format}", value);
             }
         }
 
@@ -23,6 +28,7 @@ namespace VidHub.Services.Connectors.Dialogs
             {
                 settings.Dialogs.DisplayFormat.DurationDayFormat = value;
                 vs.Update(UpdateSection.VIDEOCOLLECTION);
+                logger.LogDebug("DurationDayFormat set to {Format}", value);
             }
         }
         public string DurationHourFormat
@@ -32,6 +38,7 @@ namespace VidHub.Services.Connectors.Dialogs
             {
                 settings.Dialogs.DisplayFormat.DurationHourFormat = value;
                 vs.Update(UpdateSection.VIDEOCOLLECTION);
+                logger.LogDebug("DurationHourFormat set to {Format}", value);
             }
         }
         public string DurationMinuteFormat
@@ -41,6 +48,7 @@ namespace VidHub.Services.Connectors.Dialogs
             {
                 settings.Dialogs.DisplayFormat.DurationMinuteFormat = value;
                 vs.Update(UpdateSection.VIDEOCOLLECTION);
+                logger.LogDebug("DurationMinuteFormat set to {Format}", value);
             }
         }
         public string DurationSecondFormat
@@ -50,6 +58,7 @@ namespace VidHub.Services.Connectors.Dialogs
             {
                 settings.Dialogs.DisplayFormat.DurationSecondFormat = value;
                 vs.Update(UpdateSection.VIDEOCOLLECTION);
+                logger.LogDebug("DurationSecondFormat set to {Format}", value);
             }
         }
 
@@ -60,6 +69,7 @@ namespace VidHub.Services.Connectors.Dialogs
             {
                 settings.Dialogs.DisplayFormat.PreviewImageWidth = value;
                 vs.Update(UpdateSection.VIDEOCOLLECTION);
+                logger.LogDebug("PreviewImageWidth set to {Width}", value);
             }
         }
         public double PreviewImageHeight
@@ -69,6 +79,7 @@ namespace VidHub.Services.Connectors.Dialogs
             {
                 settings.Dialogs.DisplayFormat.PreviewImageHeight = value;
                 vs.Update(UpdateSection.VIDEOCOLLECTION);
+                logger.LogDebug("PreviewImageHeight set to {Height}", value);
             }
         }
     }

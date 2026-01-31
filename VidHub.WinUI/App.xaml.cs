@@ -3,6 +3,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using System;
 using VidHub.Core.Settings;
+using VidHub.Platform.VidHubEnvironment;
 using VidHub.Services.Base;
 using VidHub.Services.Connectors.Base;
 using VidHub.Services.Connectors.Dialogs;
@@ -21,7 +22,7 @@ namespace VidHub.WinUI
         public App()
         {
             InitializeComponent();
-            Platform.Environment.Context.Host = new HostContext(Host.CreateDefaultBuilder()
+            VidHubContext.Host = new HostContext(Host.CreateDefaultBuilder()
                 .ConfigureServices(services =>
                 {
                     _ = services.AddSingleton<IVideoService, VideoService>();
@@ -51,8 +52,8 @@ namespace VidHub.WinUI
         {
             _window = new MainWindow();
             _window.Activate();
-            Platform.Environment.Context.Window = new WindowContext(_window);
-            _window.Activated += (s, e) => Platform.Environment.Context.Window.IsActive = e.WindowActivationState != WindowActivationState.Deactivated;
+            VidHubContext.Window = new WindowContext(_window);
+            _window.Activated += (s, e) => VidHubContext.Window.IsActive = e.WindowActivationState != WindowActivationState.Deactivated;
             AppDomain.CurrentDomain.ProcessExit += (_, _) => VidHubSettings.Instance.Save();
         }
     }

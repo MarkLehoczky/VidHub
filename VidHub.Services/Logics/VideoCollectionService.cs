@@ -3,11 +3,14 @@ using VidHub.Core;
 using VidHub.Core.Notifications;
 using VidHub.Core.Utilities;
 using VidHub.Services.Base;
+using Microsoft.Extensions.Logging;
+using VidHub.Platform.VidHubEnvironment;
 
 namespace VidHub.Services.Logics
 {
     public class VideoCollectionService : IVideoCollectionService, IDisposable
     {
+        private readonly ILogger logger = VidHubContext.Logger;
         private readonly IVideoService service;
         public ObservableCollection<Video> DisplayedVideos { get; } = [];
         public ObservableCollection<BarNotification> DisplayedNotifications { get; } = [];
@@ -18,12 +21,14 @@ namespace VidHub.Services.Logics
             this.service = service;
             service.SubscribeToUpdateEvent(UpdateDisplayedVideos);
             service.SubscribeToUpdateEvent(UpdateDisplayedNotifications);
+            logger.LogTrace("VideoCollectionService initialized and subscribed to updates");
         }
 
 
         // TODO: Optimize update logic
         private void UpdateDisplayedVideos(IEnumerable<UpdateSection> sections)
         {
+            logger.LogTrace("UpdateDisplayedVideos invoked with sections count={Count}", sections?.Count() ?? 0);
             IList<Video> nextDisplayedVideos = service.GetDisplayedVideos();
 
             if (sections.Contains(UpdateSection.VIDEOCOLLECTION))
@@ -45,12 +50,18 @@ namespace VidHub.Services.Logics
                 {
                     DisplayedVideos.Add(nextDisplayedVideos[i]);
                 }
+                logger.LogDebug("DisplayedVideos synchronized to count={Count}", DisplayedVideos.Count);
+            }
+            else
+            {
+                logger.LogTrace("UpdateDisplayedVideos called but sections does not contain VIDEOCOLLECTION");
             }
         }
 
         // TODO: Optimize update logic
         private void UpdateDisplayedNotifications(IEnumerable<UpdateSection> sections)
         {
+            logger.LogTrace("UpdateDisplayedNotifications invoked with sections count={Count}", sections?.Count() ?? 0);
             IList<BarNotification> nextDisplayedNotifications = service.GetDisplayedNotifications();
 
             if (sections.Contains(UpdateSection.NOTIFICATIONS))
@@ -72,6 +83,11 @@ namespace VidHub.Services.Logics
                 {
                     DisplayedNotifications.Add(nextDisplayedNotifications[i]);
                 }
+                logger.LogDebug("DisplayedNotifications synchronized to count={Count}", DisplayedNotifications.Count);
+            }
+            else
+            {
+                logger.LogTrace("UpdateDisplayedNotifications called but sections does not contain NOTIFICATIONS");
             }
         }
 
@@ -80,6 +96,7 @@ namespace VidHub.Services.Logics
             service.UnsubscribeFromUpdateEvent(UpdateDisplayedVideos);
             service.UnsubscribeFromUpdateEvent(UpdateDisplayedNotifications);
             GC.SuppressFinalize(this);
+            logger.LogTrace("VideoCollectionService disposed and unsubscribed from updates");
         }
     }
 }

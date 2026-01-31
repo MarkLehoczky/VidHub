@@ -39,7 +39,7 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Grid Margin="10">
+                        <Grid Width="{Binding ElementName=videocollection, Path=DataContext.PreviewImageWidth}" Margin="10">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*" />
                                 <RowDefinition Height="Auto" />
@@ -86,7 +86,7 @@
                                 </MenuFlyout>
                             </Grid.ContextFlyout>
 
-                            <Grid Width="{Binding ElementName=videocollection, Path=DataContext.PreviewImageWidth}" Height="{Binding ElementName=videocollection, Path=DataContext.PreviewImageHeight}" Grid.Row="0">
+                            <Grid Height="{Binding ElementName=videocollection, Path=DataContext.PreviewImageHeight}" Grid.Row="0">
                                 <Grid HorizontalAlignment="Center" VerticalAlignment="Bottom">
                                     <Border BorderThickness="0" CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Center">
                                         <Image Source="{Binding PreviewImagePath, Converter={StaticResource PlaceholderFallback}}" Stretch="Uniform" DoubleTapped="OpenVideo" />
@@ -97,6 +97,13 @@
 
                                     <FontIcon Glyph="&#xf136;" Foreground="{ThemeResource ApplicationPageBackgroundThemeBrush}" Opacity="0.8" Visibility="{Binding ElementName=videocollection, Path=DataContext.DisplayHealths}" FontFamily="Segoe Fluent Icons" Margin="4" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
                                     <FontIcon Glyph="{Binding Health.State, Converter={StaticResource HealthIcon}}" Foreground="{Binding Health.State, Converter={StaticResource HealthColor}}" ToolTipService.ToolTip="{Binding Health.Details}" Visibility="{Binding ElementName=videocollection, Path=DataContext.DisplayHealths}" FontFamily="Segoe Fluent Icons" Margin="4" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
+
+                                    <Border Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Opacity="0.8" Visibility="{Binding ElementName=videocollection, Path=DataContext.DisplayResolutions}" BorderThickness="0" CornerRadius="10" Margin="4" HorizontalAlignment="Left" VerticalAlignment="Top" >
+                                        <TextBlock Text="{Binding Metadata.DefaultVideoStream.Resolution}" FontFamily="Consolas" Margin="6 2" />
+                                    </Border>
+                                    <Border Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Opacity="0.8" Visibility="{Binding ElementName=videocollection, Path=DataContext.DisplayFramerates}" BorderThickness="0" CornerRadius="10" Margin="4" HorizontalAlignment="Right" VerticalAlignment="Top" >
+                                        <TextBlock Text="{Binding Metadata.DefaultVideoStream.Framerate}" FontFamily="Consolas" Margin="6 2" />
+                                    </Border>
                                 </Grid>
                             </Grid>
 
@@ -116,7 +123,7 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <InfoBar IsOpen="{Binding Display}" Title="{Binding Title}" Message="{Binding Details}" Severity="{Binding Severity, Converter={StaticResource TransformSeverityType}}" IsClosable="{Binding IsClosable}" ActionButton="{Binding Button, Converter={StaticResource TransformNotificationButton}}">
+                    <InfoBar IsOpen="{Binding Display}" Title="{Binding Title}" Message="{Binding Details}" Severity="{Binding Severity, Converter={StaticResource TransfromSeverity}}" IsClosable="{Binding IsClosable}" ActionButton="{Binding Button, Converter={StaticResource TransformButton}}">
                     </InfoBar>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

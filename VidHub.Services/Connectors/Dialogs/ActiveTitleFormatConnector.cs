@@ -4,11 +4,14 @@ using VidHub.Core;
 using VidHub.Core.Settings;
 using VidHub.Core.Utilities;
 using VidHub.Services.Base;
+using Microsoft.Extensions.Logging;
+using VidHub.Platform.VidHubEnvironment;
 
 namespace VidHub.Services.Connectors.Dialogs
 {
     public class ActiveTitleFormatConnector(IVideoService vs, IVidHubSettings settings) : ConnectorTemplate(vs), ITitleFormatConnector
     {
+        private readonly ILogger logger = VidHubContext.Logger;
         public ObservableCollection<string> Titles { get; } = [];
 
         public bool IncludePath
@@ -17,6 +20,7 @@ namespace VidHub.Services.Connectors.Dialogs
             set
             {
                 settings.Dialogs.TitleFormat.IncludePath = value;
+                logger.LogDebug("IncludePath set to {Value}", value);
                 UpdateTitles();
             }
         }
@@ -26,6 +30,7 @@ namespace VidHub.Services.Connectors.Dialogs
             set
             {
                 settings.Dialogs.TitleFormat.IncludeDate = value;
+                logger.LogDebug("IncludeDate set to {Value}", value);
                 UpdateTitles();
             }
         }
@@ -35,6 +40,7 @@ namespace VidHub.Services.Connectors.Dialogs
             set
             {
                 settings.Dialogs.TitleFormat.IncludeFilename = value;
+                logger.LogDebug("IncludeFilename set to {Value}", value);
                 UpdateTitles();
             }
         }
@@ -44,6 +50,7 @@ namespace VidHub.Services.Connectors.Dialogs
             set
             {
                 settings.Dialogs.TitleFormat.IncludeMetadata = value;
+                logger.LogDebug("IncludeMetadata set to {Value}", value);
                 UpdateTitles();
             }
         }
@@ -53,6 +60,7 @@ namespace VidHub.Services.Connectors.Dialogs
             set
             {
                 settings.Dialogs.TitleFormat.IncludeExtension = value;
+                logger.LogDebug("IncludeExtension set to {Value}", value);
                 UpdateTitles();
             }
         }
@@ -63,6 +71,7 @@ namespace VidHub.Services.Connectors.Dialogs
             set
             {
                 settings.Dialogs.TitleFormat.RegexPattern = value;
+                logger.LogDebug("RegexPattern set");
                 UpdateTitles();
             }
         }
@@ -72,6 +81,7 @@ namespace VidHub.Services.Connectors.Dialogs
             set
             {
                 settings.Dialogs.TitleFormat.RegexReplacement = value;
+                logger.LogDebug("RegexReplacement set");
                 UpdateTitles();
             }
         }
@@ -83,6 +93,7 @@ namespace VidHub.Services.Connectors.Dialogs
             set
             {
                 settings.Dialogs.TitleFormat.UseRegex = value;
+                logger.LogDebug("UseRegex set to {Value}", value);
                 UpdateTitles();
                 Update(UpdateSections.ALL);
             }
@@ -97,14 +108,17 @@ namespace VidHub.Services.Connectors.Dialogs
 
         public void UpdateTitles()
         {
+            logger.LogTrace("UpdateTitles invoked");
             try
             {
                 Regex regex = new(RegexPattern);
                 InvalidRegex = false;
+                logger.LogDebug("Regex pattern validated");
             }
-            catch
+            catch (Exception ex)
             {
                 InvalidRegex = true;
+                logger.LogWarning(ex, "Invalid regex pattern in ActiveTitleFormatConnector");
             }
 
             IList<Video> videos = [.. vs.GetAllVideos().Where(v => !v.LoadingFinished)];
@@ -129,6 +143,7 @@ namespace VidHub.Services.Connectors.Dialogs
             {
                 video.Title = settings.GetCustomizedVideoTitle(video, UseRegex && !InvalidRegex);
             }
+            logger.LogDebug("UpdateTitles completed for {Count} videos", videos.Count);
         }
     }
 }

@@ -4,6 +4,7 @@ using VidHub.Services.Base;
 using VidHub.ViewModels.Dialogs;
 using System;
 using VidHub.Services.Connectors.Dialogs;
+using VidHub.Platform.VidHubEnvironment;
 
 namespace VidHub.WinUI.UserControls.Dialogs
 {
@@ -16,8 +17,8 @@ namespace VidHub.WinUI.UserControls.Dialogs
             {
                 if (futureCustomization)
                 {
-                    IVideoService service = Platform.Environment.Context.Host.GetService<IVideoService>();
-                    IVidHubSettings settings = Platform.Environment.Context.Host.GetService<IVidHubSettings>();
+                    IVideoService service = VidHubContext.Host.GetService<IVideoService>();
+                    IVidHubSettings settings = VidHubContext.Host.GetService<IVidHubSettings>();
                     viewmodel.Connector = new ActiveTitleFormatConnector(service, settings);
                 }
                 viewmodel.Connector.UpdateTitles();

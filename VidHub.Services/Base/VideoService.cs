@@ -5,12 +5,15 @@ using VidHub.Core.Data;
 using VidHub.Core.Notifications;
 using VidHub.Core.Settings;
 using VidHub.Core.Utilities;
-using VidHub.Platform.Environment;
+using Microsoft.Extensions.Logging;
+using System.Linq;
+using VidHub.Platform.VidHubEnvironment;
 
 namespace VidHub.Services.Base
 {
     public class VideoService : IVideoService
     {
+        private readonly ILogger logger = VidHubContext.Logger;
         private readonly object locker = new();
         private readonly RecurrenceManager recurringActionManager = new();
         private event Action<IEnumerable<UpdateSection>>? UpdateEvent;
@@ -24,16 +27,18 @@ namespace VidHub.Services.Base
 
         public VideoService()
         {
-            notifications.Add(NotificationData.NotCheckedVideosNotification(videos));
+            logger.LogTrace("VideoService initializing");
+            notifications.Add(NotificationData.NotCheckedVideosNotification(GetAllVideos));
             notifications.Add(NotificationData.MediumCacheSizeNotification());
             notifications.Add(NotificationData.HealthyVideosNotification(videos));
-            notifications.Add(NotificationData.UnhealthyVideosNotification(videos));
+            notifications.Add(NotificationData.UnhealthyVideosNotification(GetAllVideos));
             notifications.Add(NotificationData.LargeCacheSizeNotification());
             notifications.Add(NotificationData.FFmpegNotInstalledNotification());
 
-            recurringActionManager.Add(PeriodicDisplayUpdate, TimeSpan.FromSeconds(5));
-            recurringActionManager.Add(PeriodicHealthCheck, TimeSpan.FromSeconds(60));
-            recurringActionManager.Add(PeriodicNotificationUpdate, TimeSpan.FromSeconds(5));
+            recurringActionManager.Add(PeriodicDisplayUpdate, TimeSpan.FromSeconds(5), "Display update");
+            recurringActionManager.Add(PeriodicHealthCheck, TimeSpan.FromSeconds(60), "Health check");
+            recurringActionManager.Add(PeriodicNotificationUpdate, TimeSpan.FromSeconds(5), "Notification update");
+            logger.LogDebug("VideoService initialized with {NotificationCount} notifications", notifications.Count);
         }
 
 
@@ -41,6 +46,7 @@ namespace VidHub.Services.Base
         {
             lock (locker)
             {
+                logger.LogTrace("GetAllNotifications returning {Count}", notifications.Count);
                 return [.. notifications];
             }
         }
@@ -48,6 +54,7 @@ namespace VidHub.Services.Base
         {
             lock (locker)
             {
+                logger.LogTrace("GetAllVideos returning {Count}", videos.Count);
                 return [.. videos];
             }
         }
@@ -55,27 +62,35 @@ namespace VidHub.Services.Base
         {
             lock (locker)
             {
-                return [.. notifications.Where(n => n.Display && VidHubSettings.Instance.DisplayNotification(n))];
+                List<BarNotification> list = notifications.Where(n => n.Display && VidHubSettings.Instance.DisplayNotification(n)).ToList();
+                logger.LogTrace("GetDisplayedNotifications returning {Count}", list.Count);
+                return list;
             }
         }
         public IList<Video> GetDisplayedVideos()
         {
             lock (locker)
             {
-                return [.. videos.Where(Predicate).Order(Comparer)];
+                List<Video> list = videos.Where(Predicate).ToList();
+                list.Sort(Comparer);
+                logger.LogTrace("GetDisplayedVideos returning {Count}", list.Count);
+                return list;
             }
         }
 
 
         private void PeriodicDisplayUpdate()
         {
-            Debug.WriteLine("Periodic Display Update");
+            logger.LogTrace("PeriodicDisplayUpdate invoked");
             try { Update(UpdateSections.ALL); }
-            catch { }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "PeriodicDisplayUpdate failed to update");
+            }
         }
         private void PeriodicHealthCheck()
         {
-            Debug.WriteLine("Periodic Health Check");
+            logger.LogTrace("PeriodicHealthCheck invoked");
             IList<Video> snapshot;
             lock (locker)
             {
@@ -85,10 +100,11 @@ namespace VidHub.Services.Base
             {
                 video.CheckHealth();
             }
+            logger.LogDebug("PeriodicHealthCheck completed for {Count} videos", snapshot.Count);
         }
         private void PeriodicNotificationUpdate()
         {
-            Debug.WriteLine("Periodic Notification Update");
+            logger.LogTrace("PeriodicNotificationUpdate invoked");
             IList<BarNotification> snapshot;
             lock (locker)
             {
@@ -100,6 +116,7 @@ namespace VidHub.Services.Base
                 bool after = notif.DisplayCondition?.Invoke() ?? true;
                 notif.Display = after;
             }
+            logger.LogDebug("PeriodicNotificationUpdate updated {Count} notifications", snapshot.Count);
         }
 
 
@@ -108,6 +125,7 @@ namespace VidHub.Services.Base
             lock (locker)
             {
                 UpdateEvent += action;
+                logger.LogTrace("Subscriber added to UpdateEvent");
             }
         }
         public void UnsubscribeFromUpdateEvent(Action<IEnumerable<UpdateSection>> action)
@@ -115,13 +133,15 @@ namespace VidHub.Services.Base
             lock (locker)
             {
                 UpdateEvent -= action;
+                logger.LogTrace("Subscriber removed from UpdateEvent");
             }
         }
         public void Update(IEnumerable<UpdateSection> sections)
         {
             lock (locker)
             {
-                _ = Context.Window.TryEnqueue(() => UpdateEvent?.Invoke(sections));
+                logger.LogTrace("Update called with sections count={Count}", sections?.Count() ?? 0);
+                _ = VidHubContext.Window.TryEnqueue(() => UpdateEvent?.Invoke(sections));
             }
         }
         public void Update(params UpdateSection[] sections)
@@ -140,6 +160,7 @@ namespace VidHub.Services.Base
             lock (locker)
             {
                 videos.Add(item);
+                logger.LogDebug("Video added: {File}", item?.FilePath);
             }
         }
 
@@ -156,6 +177,7 @@ namespace VidHub.Services.Base
             lock (locker)
             {
                 videos.Clear();
+                logger.LogDebug("All videos cleared");
             }
         }
 
@@ -196,6 +218,7 @@ namespace VidHub.Services.Base
             lock (locker)
             {
                 videos.Insert(index, item);
+                logger.LogDebug("Video inserted at {Index}: {File}", index, item?.FilePath);
             }
         }
 
@@ -203,7 +226,9 @@ namespace VidHub.Services.Base
         {
             lock (locker)
             {
-                return videos.Remove(item);
+                bool result = videos.Remove(item);
+                logger.LogDebug("Video removal attempted for {File}, success={Result}", item?.FilePath, result);
+                return result;
             }
         }
 
@@ -212,6 +237,7 @@ namespace VidHub.Services.Base
             lock (locker)
             {
                 videos.RemoveAt(index);
+                logger.LogDebug("Video removed at index {Index}", index);
             }
         }
     }
