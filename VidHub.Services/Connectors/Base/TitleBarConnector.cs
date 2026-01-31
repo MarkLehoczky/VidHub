@@ -1,7 +1,8 @@
-﻿using VidHub.Core.Models;
+﻿using Microsoft.Extensions.Logging;
+using VidHub.Core.Models;
 using VidHub.Core.Settings;
 using VidHub.Core.Utilities;
-using VidHub.Platform.Environment;
+using VidHub.Platform.VidHubEnvironment;
 using VidHub.Services.Base;
 using VidHub.Services.Logics;
 using Windows.Storage;
@@ -236,23 +237,23 @@ namespace VidHub.Services.Connectors.Base
 
         public async Task OpenLicensesDialog()
         {
-            await Context.Window.OpenLicensesDialog();
+            await VidHubContext.Window.OpenLicensesDialog();
         }
         public async Task OpenDisplayFormatDialog()
         {
-            await Context.Window.OpenDisplayFormatDialog();
+            await VidHubContext.Window.OpenDisplayFormatDialog();
         }
         public async Task OpenPassiveTitleFormatDialog()
         {
-            await Context.Window.OpenPassiveTitleFormatDialog();
+            await VidHubContext.Window.OpenPassiveTitleFormatDialog();
         }
         public async Task OpenPreviewImageFormatDialog()
         {
-            await Context.Window.OpenPreviewImageFormatDialog();
+            await VidHubContext.Window.OpenPreviewImageFormatDialog();
         }
         public async Task OpenVersionsDialog()
         {
-            await Context.Window.OpenVersionsDialog();
+            await VidHubContext.Window.OpenVersionsDialog();
         }
     }
 }

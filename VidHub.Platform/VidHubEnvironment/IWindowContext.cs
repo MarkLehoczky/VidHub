@@ -1,4 +1,4 @@
-﻿namespace VidHub.Platform.Environment
+﻿namespace VidHub.Platform.VidHubEnvironment
 {
     public interface IWindowContext
     {

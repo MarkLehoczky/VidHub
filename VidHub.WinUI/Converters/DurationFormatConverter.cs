@@ -1,11 +1,15 @@
 ﻿using Microsoft.UI.Xaml.Data;
 using System;
 using VidHub.Core.Settings;
+using Microsoft.Extensions.Logging;
+using VidHub.Platform.VidHubEnvironment;
 
 namespace VidHub.WinUI.Converters
 {
     internal partial class DurationFormatConverter : IValueConverter
     {
+        private readonly ILogger logger = VidHubContext.Logger;
+
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             try
@@ -13,7 +17,7 @@ namespace VidHub.WinUI.Converters
                 TimeSpan duration = (TimeSpan)value;
                 try
                 {
-                    return duration.TotalDays >= 1
+                    string formatted = duration.TotalDays >= 1
                         ? duration.ToString(VidHubSettings.Instance.Dialogs.DisplayFormat.DurationDayFormat)
                         : duration.TotalHours >= 1
                         ? duration.ToString(VidHubSettings.Instance.Dialogs.DisplayFormat.DurationHourFormat)
@@ -22,9 +26,12 @@ namespace VidHub.WinUI.Converters
                         : duration >= TimeSpan.Zero
                         ? duration.ToString(VidHubSettings.Instance.Dialogs.DisplayFormat.DurationSecondFormat)
                         : "n/a";
+                    logger.LogTrace("DurationFormatConverter: Converted {Duration} to {FormattedDuration}", duration, formatted);
+                    return formatted;
                 }
-                catch
+                catch (Exception ex)
                 {
+                    logger.LogWarning(ex, "DurationFormatConverter: Failed to format with custom format, using default format for {Duration}", duration);
                     return duration.TotalDays >= 1
                         ? duration.ToString("d' day(s) 'hh':'mm':'ss")
                         : duration.TotalHours >= 1
@@ -34,8 +41,9 @@ namespace VidHub.WinUI.Converters
                         : duration >= TimeSpan.Zero ? duration.ToString("ss' second(s)'") : "n/a";
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                logger.LogError(ex, "DurationFormatConverter: Error converting value {Value}", value);
                 return "n/a";
             }
         }

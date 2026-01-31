@@ -9,11 +9,15 @@ using VidHub.Services.Logics;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 using Windows.System;
+using Microsoft.Extensions.Logging;
+using VidHub.Platform.VidHubEnvironment;
 
 namespace VidHub.WinUI.UserControls
 {
     public sealed partial class VideoCollectionUserControl : UserControl
     {
+        private readonly ILogger logger = VidHubContext.Logger;
+
         public VideoCollectionUserControl()
         {
             InitializeComponent();
@@ -27,6 +31,7 @@ namespace VidHub.WinUI.UserControls
 
             KeyboardAccelerators.Add(pasteAccelerator);
             KeyboardAcceleratorPlacementMode = KeyboardAcceleratorPlacementMode.Hidden;
+            logger.LogTrace("VideoCollectionUserControl initialized and keyboard accelerator registered");
         }
 
 
@@ -34,44 +39,86 @@ namespace VidHub.WinUI.UserControls
         {
             args.Handled = true;
 
-            DataPackageView dataPackageView = Clipboard.GetContent();
-
-            if (dataPackageView.Contains(StandardDataFormats.StorageItems))
+            try
             {
-                IReadOnlyList<IStorageItem> items = await dataPackageView.GetStorageItemsAsync();
-                HandlePastedFiles(items);
+                DataPackageView dataPackageView = Clipboard.GetContent();
+
+                if (dataPackageView.Contains(StandardDataFormats.StorageItems))
+                {
+                    IReadOnlyList<IStorageItem> items = await dataPackageView.GetStorageItemsAsync();
+                    logger.LogDebug("Paste invoked with {Count} items", items.Count);
+                    HandlePastedFiles(items);
+                }
+                else
+                {
+                    logger.LogTrace("Paste invoked but no storage items present");
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "PasteAccelerator handling failed");
             }
         }
 
         private void DragOverItems(object sender, DragEventArgs e)
         {
-            e.AcceptedOperation = e.DataView.Contains(StandardDataFormats.StorageItems) ? DataPackageOperation.Copy : DataPackageOperation.None;
+            try
+            {
+                e.AcceptedOperation = e.DataView.Contains(StandardDataFormats.StorageItems) ? DataPackageOperation.Copy : DataPackageOperation.None;
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "DragOverItems encountered exception");
+                e.AcceptedOperation = DataPackageOperation.None;
+            }
         }
 
         private async void DropItems(object sender, DragEventArgs e)
         {
-            if (e.DataView.Contains(StandardDataFormats.StorageItems))
+            try
             {
-                IReadOnlyList<IStorageItem> items = await e.DataView.GetStorageItemsAsync().AsTask();
-                HandlePastedFiles(items);
+                if (e.DataView.Contains(StandardDataFormats.StorageItems))
+                {
+                    IReadOnlyList<IStorageItem> items = await e.DataView.GetStorageItemsAsync().AsTask();
+                    logger.LogDebug("DropItems received {Count} items", items.Count);
+                    HandlePastedFiles(items);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "DropItems handling failed");
             }
         }
 
 
         private void HandlePastedFiles(IEnumerable<IStorageItem> items)
         {
-            _ = Platform.Environment.Context.Host.GetService<IVideoLoadService>().LoadItems(items, true);
+            try
+            {
+                _ = VidHubContext.Host.GetService<IVideoLoadService>().LoadItems(items, true);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to queue pasted files for loading");
+            }
         }
 
         private void TextTrimmingChanged(TextBlock sender, IsTextTrimmedChangedEventArgs args)
         {
-            if (sender.IsTextTrimmed)
+            try
             {
-                ToolTipService.SetToolTip(sender, sender.Text);
+                if (sender.IsTextTrimmed)
+                {
+                    ToolTipService.SetToolTip(sender, sender.Text);
+                }
+                else
+                {
+                    ToolTipService.SetToolTip(sender, null);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                ToolTipService.SetToolTip(sender, null);
+                logger.LogWarning(ex, "TextTrimmingChanged handler failed");
             }
         }
 
@@ -81,9 +128,21 @@ namespace VidHub.WinUI.UserControls
             {
                 _ = Task.Run(async () =>
                 {
-                    StorageFile file = await StorageFile.GetFileFromPathAsync(video.FilePath);
-                    _ = await Launcher.LaunchFileAsync(file);
+                    try
+                    {
+                        StorageFile file = await StorageFile.GetFileFromPathAsync(video.FilePath);
+                        _ = await Launcher.LaunchFileAsync(file);
+                        logger.LogInformation("Opened video file from UI action: {File}", video.FilePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogWarning(ex, "OpenVideo action failed for {File}", video.FilePath);
+                    }
                 });
+            }
+            else
+            {
+                logger.LogWarning("OpenVideo invoked but DataContext is not a Video");
             }
         }
     }

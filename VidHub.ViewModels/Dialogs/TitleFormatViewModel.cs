@@ -1,16 +1,19 @@
 ﻿using VidHub.Core.Utilities;
-using VidHub.Platform.Environment;
 using VidHub.Services.Connectors.Dialogs;
+using Microsoft.Extensions.Logging;
+using VidHub.Platform.VidHubEnvironment;
 
 namespace VidHub.ViewModels.Dialogs
 {
     public partial class TitleFormatViewModel(ITitleFormatConnector connector) : ViewModelTemplate(connector)
     {
+        private readonly ILogger logger = VidHubContext.Logger;
         public ITitleFormatConnector Connector { get; set; } = connector;
 
-        public TitleFormatViewModel() : this(Context.Host.GetService<ITitleFormatConnector>())
+        public TitleFormatViewModel() : this(VidHubContext.Host.GetService<ITitleFormatConnector>())
         {
-            Connector = Context.Host.GetService<ITitleFormatConnector>();
+            Connector = VidHubContext.Host.GetService<ITitleFormatConnector>();
+            logger.LogTrace("TitleFormatViewModel initialized");
         }
 
 
@@ -19,27 +22,27 @@ namespace VidHub.ViewModels.Dialogs
         public bool IncludePath
         {
             get => Connector.IncludePath;
-            set => Connector.IncludePath = value;
+            set { Connector.IncludePath = value; logger.LogDebug("IncludePath set to {Value}", value); }
         }
         public bool IncludeDate
         {
             get => Connector.IncludeDate;
-            set => Connector.IncludeDate = value;
+            set { Connector.IncludeDate = value; logger.LogDebug("IncludeDate set to {Value}", value); }
         }
         public bool IncludeFilename
         {
             get => Connector.IncludeFilename;
-            set => Connector.IncludeFilename = value;
+            set { Connector.IncludeFilename = value; logger.LogDebug("IncludeFilename set to {Value}", value); }
         }
         public bool IncludeMetadata
         {
             get => Connector.IncludeMetadata;
-            set => Connector.IncludeMetadata = value;
+            set { Connector.IncludeMetadata = value; logger.LogDebug("IncludeMetadata set to {Value}", value); }
         }
         public bool IncludeExtension
         {
             get => Connector.IncludeExtension;
-            set => Connector.IncludeExtension = value;
+            set { Connector.IncludeExtension = value; logger.LogDebug("IncludeExtension set to {Value}", value); }
         }
 
         public string RegexPattern
@@ -49,28 +52,30 @@ namespace VidHub.ViewModels.Dialogs
             {
                 Connector.RegexPattern = value;
                 OnPropertyChanged(nameof(InvalidRegex));
+                logger.LogDebug("RegexPattern set");
             }
         }
         public string RegexReplacement
         {
-            get => Connector.RegexReplacement; set => Connector.RegexReplacement = value;
+            get => Connector.RegexReplacement; set { Connector.RegexReplacement = value; logger.LogDebug("RegexReplacement set"); }
         }
         public bool InvalidRegex => Connector.InvalidRegex;
 
         public bool EnabledRegex
         {
             get => Connector.UseRegex;
-            set => Connector.UseRegex = value;
+            set { Connector.UseRegex = value; logger.LogDebug("UseRegex set to {Value}", value); }
         }
         public bool DontShowTitleCustomizationAgain
         {
             get => Connector.HideTitleCustomization;
-            set => Connector.HideTitleCustomization = value;
+            set { Connector.HideTitleCustomization = value; logger.LogDebug("HideTitleCustomization set to {Value}", value); }
         }
 
 
         public override void Update(IEnumerable<UpdateSection> sections)
         {
+            logger.LogTrace("TitleFormatViewModel.Update invoked");
             OnPropertyChanged(nameof(EnabledRegex));
         }
     }

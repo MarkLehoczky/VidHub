@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Microsoft.Extensions.Logging;
+using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
@@ -6,6 +7,7 @@ using System.Text.Json.Serialization;
 using VidHub.Core.Models;
 using VidHub.Core.Settings;
 using VidHub.Core.Utilities.Internal;
+using VidHub.Platform.VidHubEnvironment;
 using Windows.Storage;
 
 namespace VidHub.Core
@@ -28,6 +30,8 @@ namespace VidHub.Core
         private DetailedHealth health;
         private bool loadingFinished;
 
+        private readonly ILogger logger = VidHubContext.Logger;
+
         [JsonIgnore] public int ID { get => id; private set => SetFocusedProperty(ref id, value); }
         [JsonIgnore] public string Hash { get => hash; private set => SetFocusedProperty(ref hash, value); }
         public string Title { get => title; set => SetFocusedProperty(ref title, value); }
@@ -42,6 +46,7 @@ namespace VidHub.Core
 
         public Video()
         {
+            logger.LogTrace("Video constructor (default) invoked");
             _ = Interlocked.Increment(ref IDProvider);
             id = IDProvider;
             hash = string.Empty;
@@ -57,8 +62,10 @@ namespace VidHub.Core
         public Video(string file) : this()
         {
             filePath = Path.GetFullPath(file);
+            logger.LogTrace("Video constructed for file={File}", filePath);
             VideoHasher hasher = new(this);
             hash = hasher.GenerateHash();
+            logger.LogDebug("Hash generated for file={File} hash={Hash}", filePath, hash);
         }
         public Video(Uri file) : this(file.AbsolutePath) { }
         public Video(StorageFile file) : this(file.Path) { }
@@ -66,35 +73,44 @@ namespace VidHub.Core
 
         public void CheckHealth()
         {
+            logger.LogTrace("CheckHealth entered for file={File}", filePath);
             if (VidHubSettings.Instance.Health.Type is HealthType.NONE)
             {
+                logger.LogDebug("Health checking disabled (Type=NONE)");
                 return;
             }
             if (VidHubSettings.Instance.Health.Type is HealthType.EXISTENCECHECK)
             {
                 Health = File.Exists(FilePath) ? HealthState.HEALTHY : HealthState.FILENOTFOUND;
+                logger.LogDebug("Existence check result for {File}: {State}", FilePath, Health);
                 return;
             }
             if (!File.Exists(FilePath))
             {
                 Health = HealthState.FILENOTFOUND;
+                logger.LogWarning("File not found during health check: {File}", FilePath);
                 return;
             }
 
             Health = HealthState.INPROGRESS;
+            logger.LogDebug("Starting detailed health check for {File}", FilePath);
             VideoProcessor processor = new(this);
             Health = processor.HealthCheck();
+            logger.LogDebug("HealthCheck completed for {File} with state={State}", FilePath, Health);
         }
 
         public void Load()
         {
+            logger.LogTrace("Load entered for file={File}", FilePath);
             if (LoadCache())
             {
                 Title = VidHubSettings.Instance.GetCustomizedVideoTitle(this);
+                logger.LogInformation("Loaded from cache and title set for {File}", FilePath);
                 return;
             }
             VideoProcessor processor = new(this);
             Metadata = processor.ProcessMetadata();
+            logger.LogDebug("Metadata processed for {File}. VideoStreams={VideoStreamsCount}", FilePath, Metadata?.VideoStreams?.Count() ?? 0);
             Title = VidHubSettings.Instance.GetCustomizedVideoTitle(this);
             Date = Metadata.Format is not null && Metadata.Format.CreationTime != DateTime.MinValue
                 ? Metadata.Format.CreationTime
@@ -104,17 +120,21 @@ namespace VidHub.Core
                 : Metadata.Format is not null
                     ? Metadata.Format.Duration
                     : TimeSpan.Zero;
+            logger.LogDebug("Computed Date={Date} Duration={Duration} for {File}", Date, Duration, FilePath);
             ProcessPreviewImage();
             SaveCache();
+            logger.LogInformation("Load completed for {File}", FilePath);
         }
 
 
         private bool LoadCache()
         {
+            logger.LogTrace("LoadCache entered for hash={Hash}", Hash);
             string cacheDirectory = Path.Combine(Path.GetTempPath(), "VidHub", "Data");
             string cachePath = Path.Combine(cacheDirectory, Hash + ".json");
             if (!VidHubSettings.Instance.Performance.UseCacheLoading || !File.Exists(cachePath))
             {
+                logger.LogDebug("Cache loading disabled or cache not present for {Hash}", Hash);
                 return false;
             }
 
@@ -122,6 +142,7 @@ namespace VidHub.Core
             Video? video = JsonSerializer.Deserialize<Video>(json);
             if (video is null)
             {
+                logger.LogWarning("Cache deserialized to null for {CachePath}", cachePath);
                 return false;
             }
 
@@ -132,10 +153,12 @@ namespace VidHub.Core
             FilePath = video.FilePath;
             Metadata = video.Metadata;
 
+            logger.LogDebug("Cache loaded for {Hash}, previewImagePresent={HasPreview}", Hash, !string.IsNullOrEmpty(PreviewImagePath));
             return !string.IsNullOrEmpty(PreviewImagePath);
         }
         private void SaveCache()
         {
+            logger.LogTrace("SaveCache entered for hash={Hash}", Hash);
             string cacheDirectory = Path.Combine(Path.GetTempPath(), "VidHub", "Data");
             string cachePath = Path.Combine(cacheDirectory, Hash + ".json");
 
@@ -149,13 +172,16 @@ namespace VidHub.Core
 
             _ = Directory.CreateDirectory(cacheDirectory);
             File.WriteAllText(cachePath, JsonSerializer.Serialize(this, jsonOptions));
+            logger.LogDebug("Cache saved to {CachePath}", cachePath);
         }
 
         private bool ProcessPreviewImage()
         {
+            logger.LogTrace("ProcessPreviewImage entered for file={File}", FilePath);
             VideoProcessor processor = new(this);
             bool result = processor.ProcessPreviewImage(out string? extractedImagePath);
             PreviewImagePath = extractedImagePath ?? string.Empty;
+            logger.LogDebug("ProcessPreviewImage result={Result} path={Path}", result, PreviewImagePath);
             return result;
         }
 
@@ -164,12 +190,14 @@ namespace VidHub.Core
         {
             bool result = base.SetFocusedProperty(ref field, newValue, propertyName);
             SaveCache();
+            logger.LogTrace("SetFocusedProperty for {Property} resulted in changed={Changed}", propertyName, result);
             return result;
         }
 
 
         public object Clone()
         {
+            logger.LogTrace("Clone called for {File}", FilePath);
             return MemberwiseClone();
         }
 
@@ -198,10 +226,12 @@ namespace VidHub.Core
         }
         public int GetHashCode(Video obj)
         {
+            logger.LogTrace("GetHashCode(Video) for {File}", obj?.FilePath);
             return obj is null ? 0 : obj.Hash != null ? StringComparer.Ordinal.GetHashCode(obj.Hash) : 0;
         }
         public override int GetHashCode()
         {
+            logger.LogTrace("GetHashCode() for {File}", FilePath);
             return Hash != null ? StringComparer.Ordinal.GetHashCode(Hash) : base.GetHashCode();
         }
 
