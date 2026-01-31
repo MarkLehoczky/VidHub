@@ -32,8 +32,29 @@ namespace VidHub.Core.Streams
 
     public class Framerate
     {
-        public int Numerator { get; set; }
-        public int Denominator { get; set; }
+        private int numerator;
+        private int denominator;
+
+        public int Numerator
+        {
+            get => numerator;
+            set
+            {
+                numerator = value;
+                Value = Denominator != 0 ? (double)Numerator / Denominator : double.NaN;
+                Definition = GetDefinition(Value);
+            }
+        }
+        public int Denominator
+        {
+            get => denominator;
+            set
+            {
+                denominator = value;
+                Value = Denominator != 0 ? (double)Numerator / Denominator : double.NaN;
+                Definition = GetDefinition(Value);
+            }
+        }
         [JsonIgnore] public double Value { get; set; }
         [JsonIgnore] public DefinedFramerate Definition { get; set; }
 
@@ -118,8 +139,29 @@ namespace VidHub.Core.Streams
 
     public class Resolution
     {
-        public int Width { get; set; }
-        public int Height { get; set; }
+        private int width;
+        private int height;
+
+        public int Width
+        {
+            get => width;
+            set
+            {
+                width = value;
+                Value = Width * Height;
+                Definition = GetDefinition(Value);
+            }
+        }
+        public int Height
+        {
+            get => height;
+            set
+            {
+                height = value;
+                Value = Width * Height;
+                Definition = GetDefinition(Value);
+            }
+        }
         [JsonIgnore] public int Value { get; set; }
         [JsonIgnore] public DefinedResolution Definition { get; set; }
 
