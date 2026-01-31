@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using System.Data;
+using System.Diagnostics;
 using VidHub.Core.Settings;
 using VidHub.Platform.VidHubEnvironment;
 using Windows.Storage;

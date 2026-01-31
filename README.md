@@ -2,7 +2,7 @@
 
 # VIDHUB
 
-**VidHub** is a video collector and organizer application designed for Windows using *WinUI 3* with *.NET 8.0*.
+**VidHub** is a video collector, manager and organizer application designed for Windows using *WinUI 3* with *.NET 8.0*, focused on efficient loading, detailed organization, and a highly customizable viewing experience.
 
 ---
 
@@ -16,34 +16,60 @@
 
 </div>
 
+## Overview
+
+VidHub is a modern Windows application designed to provide a structured and efficient way to manage video collections. It emphasizes clarity, performance, and consistency.
+
+The application offers a streamlined workflow for adding, browsing, and reviewing videos through a clean and responsive interface. Visual previews and adaptable layouts support quick navigation, while the overall design remains focused and unobtrusive.
+
+Built with WinUI 3 and .NET 8.0, VidHub aligns with Windows system conventions and appearance settings to deliver a cohesive and reliable desktop experience.
+
 ## Features
 
-### 🖥️ UI-Focused Features
+### Video Collecting & Loading
 
-- 🖥️ **Video Display UI** - Display videos in an simple and clear interface
-- 📂 **Drag & Drop Video Loading** - Load videos by dragging files into the app
-- 📋 **Clipboard Video Loading** - Load videos directly from clipboard content
-- 📁 **File/Folder Picker Video Loading** - Use a picker dialog to load videos from files or folders
-- 🔢 **Sorting & Filtering** - Organize videos using basic sort and filter options
-- 🔍 **Text Filter Settings** - Filter videos based on different text input criteria
-- 🔄 **Transfer Displaying** - Display the state of ongoing transfers
+- Load initialization via file picker, drap & drop or clipboard
+- Video collecting and loading simultaneously
+- Collecting and loading progress displaying
+- Optional parallel video loading and cached data reloading
+- Video hashing based on file path or file content for caching
+- Video metadata extraction
+- Periodic health check for videos based customizable health level check
 
-### ⚡ Core Functionality
+### Organizing (Ordering & Filtering)
 
-- ⚙️ **Settings Persistence** - Keep set values for settings and optionally for filters and sorter
-- 🗄️ **Fast Loading** - Cached loading from previous values for imporved load performance
-- 🎥 **Concurrent Video Loading** - Load multiple videos simultaneously for faster load completion
-- 📌 **Taskbar Progress & Status** - Show transfer state on the taskbar
-- 🔔 **System Notifications** - Get notifications for finished loading
-  
+- Order videos by *title*, *duration*, *creation date*, *resoltuion* or *framerate*
+- Filter videos by *title*, *duration*, *creation date*, *resoltuion* or *framerate*
+- Filter video titles with optional *case sensitivity*, *suggestions for titles* and *live search*
+
+### Display & Customization
+
+- Grid video displaying with adjustable grid sizes
+- Preview image displaying with optional *title*, *creation date*, *duration*, *video health*, *resolution* and *framerate* showcase
+- Preview image *absolute*- and *relative* position configuration with optional *embedded image extraction*
+- Batch title customization with optional *file path*, *creation date* and *metadata* information
+- Light and dark theme support based on system settings
+- Context menu for basic video *opening*, *copying*, *renaming* and *removing* operations
+
+### Notification Services
+
+- Automatically updating notifications
+- Notifications for video health results
+- Notifications for required software detection and installation option
+- Notifications for large cache storage size and cleanup option
+- *Bar*- and *system* notifications and taskbar interactions
+
 ## Screenshots
 
-| Description                         |                                Light Mode                                 |                                Dark Mode                                 |
-| :---------------------------------- | :-----------------------------------------------------------------------: | :----------------------------------------------------------------------: |
-| Empty view with w/o side panel      | ![Empty view with with side panel](./Screenshots/Light/Empty.png)         | ![Empty view with with side panel](./Screenshots/Dark/Empty.png)         |
-| Loaded videos w/o side panel        | ![Loaded videos without side panel](./Screenshots/Light/Loaded.png)       | ![Loaded videos without side panel](./Screenshots/Dark/Loaded.png)       |
-| Filtered videos w/ side panel       | ![Filtered videos with with side panel](./Screenshots/Light/Filtered.png) | ![Filtered videos with with side panel](./Screenshots/Dark/Filtered.png) |
-| Active video loading                | ![Active video loading](./Screenshots/Light/Transfer.png)                 | ![Active video loading](./Screenshots/Dark/Transfer.png)                 |
+| Description | Light Mode | Dark Mode |
+| :--- | :---: | :---: |
+| Empty view with side panel | ![](./Screenshots/Light/Empty.png) | ![](./Screenshots/Dark/Empty.png) |
+| Multiple layered menu bar | ![](./Screenshots/Light/Menubar.png) | ![](./Screenshots/Dark/Menubar.png) |
+| Loading videos with progress indicator | ![](./Screenshots/Light/Transfer.png) | ![](./Screenshots/Dark/Transfer.png) |
+| Loaded videos without side panel | ![](./Screenshots/Light/Loaded.png) | ![](./Screenshots/Dark/Loaded.png) |
+| Filtered videos | ![](./Screenshots/Light/Filtered.png) | ![](./Screenshots/Dark/Filtered.png) |
+| Changed video size | ![](./Screenshots/Light/Changed.png) | ![](./Screenshots/Dark/Changed.png) |
+| Title customization modal | ![](./Screenshots/Light/Customization.png) | ![](./Screenshots/Dark/Customization.png) |
 
 ## License
 

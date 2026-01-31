@@ -8,6 +8,7 @@ namespace VidHub.ViewModels.Dialogs
     {
         public IList<VersionInformation> Versions =>
         [
+            VersionData.Version_0_6_0,
             VersionData.Version_0_5_0,
             VersionData.Version_0_4_0,
             VersionData.Version_0_3_0,
