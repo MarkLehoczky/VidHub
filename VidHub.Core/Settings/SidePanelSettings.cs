@@ -14,15 +14,15 @@
         public bool FilterDuration { get; set; } = false;
         public TimeSpan? MinDuration { get; set; } = null;
         public TimeSpan? MaxDuration { get; set; } = null;
-        public bool DisplayMaximumResolutionVideos { get; set; } = true;
-        public bool DisplayLargeResolutionVideos { get; set; } = true;
-        public bool DisplayMediumResolutionVideos { get; set; } = true;
-        public bool DisplayLowResolutionVideos { get; set; } = true;
-        public bool DisplayMinimumResolutionVideos { get; set; } = true;
-        public bool DisplayMaximumFramerateVideos { get; set; } = true;
-        public bool DisplayLargeFramerateVideos { get; set; } = true;
-        public bool DisplayMediumFramerateVideos { get; set; } = true;
-        public bool DisplayLowFramerateVideos { get; set; } = true;
-        public bool DisplayMinimumFramerateVideos { get; set; } = true;
+        public bool DisplayMaximumResolutionVideos { get; set; } = false;
+        public bool DisplayLargeResolutionVideos { get; set; } = false;
+        public bool DisplayMediumResolutionVideos { get; set; } = false;
+        public bool DisplayLowResolutionVideos { get; set; } = false;
+        public bool DisplayMinimumResolutionVideos { get; set; } = false;
+        public bool DisplayMaximumFramerateVideos { get; set; } = false;
+        public bool DisplayLargeFramerateVideos { get; set; } = false;
+        public bool DisplayMediumFramerateVideos { get; set; } = false;
+        public bool DisplayLowFramerateVideos { get; set; } = false;
+        public bool DisplayMinimumFramerateVideos { get; set; } = false;
     }
 }
