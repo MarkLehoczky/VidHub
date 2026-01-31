@@ -1,13 +1,13 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Threading.Tasks;
 using VidHub.Core;
+using VidHub.Platform.VidHubEnvironment;
 using VidHub.Services.Base;
 using VidHub.WinUI.UserControls.Dialogs;
 using WinRT.Interop;
-using Microsoft.Extensions.Logging;
-using VidHub.Platform.VidHubEnvironment;
 
 namespace VidHub.WinUI.Context
 {

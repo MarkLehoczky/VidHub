@@ -1,13 +1,13 @@
-﻿using VidHub.Core.Utilities;
-using VidHub.Services.Connectors.Dialogs;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using VidHub.Core.Utilities;
 using VidHub.Platform.VidHubEnvironment;
+using VidHub.Services.Connectors.Dialogs;
 
 namespace VidHub.ViewModels.Dialogs
 {
     public partial class PreviewImageFormatViewModel(IPreviewImageFormatConnector connector) : ViewModelTemplate(connector)
     {
-        private readonly ILogger logger = VidHubContext.Logger;
+        private new readonly ILogger logger = VidHubContext.Logger;
         public PreviewImageFormatViewModel() : this(VidHubContext.Host.GetService<IPreviewImageFormatConnector>()) { }
 
 

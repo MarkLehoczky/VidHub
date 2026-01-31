@@ -1,10 +1,9 @@
-﻿using System.Diagnostics;
+﻿using Microsoft.Extensions.Logging;
 using VidHub.Core;
 using VidHub.Core.Settings;
 using VidHub.Core.Utilities;
-using VidHub.Services.Base;
-using Microsoft.Extensions.Logging;
 using VidHub.Platform.VidHubEnvironment;
+using VidHub.Services.Base;
 
 namespace VidHub.Services.Logics
 {
@@ -272,8 +271,8 @@ namespace VidHub.Services.Logics
         private void UpdateDisplayedVideos()
         {
             logger.LogTrace("UpdateDisplayedVideos called");
-            var selectedComparer = sortOptions.TryGetValue(settings.SidePanel.SortBy ?? string.Empty, out Comparer<Video>? comparer) ? comparer : Comparer<Video>.Default;
-            var tempComparer = selectedComparer;
+            Comparer<Video> selectedComparer = sortOptions.TryGetValue(settings.SidePanel.SortBy ?? string.Empty, out Comparer<Video>? comparer) ? comparer : Comparer<Video>.Default;
+            Comparer<Video> tempComparer = selectedComparer;
             if (Orientation != "ASC")
             {
                 selectedComparer = Comparer<Video>.Create((x, y) => tempComparer.Compare(y, x));

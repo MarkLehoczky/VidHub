@@ -26,12 +26,22 @@ namespace VidHub.Platform.VidHubEnvironment
     {
         private readonly object locker = new();
 
-        public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
-        public bool IsEnabled(LogLevel logLevel) => logLevel >= minLevel;
+        public IDisposable? BeginScope<TState>(TState state) where TState : notnull
+        {
+            return null;
+        }
+
+        public bool IsEnabled(LogLevel logLevel)
+        {
+            return logLevel >= minLevel;
+        }
+
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
             if (!IsEnabled(logLevel))
+            {
                 return;
+            }
 
             lock (locker)
             {
@@ -47,13 +57,15 @@ namespace VidHub.Platform.VidHubEnvironment
         public override void LogAction<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
             if (!Debugger.IsAttached)
+            {
                 return;
+            }
 
             string message = formatter(state, exception);
-            string debugEntry = exception != null 
-                ? $"[{logLevel}] {message} ({exception.Message})" 
+            string debugEntry = exception != null
+                ? $"[{logLevel}] {message} ({exception.Message})"
                 : $"[{logLevel}] {message}";
-            
+
             Debug.WriteLine(debugEntry);
         }
     }
@@ -74,7 +86,7 @@ namespace VidHub.Platform.VidHubEnvironment
             string? directory = Path.GetDirectoryName(logFilePath);
             if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
             {
-                Directory.CreateDirectory(directory);
+                _ = Directory.CreateDirectory(directory);
             }
         }
 
@@ -89,19 +101,21 @@ namespace VidHub.Platform.VidHubEnvironment
                 Exception = exception?.ToString()
             };
 
-            using (FileStream fileStream = new(logFilePath, FileMode.Append, FileAccess.Write, FileShare.Read))
-            using (StreamWriter writer = new(fileStream))
-            {
-                string json = JsonSerializer.Serialize(logEntry, JsonOptions);
-                writer.WriteLine(json);
-            }
+            using FileStream fileStream = new(logFilePath, FileMode.Append, FileAccess.Write, FileShare.Read);
+            using StreamWriter writer = new(fileStream);
+            string json = JsonSerializer.Serialize(logEntry, JsonOptions);
+            writer.WriteLine(json);
         }
     }
 
 
     public class ConsoleLoggerProvider(LogLevel minLevel) : ILoggerProvider
     {
-        public ILogger CreateLogger(string categoryName) => new ConsoleLogger(minLevel);
+        public ILogger CreateLogger(string categoryName)
+        {
+            return new ConsoleLogger(minLevel);
+        }
+
         public void Dispose()
         {
         }

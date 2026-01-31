@@ -1,7 +1,7 @@
-﻿using Microsoft.UI.Xaml.Controls;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using System;
-using Microsoft.Extensions.Logging;
 using VidHub.Platform.VidHubEnvironment;
 
 namespace VidHub.WinUI.Converters

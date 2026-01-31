@@ -1,7 +1,7 @@
-﻿using System.Diagnostics;
+﻿using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 using VidHub.Core.Models;
 using VidHub.Core.Notifications;
-using Microsoft.Extensions.Logging;
 using VidHub.Platform.VidHubEnvironment;
 
 namespace VidHub.Core.Data

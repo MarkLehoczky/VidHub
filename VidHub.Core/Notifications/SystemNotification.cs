@@ -1,8 +1,8 @@
-﻿using Microsoft.Toolkit.Uwp.Notifications;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Toolkit.Uwp.Notifications;
 using VidHub.Core.Settings;
-using Windows.UI.Notifications;
-using Microsoft.Extensions.Logging;
 using VidHub.Platform.VidHubEnvironment;
+using Windows.UI.Notifications;
 
 namespace VidHub.Core.Notifications
 {

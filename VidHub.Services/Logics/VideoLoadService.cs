@@ -1,14 +1,14 @@
-﻿using VidHub.Core;
+﻿using Microsoft.Extensions.Logging;
+using VidHub.Core;
 using VidHub.Core.Notifications;
 using VidHub.Core.Settings;
 using VidHub.Core.Utilities;
+using VidHub.Platform.VidHubEnvironment;
 using VidHub.Services.Base;
 using VidHub.Services.System;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
-using Microsoft.Extensions.Logging;
-using VidHub.Platform.VidHubEnvironment;
 
 namespace VidHub.Services.Logics
 {

@@ -1,10 +1,9 @@
 using Microsoft.UI.Xaml.Controls;
 using VidHub.Core.Settings;
-using VidHub.Services.Base;
-using VidHub.ViewModels.Dialogs;
-using System;
-using VidHub.Services.Connectors.Dialogs;
 using VidHub.Platform.VidHubEnvironment;
+using VidHub.Services.Base;
+using VidHub.Services.Connectors.Dialogs;
+using VidHub.ViewModels.Dialogs;
 
 namespace VidHub.WinUI.UserControls.Dialogs
 {

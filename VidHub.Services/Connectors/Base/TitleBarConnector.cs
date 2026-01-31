@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using VidHub.Core.Models;
+﻿using VidHub.Core.Models;
 using VidHub.Core.Settings;
 using VidHub.Core.Utilities;
 using VidHub.Platform.VidHubEnvironment;
@@ -53,7 +52,7 @@ namespace VidHub.Services.Connectors.Base
                 vs.Update(UpdateSection.VIDEOCOLLECTION);
             }
         }
-        
+
         public bool DisplayDates
         {
             get => settings.Display.DisplayDate;

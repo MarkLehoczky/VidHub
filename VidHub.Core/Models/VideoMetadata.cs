@@ -18,7 +18,7 @@ namespace VidHub.Core.Models
             get => videoStreams;
             set
             {
-                SetFocusedProperty(ref videoStreams, value);
+                _ = SetFocusedProperty(ref videoStreams, value);
                 DefaultVideoStream = videoStreams.FirstOrDefault(s => s.IsDefault) ?? videoStreams.FirstOrDefault();
             }
         }
@@ -27,7 +27,7 @@ namespace VidHub.Core.Models
             get => audioStreams;
             set
             {
-                SetFocusedProperty(ref audioStreams, value);
+                _ = SetFocusedProperty(ref audioStreams, value);
                 DefaultAudioStream = audioStreams.FirstOrDefault(s => s.IsDefault) ?? audioStreams.FirstOrDefault();
             }
         }

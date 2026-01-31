@@ -1,8 +1,8 @@
-﻿using VidHub.Core.Settings;
+﻿using Microsoft.Extensions.Logging;
+using VidHub.Core.Settings;
 using VidHub.Core.Utilities;
-using VidHub.Services.Base;
-using Microsoft.Extensions.Logging;
 using VidHub.Platform.VidHubEnvironment;
+using VidHub.Services.Base;
 
 namespace VidHub.Services.Connectors.Dialogs
 {

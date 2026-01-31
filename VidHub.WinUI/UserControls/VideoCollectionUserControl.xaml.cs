@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -5,12 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VidHub.Core;
+using VidHub.Platform.VidHubEnvironment;
 using VidHub.Services.Logics;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 using Windows.System;
-using Microsoft.Extensions.Logging;
-using VidHub.Platform.VidHubEnvironment;
 
 namespace VidHub.WinUI.UserControls
 {
