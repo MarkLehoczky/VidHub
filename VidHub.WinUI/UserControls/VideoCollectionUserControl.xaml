@@ -39,7 +39,7 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Grid Width="{Binding ElementName=videocollection, Path=DataContext.PreviewImageWidth}" Margin="10">
+                        <Grid x:Name="videoelement" Width="{Binding ElementName=videocollection, Path=DataContext.PreviewImageWidth}" Margin="10">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*" />
                                 <RowDefinition Height="Auto" />
@@ -107,7 +107,15 @@
                                 </Grid>
                             </Grid>
 
-                            <TextBlock Text="{Binding Title}" FontWeight="Bold" TextTrimming="CharacterEllipsis" IsTextTrimmedChanged="TextTrimmingChanged" Visibility="{Binding ElementName=videocollection, Path=DataContext.DisplayTitles}" IsTextSelectionEnabled="True" Margin="10 5 10 0" Grid.Row="1" />
+                            <Grid Margin="10 0 0 0" HorizontalAlignment="Stretch" Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Text="{Binding Title}" FontWeight="Bold" TextTrimming="CharacterEllipsis" IsTextTrimmedChanged="TextTrimmingChanged" Visibility="{Binding ElementName=videocollection, Path=DataContext.DisplayTitles}" IsTextSelectionEnabled="True" VerticalAlignment="Center" Grid.Column="0" />
+                                <TextBlock Text="⁝" FontWeight="Bold" ContextFlyout="{Binding ElementName=videoelement, Path=ContextFlyout}" Visibility="{Binding ElementName=videocollection, Path=DataContext.DisplayTitles}" Tapped="ChangeContextMenu" Padding="10 5 10 5" Grid.Column="1" />
+                            </Grid>
                             <TextBlock Text="{Binding Date, Converter={StaticResource DateFormatting}}" Visibility="{Binding ElementName=videocollection, Path=DataContext.DisplayDates}" IsTextSelectionEnabled="True" FontStyle="Italic" Margin="5 5 10 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="2" />
                         </Grid>
                     </DataTemplate>
