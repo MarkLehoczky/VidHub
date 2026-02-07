@@ -36,6 +36,9 @@ namespace VidHub.Services.Connectors.Base
         bool OpenedSidePanel { get; set; }
         bool KeepSidePanelSettings { get; set; }
 
+        string CacheSize { get; }
+        string LogSize { get; }
+
         Task Export();
         Task Import();
         Task LoadItems(IEnumerable<IStorageItem> items, bool includeSubfolders);
@@ -46,5 +49,7 @@ namespace VidHub.Services.Connectors.Base
         Task OpenPassiveTitleFormatDialog();
         Task OpenPreviewImageFormatDialog();
         Task OpenVersionsDialog();
+        Task ClearCache();
+        Task ClearLogs();
     }
 }

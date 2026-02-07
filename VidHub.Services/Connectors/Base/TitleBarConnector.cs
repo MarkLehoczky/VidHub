@@ -1,4 +1,6 @@
-﻿using VidHub.Core.Models;
+﻿using Microsoft.Extensions.Logging;
+using System.Net.Sockets;
+using VidHub.Core.Models;
 using VidHub.Core.Settings;
 using VidHub.Core.Utilities;
 using VidHub.Platform.VidHubEnvironment;
@@ -211,6 +213,20 @@ namespace VidHub.Services.Connectors.Base
             }
         }
 
+        public string CacheSize => GetCacheSize();
+        private string GetCacheSize()
+        {
+            long size = Directory.EnumerateFiles(Path.Combine(Path.GetTempPath(), "VidHub"), "*", SearchOption.AllDirectories).Sum(f => new FileInfo(f).Length);
+            return $"Clear Cache ({FormatSize(size):0.##})";
+        }
+
+        public string LogSize => GetLogSize();
+        private string GetLogSize()
+        {
+            long size = Directory.EnumerateFiles(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "VidHub", "Logs"), "*", SearchOption.AllDirectories).Order().SkipLast(1).Sum(f => new FileInfo(f).Length);
+            return $"Clear Log ({FormatSize(size):0.##})";
+        }
+
 
         public async Task Import()
         {
@@ -253,6 +269,63 @@ namespace VidHub.Services.Connectors.Base
         public async Task OpenVersionsDialog()
         {
             await VidHubContext.Window.OpenVersionsDialog();
+        }
+        public async Task ClearCache()
+        {
+            await Task.Run(() =>
+            {
+                foreach (var file in Directory.EnumerateFiles(Path.Combine(Path.GetTempPath(), "VidHub"), "*", SearchOption.AllDirectories))
+                {
+                    try
+                    {
+                        VidHubContext.Logger.LogTrace("Deleting cache file: {File}", file);
+                        File.Delete(file);
+                    }
+                    catch (Exception ex)
+                    {
+                        VidHubContext.Logger.LogError(ex, "Failed to delete cache file: {File}", file);
+                    }
+                }
+            });
+        }
+        public async Task ClearLogs()
+        {
+            await Task.Run(() =>
+            {
+                foreach (var file in Directory.EnumerateFiles(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "VidHub", "Logs"), "*", SearchOption.AllDirectories).Order().SkipLast(1))
+                {
+                    try
+                    {
+                        VidHubContext.Logger.LogTrace("Deleting log file: {File}", file);
+                        File.Delete(file);
+                    }
+                    catch (Exception ex)
+                    {
+                        VidHubContext.Logger.LogError(ex, "Failed to delete log file: {File}", file);
+                    }
+                }
+            });
+        }
+
+
+        private static string FormatSize(long size)
+        {
+            if (size > 1024 * 1024 * 1024)
+            {
+                return $"{size / (1024 * 1024 * 1024)} GiB";
+            }
+            else if (size > 1024 * 1024)
+            {
+                return $"{size / (1024 * 1024)} MiB";
+            }
+            else if (size > 1024)
+            {
+                return $"{size / 1024} kiB";
+            }
+            else
+            {
+                return $"{size} B";
+            }
         }
     }
 }
