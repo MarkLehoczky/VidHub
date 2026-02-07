@@ -7,7 +7,7 @@ using VidHub.Platform.VidHubEnvironment;
 
 namespace VidHub.Core.Settings
 {
-    public class VidHubSettings : IVidHubSettings
+    public class VidHubSettings : IVidHubSettings, IAsyncDisposable, IDisposable
     {
         private readonly ILogger logger = VidHubContext.Logger;
 
@@ -20,6 +20,22 @@ namespace VidHub.Core.Settings
         public PerformanceSettings Performance { get; set; } = new PerformanceSettings();
         public SidePanelSettings SidePanel { get; set; } = new SidePanelSettings();
         public DialogSettings Dialogs { get; set; } = new DialogSettings();
+
+
+
+        public VidHubSettings()
+        {
+            try
+            {
+                logger.LogTrace("Loading settings");
+                Save();
+                logger.LogInformation("Settings loaded");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to load settings during VidHubSettings initialization");
+            }
+        }
 
 
         public bool DisplayNotification(BaseNotification notification)
@@ -409,6 +425,27 @@ namespace VidHub.Core.Settings
             catch (Exception ex)
             {
                 logger.LogError(ex, "Failed to save settings");
+            }
+        }
+
+
+        public async ValueTask DisposeAsync()
+        {
+            Dispose();
+            await Task.CompletedTask;
+        }
+
+        public void Dispose()
+        {
+            try
+            {
+                logger.LogTrace("Saving settings");
+                Save();
+                logger.LogInformation("Settings saved");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to save settings during VidHubSettings disposal");
             }
         }
     }
