@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -70,7 +71,7 @@ namespace VidHub.Platform.VidHubEnvironment
         }
     }
 
-    internal class FileLogger : LoggerTemplate
+    internal class FileLogger : LoggerTemplate, IDisposable
     {
         private static readonly JsonSerializerOptions JsonOptions = new()
         {
@@ -78,6 +79,12 @@ namespace VidHub.Platform.VidHubEnvironment
         };
 
         private readonly string logFilePath;
+        private readonly Queue<string> logBuffer = new();
+        private readonly object bufferLock = new();
+        private Timer? flushTimer;
+
+        private const int batchSize = 250;
+        private const int flushIntervalMilliseconds = 5000;
 
         public FileLogger(LogLevel minLevel, string logFilePath) : base(minLevel)
         {
@@ -88,6 +95,8 @@ namespace VidHub.Platform.VidHubEnvironment
             {
                 _ = Directory.CreateDirectory(directory);
             }
+
+            flushTimer = new Timer(_ => Flush(), null, flushIntervalMilliseconds, flushIntervalMilliseconds);
         }
 
         public override void LogAction<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
@@ -101,10 +110,49 @@ namespace VidHub.Platform.VidHubEnvironment
                 Exception = exception?.ToString()
             };
 
-            using FileStream fileStream = new(logFilePath, FileMode.Append, FileAccess.Write, FileShare.Read);
-            using StreamWriter writer = new(fileStream);
             string json = JsonSerializer.Serialize(logEntry, JsonOptions);
-            writer.WriteLine(json);
+
+            lock (bufferLock)
+            {
+                logBuffer.Enqueue(json);
+
+                if (logBuffer.Count >= batchSize)
+                {
+                    Flush();
+                }
+            }
+        }
+
+        private void Flush()
+        {
+            lock (bufferLock)
+            {
+                if (logBuffer.Count == 0)
+                {
+                    return;
+                }
+
+                try
+                {
+                    using FileStream fileStream = new(logFilePath, FileMode.Append, FileAccess.Write, FileShare.Read);
+                    using StreamWriter writer = new(fileStream);
+                    
+                    while (logBuffer.TryDequeue(out string? json))
+                    {
+                        writer.WriteLine(json);
+                    }
+                }
+                catch
+                {
+                }
+            }
+        }
+
+        public void Dispose()
+        {
+            flushTimer?.Dispose();
+            Flush();
+            GC.SuppressFinalize(this);
         }
     }
 

@@ -13,7 +13,7 @@
         <viewmodel:LicensesViewModel />
     </UserControl.DataContext>
 
-    <ScrollViewer Padding="0 0 5 0">
+    <ScrollViewer Padding="0 0 5 0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden">
         <StackPanel>
 
             <StackPanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" CornerRadius="{ThemeResource ControlCornerRadius}" Padding="10" Margin="0 0 0 30">
@@ -27,12 +27,21 @@
                 <ItemsControl ItemsSource="{Binding ExternalLicenses}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="•" Margin="0 0 10 0" VerticalAlignment="Center" />
-                                <TextBlock Text="{Binding Name}" Margin="0 0 10 0" VerticalAlignment="Center" />
-                                <TextBlock Text="▷" Foreground="{ThemeResource TextFillColorSecondary}" VerticalAlignment="Center" />
-                                <HyperlinkButton Content="{Binding License}" NavigateUri="{Binding Link}" VerticalAlignment="Center" />
-                            </StackPanel>
+                            <Grid HorizontalAlignment="Stretch">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="11*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="7*" />
+                                </Grid.ColumnDefinitions>
+                                
+                                <TextBlock Text="{Binding Module}" VerticalAlignment="Center" Grid.Column="0" />
+                                <TextBlock Text="▷" Foreground="{ThemeResource TextFillColorSecondary}" VerticalAlignment="Center" Grid.Column="1" />
+                                <HyperlinkButton NavigateUri="{Binding Link}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" VerticalAlignment="Center" Grid.Column="2">
+                                    <HyperlinkButton.Content>
+                                        <TextBlock Text="{Binding License}" TextWrapping="Wrap" />
+                                    </HyperlinkButton.Content>
+                                </HyperlinkButton>
+                            </Grid>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>

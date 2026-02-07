@@ -13,6 +13,12 @@ namespace VidHub.ViewModels
 
         public TitleBarViewModel() : this(VidHubContext.Host.GetService<ITitleBarConnector>()) { }
 
+        public void RefreshAboutMenu()
+        {
+            OnPropertyChanged(nameof(CacheSize));
+            OnPropertyChanged(nameof(LogSize));
+        }
+
 
         public bool DisplayInformationalSystemNotification
         {
@@ -149,6 +155,10 @@ namespace VidHub.ViewModels
         public string License => ApplicationLicenseData.Copyright;
 
 
+        public string CacheSize => connector.CacheSize;
+        public string LogSize => connector.LogSize;
+
+
         private bool CanOpenSidePanel()
         {
             return !connector.OpenedSidePanel;
@@ -245,6 +255,20 @@ namespace VidHub.ViewModels
         {
             logger.LogTrace("OpenLicensesDialogAsync invoked");
             await connector.OpenLicensesDialog();
+        }
+
+        [RelayCommand]
+        private async Task ClearCacheAsync()
+        {
+            logger.LogTrace("ClearCacheAsync invoked");
+            await connector.ClearCache();
+        }
+
+        [RelayCommand]
+        private async Task ClearLogsAsync()
+        {
+            logger.LogTrace("ClearLogsAsync invoked");
+            await connector.ClearLogs();
         }
 
 

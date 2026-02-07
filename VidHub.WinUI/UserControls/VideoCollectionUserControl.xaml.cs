@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using VidHub.Core;
 using VidHub.Platform.VidHubEnvironment;
@@ -143,6 +144,20 @@ namespace VidHub.WinUI.UserControls
             else
             {
                 logger.LogWarning("OpenVideo invoked but DataContext is not a Video");
+            }
+        }
+
+        private void ChangeContextMenu(object sender, TappedRoutedEventArgs e)
+        {
+            logger.LogTrace("ChangeContextMenu invoked with pointer: {PointerId}", e.PointerDeviceType);
+            if (sender is FrameworkElement element && element.DataContext is Video video)
+            {
+                element.ContextFlyout.ShowAt(element);
+                logger.LogDebug("Context menu set for video: {File}", video.FilePath);
+            }
+            else
+            {
+                logger.LogWarning("ChangeContextMenu invoked but DataContext is not a Video");
             }
         }
     }

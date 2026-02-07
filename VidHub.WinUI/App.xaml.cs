@@ -54,7 +54,6 @@ namespace VidHub.WinUI
             _window.Activate();
             VidHubContext.Window = new WindowContext(_window);
             _window.Activated += (s, e) => VidHubContext.Window.IsActive = e.WindowActivationState != WindowActivationState.Deactivated;
-            AppDomain.CurrentDomain.ProcessExit += (_, _) => VidHubSettings.Instance.Save();
         }
     }
 }
