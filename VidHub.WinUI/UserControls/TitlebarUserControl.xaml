@@ -32,19 +32,44 @@
                         <FontIcon Glyph="&#xea5b;" FontFamily="Segoe Fluent Icons" />
                     </MenuFlyoutItem.Icon>
                 </MenuFlyoutItem>
-                
                 <MenuFlyoutItem Text="Close Side Panel" Command="{Binding CloseSidePanelCommand}">
                     <MenuFlyoutItem.Icon>
                         <FontIcon Glyph="&#xea49;" FontFamily="Segoe Fluent Icons" />
                     </MenuFlyoutItem.Icon>
                 </MenuFlyoutItem>
+                
                 <MenuFlyoutSeparator />
-                <ToggleMenuFlyoutItem Text="Display Video Title" IsChecked="{Binding DisplayTitles, Mode=TwoWay}" />
-                <ToggleMenuFlyoutItem Text="Display Video Date" IsChecked="{Binding DisplayDates, Mode=TwoWay}" />
-                <ToggleMenuFlyoutItem Text="Display Video Duration" IsChecked="{Binding DisplayDurations, Mode=TwoWay}" />
-                <ToggleMenuFlyoutItem Text="Display Video Health" IsChecked="{Binding DisplayHealths, Mode=TwoWay}" />
-                <ToggleMenuFlyoutItem Text="Display Video Resolution" IsChecked="{Binding DisplayResolutions, Mode=TwoWay}" />
-                <ToggleMenuFlyoutItem Text="Display Video Framerate" IsChecked="{Binding DisplayFramerates, Mode=TwoWay}" />
+                
+                <ToggleMenuFlyoutItem Text="Display Video Title" IsChecked="{Binding DisplayTitles, Mode=TwoWay}">
+                    <ToggleMenuFlyoutItem.Icon>
+                        <FontIcon Glyph="&#xe8c1;" FontFamily="Segoe Fluent Icons" />
+                    </ToggleMenuFlyoutItem.Icon>
+                </ToggleMenuFlyoutItem>
+                <ToggleMenuFlyoutItem Text="Display Video Date" IsChecked="{Binding DisplayDates, Mode=TwoWay}">
+                    <ToggleMenuFlyoutItem.Icon>
+                        <FontIcon Glyph="&#xe787;" FontFamily="Segoe Fluent Icons" />
+                    </ToggleMenuFlyoutItem.Icon>
+                </ToggleMenuFlyoutItem>
+                <ToggleMenuFlyoutItem Text="Display Video Duration" IsChecked="{Binding DisplayDurations, Mode=TwoWay}">
+                    <ToggleMenuFlyoutItem.Icon>
+                        <FontIcon Glyph="&#xe916;" FontFamily="Segoe Fluent Icons" />
+                    </ToggleMenuFlyoutItem.Icon>
+                </ToggleMenuFlyoutItem>
+                <ToggleMenuFlyoutItem Text="Display Video Health" IsChecked="{Binding DisplayHealths, Mode=TwoWay}">
+                    <ToggleMenuFlyoutItem.Icon>
+                        <FontIcon Glyph="&#xe95e;" FontFamily="Segoe Fluent Icons" />
+                    </ToggleMenuFlyoutItem.Icon>
+                </ToggleMenuFlyoutItem>
+                <ToggleMenuFlyoutItem Text="Display Video Resolution" IsChecked="{Binding DisplayResolutions, Mode=TwoWay}">
+                    <ToggleMenuFlyoutItem.Icon>
+                        <FontIcon Glyph="&#xe799;" FontFamily="Segoe Fluent Icons" />
+                    </ToggleMenuFlyoutItem.Icon>
+                </ToggleMenuFlyoutItem>
+                <ToggleMenuFlyoutItem Text="Display Video Framerate" IsChecked="{Binding DisplayFramerates, Mode=TwoWay}">
+                    <ToggleMenuFlyoutItem.Icon>
+                        <FontIcon Glyph="&#xec49;" FontFamily="Segoe Fluent Icons" />
+                    </ToggleMenuFlyoutItem.Icon>
+                </ToggleMenuFlyoutItem>
             </MenuBarItem>
             <MenuBarItem Title="Settings" Height="32" Margin="0">
                 <MenuFlyoutSubItem Text="Notifications">
@@ -113,10 +138,11 @@
                 <MenuFlyoutItem Text="{Binding License}" Command="{Binding OpenLicensesDialogCommand}">
                     <MenuFlyoutItem.Icon>
                         <FontIcon Glyph="&#xeb95;" FontFamily="Segoe Fluent Icons" />
-                        <!-- FontIcon Glyph="&#xe82d;" FontFamily="Segoe Fluent Icons" /-->
                     </MenuFlyoutItem.Icon>
                 </MenuFlyoutItem>
+                
                 <MenuFlyoutSeparator />
+                
                 <MenuFlyoutItem Text="{Binding CacheSize}" Command="{Binding ClearCacheCommand}">
                     <MenuFlyoutItem.Icon>
                         <FontIcon Glyph="&#xea69;" FontFamily="Segoe Fluent Icons" />
