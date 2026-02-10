@@ -270,6 +270,11 @@ namespace VidHub.Services.Connectors.Base
         {
             await VidHubContext.Window.OpenVersionsDialog();
         }
+        public async Task OpenTagsDialog()
+        {
+            await VidHubContext.Window.OpenTagsDialog();
+        }
+
         public async Task ClearCache()
         {
             await Task.Run(() =>

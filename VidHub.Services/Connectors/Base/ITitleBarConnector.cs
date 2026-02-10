@@ -49,6 +49,7 @@ namespace VidHub.Services.Connectors.Base
         Task OpenPassiveTitleFormatDialog();
         Task OpenPreviewImageFormatDialog();
         Task OpenVersionsDialog();
+        Task OpenTagsDialog();
         Task ClearCache();
         Task ClearLogs();
     }

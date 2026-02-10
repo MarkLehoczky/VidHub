@@ -10,6 +10,7 @@
         Task OpenPassiveTitleFormatDialog();
         Task OpenActiveTitleFormatDialog();
         Task OpenVersionsDialog();
+        Task OpenTagsDialog();
         Task OpenRenameDialog(object obj);
         bool TryEnqueue(Action callback);
     }

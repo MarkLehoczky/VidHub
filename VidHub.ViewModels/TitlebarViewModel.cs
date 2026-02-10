@@ -258,6 +258,14 @@ namespace VidHub.ViewModels
         }
 
         [RelayCommand]
+        private async Task OpenTagsDialogAsync()
+        {
+            logger.LogTrace("OpenTagsDialogAsync invoked");
+            await connector.OpenTagsDialog();
+        }
+
+
+        [RelayCommand]
         private async Task ClearCacheAsync()
         {
             logger.LogTrace("ClearCacheAsync invoked");

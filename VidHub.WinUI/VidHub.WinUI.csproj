@@ -17,6 +17,7 @@
     <None Remove="Pages\MainPage.xaml" />
     <None Remove="UserControls\Dialogs\LicensesUserControl.xaml" />
     <None Remove="UserControls\Dialogs\RenameUserControl.xaml" />
+    <None Remove="UserControls\Dialogs\TagsUserControl.xaml" />
     <None Remove="UserControls\Dialogs\VersionsUserControl.xaml" />
     <None Remove="UserControls\SidepanelUserControl.xaml" />
     <None Remove="UserControls\TitlebarUserControl.xaml" />
@@ -59,6 +60,11 @@
     <Content Update="Assets\Placeholder.Image.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="UserControls\Dialogs\TagsUserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="UserControls\Modals\LicensesUserControl.xaml">

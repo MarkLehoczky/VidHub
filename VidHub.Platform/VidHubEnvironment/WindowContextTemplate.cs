@@ -45,5 +45,10 @@
         {
             throw new NotImplementedException();
         }
+
+        public Task OpenTagsDialog()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
