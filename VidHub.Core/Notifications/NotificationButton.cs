@@ -13,7 +13,7 @@ namespace VidHub.Core.Notifications
     public class CustomActionNotificationButton : NotificationButton
     {
         public Action CustomAction { get; set; } = () => { };
-        public IRelayCommand Command => new RelayCommand(CustomAction.Invoke);
+        public IRelayCommand Command => new RelayCommand(CustomAction);
     }
 
 

@@ -33,7 +33,7 @@ namespace VidHub.Core.Data
                     string output = process.StandardOutput.ReadToEnd();
                     process.WaitForExit();
                     bool isNotInstalled = string.IsNullOrEmpty(output);
-                    logger.LogDebug("FFmpeg installation check result: {IsNotInstalled}", isNotInstalled);
+                    logger.LogDebug("FFmpeg installation check result: {IsNotInstalled}", isNotInstalled ? "Not installed" : "Installed");
                     return isNotInstalled;
                 },
                 Button = new CustomActionNotificationButton
@@ -53,6 +53,7 @@ namespace VidHub.Core.Data
                                 process.StartInfo.RedirectStandardOutput = true;
                                 process.StartInfo.UseShellExecute = false;
                                 process.StartInfo.CreateNoWindow = false;
+                                process.Start();
                                 process.WaitForExit();
                                 logger.LogInformation("FFmpeg installation completed");
                             }
