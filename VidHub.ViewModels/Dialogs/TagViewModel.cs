@@ -3,34 +3,35 @@ using System.Collections.ObjectModel;
 using VidHub.Core.Models;
 using VidHub.Core.Utilities;
 using VidHub.Platform.VidHubEnvironment;
-using VidHub.Services.Base;
+using VidHub.Services.Connectors.Dialogs;
 
 namespace VidHub.ViewModels.Dialogs
 {
-    public partial class TagViewModel(IVideoService vs) : ViewModelTemplate(vs)
+    public partial class TagViewModel(ITagConnector connector) : ViewModelTemplate(connector)
     {
-        public ObservableCollection<Tag> Tags { get; } = [];
+        public ObservableCollection<Tag> Tags => connector.Tags;
 
 
-        public TagViewModel() : this(VidHubContext.Host.GetService<IVideoService>()) { }
+        public TagViewModel() : this(VidHubContext.Host.GetService<ITagConnector>()) { }
 
 
         [RelayCommand]
         private void AddTag()
         {
-            Tags.Insert(0, new Tag());
+            connector.AddTag();
         }
 
         [RelayCommand]
         private void RemoveTag(Tag tag)
         {
-            Tags.Remove(tag);
+            connector.RemoveTag(tag);
         }
 
         [RelayCommand]
         private void ChangeColorPickerState(Tag tag)
         {
-            tag.ColorPickerOpen = !tag.ColorPickerOpen;
+            connector.ChangeColorPickerState(tag);
+            OnPropertyChanged(nameof(Tags));
         }
 
 

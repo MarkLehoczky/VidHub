@@ -25,16 +25,6 @@ namespace VidHub.Core.Settings
 
         public VidHubSettings()
         {
-            try
-            {
-                logger.LogTrace("Loading settings");
-                Save();
-                logger.LogInformation("Settings loaded");
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Failed to load settings during VidHubSettings initialization");
-            }
         }
 
 
