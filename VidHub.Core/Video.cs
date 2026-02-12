@@ -20,6 +20,7 @@ namespace VidHub.Core
         public string PreviewImagePath { get; set; } = string.Empty;
         public string FilePath { get; set; } = string.Empty;
         public VideoMetadata Metadata { get; set; } = new();
+        public List<long> TagID { get; set; } = [];
     }
 
 
@@ -40,7 +41,7 @@ namespace VidHub.Core
         private VideoMetadata metadata;
         private DetailedHealth health;
         private bool loadingFinished;
-
+        private List<long> tagID;
         private readonly ILogger logger = VidHubContext.Logger;
 
         [JsonIgnore] public int ID { get => id; private set => SetFocusedProperty(ref id, value); }
@@ -53,6 +54,7 @@ namespace VidHub.Core
         public VideoMetadata Metadata { get => metadata; set => SetFocusedProperty(ref metadata, value); }
         [JsonIgnore] public DetailedHealth Health { get => health; set => SetFocusedProperty(ref health, value); }
         [JsonIgnore] public bool LoadingFinished { get => loadingFinished; set => SetFocusedProperty(ref loadingFinished, value); }
+        public List<long> TagID { get => tagID; set => SetFocusedProperty(ref tagID, value); }
 
 
         public Video()
@@ -69,6 +71,7 @@ namespace VidHub.Core
             metadata = new VideoMetadata();
             health = new DetailedHealth();
             loadingFinished = false;
+            tagID = [];
         }
         public Video(string file) : this()
         {
@@ -170,6 +173,7 @@ namespace VidHub.Core
                 previewImagePath = video.PreviewImagePath;
                 filePath = video.FilePath;
                 metadata = video.Metadata;
+                tagID = video.TagID;
 
                 logger.LogDebug("Cache loaded for {Hash}, previewImagePresent={HasPreview}", Hash, !string.IsNullOrEmpty(PreviewImagePath));
                 return !string.IsNullOrEmpty(PreviewImagePath);

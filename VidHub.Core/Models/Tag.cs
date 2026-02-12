@@ -12,7 +12,11 @@ namespace VidHub.Core.Models
 
         public string Name { get => name; set => SetProperty(ref name, value); }
         public Color Color { get => color; set => SetProperty(ref color, value); }
+        public long ID { get; set; } = DateTime.Now.Ticks;
+        public bool IsSelected { get; set; } = false;
         [JsonIgnore] public bool ColorPickerOpen { get => colorPickerOpen; set { SetProperty(ref colorPickerOpen, value); OnPropertyChanged(nameof(ColorPickerIcon)); } }
         [JsonIgnore] public string ColorPickerIcon => ColorPickerOpen ? "\ue70d" : "\ue70e";
+
+
     }
 }

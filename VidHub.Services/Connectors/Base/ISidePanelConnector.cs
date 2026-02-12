@@ -1,4 +1,6 @@
-﻿using VidHub.Services.Base;
+﻿using System.Collections.ObjectModel;
+using VidHub.Core.Models;
+using VidHub.Services.Base;
 
 namespace VidHub.Services.Connectors.Base
 {
@@ -15,16 +17,20 @@ namespace VidHub.Services.Connectors.Base
         bool FilterDuration { get; set; }
         TimeSpan? MaxDuration { get; set; }
         TimeSpan? MinDuration { get; set; }
+        bool FilterResolution { get; set; }
         bool DisplayMaximumResolutionVideos { get; set; }
         bool DisplayLargeResolutionVideos { get; set; }
         bool DisplayMediumResolutionVideos { get; set; }
         bool DisplayLowResolutionVideos { get; set; }
+        bool FilterFramerate { get; set; }
         bool DisplayMinimumResolutionVideos { get; set; }
         bool DisplayMaximumFramerateVideos { get; set; }
         bool DisplayLargeFramerateVideos { get; set; }
         bool DisplayMediumFramerateVideos { get; set; }
         bool DisplayLowFramerateVideos { get; set; }
         bool DisplayMinimumFramerateVideos { get; set; }
+        bool FilterTags { get; set; }
+        ObservableCollection<Tag> Tags { get; }
         bool HasActiveTransfer { get; }
         int LoadedFileCount { get; }
         int TotalFileCount { get; }
