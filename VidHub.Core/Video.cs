@@ -91,12 +91,14 @@ namespace VidHub.Core
         {
             bool result = TagID.Add(tag.ID);
             SaveCache();
+            OnPropertyChanged(nameof(AddedTags));
             return result;
         }
         public bool RemoveTag(Tag tag)
         {
             bool result = TagID.Remove(tag.ID);
             SaveCache();
+            OnPropertyChanged(nameof(AddedTags));
             return result;
         }
 

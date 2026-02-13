@@ -10,6 +10,7 @@ namespace VidHub.Services.Connectors.Base
         bool DisplayFramerates { get; set; }
         bool DisplayHealths { get; set; }
         bool DisplayResolutions { get; set; }
+        bool DisplayTags { get; set; }
         bool DisplayTitles { get; set; }
 
         bool DisplayInformationalSystemNotification { get; set; }

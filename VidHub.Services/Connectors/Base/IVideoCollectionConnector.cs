@@ -13,6 +13,7 @@ namespace VidHub.Services.Connectors.Base
         bool DisplayTitles { get; }
         bool DisplayResolutions { get; }
         bool DisplayFramerates { get; }
+        bool DisplayTags { get; }
         ObservableCollection<Video> DisplayedVideos { get; }
         ObservableCollection<BarNotification> DisplayedNotifications { get; }
         double PreviewImageWidth { get; }

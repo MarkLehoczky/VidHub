@@ -70,6 +70,11 @@
                         <FontIcon Glyph="&#xec49;" FontFamily="Segoe Fluent Icons" />
                     </ToggleMenuFlyoutItem.Icon>
                 </ToggleMenuFlyoutItem>
+                <ToggleMenuFlyoutItem Text="Display Video Tags" IsChecked="{Binding DisplayTags, Mode=TwoWay}">
+                    <ToggleMenuFlyoutItem.Icon>
+                        <FontIcon Glyph="&#xe8ec;" FontFamily="Segoe Fluent Icons" />
+                    </ToggleMenuFlyoutItem.Icon>
+                </ToggleMenuFlyoutItem>
             </MenuBarItem>
             <MenuBarItem Title="Settings" Height="32" Margin="0">
                 <MenuFlyoutSubItem Text="Notifications">

@@ -23,6 +23,7 @@ namespace VidHub.Services.Connectors.Base
         public bool DisplayTitles => settings.Display.DisplayTitle;
         public bool DisplayResolutions => settings.Display.DisplayResolution;
         public bool DisplayFramerates => settings.Display.DisplayFramerate;
+        public bool DisplayTags => settings.Display.DisplayTags;
 
         public double PreviewImageWidth => settings.Dialogs.DisplayFormat.PreviewImageWidth;
         public double PreviewImageHeight => settings.Dialogs.DisplayFormat.PreviewImageHeight;

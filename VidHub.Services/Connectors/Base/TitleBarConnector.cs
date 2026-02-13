@@ -100,6 +100,15 @@ namespace VidHub.Services.Connectors.Base
                 vs.Update(UpdateSection.VIDEOCOLLECTION);
             }
         }
+        public bool DisplayTags
+        {
+            get => settings.Display.DisplayTags;
+            set
+            {
+                settings.Display.DisplayTags = value;
+                vs.Update(UpdateSection.VIDEOCOLLECTION);
+            }
+        }
         public bool DisplayTitles
         {
             get => settings.Display.DisplayTitle;

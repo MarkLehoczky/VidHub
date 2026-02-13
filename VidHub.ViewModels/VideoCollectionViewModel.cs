@@ -25,6 +25,7 @@ namespace VidHub.ViewModels
         public bool DisplayHealths => connector.DisplayHealths;
         public bool DisplayResolutions => connector.DisplayResolutions;
         public bool DisplayFramerates => connector.DisplayFramerates;
+        public bool DisplayTags => connector.DisplayTags;
 
         public double PreviewImageWidth => connector.PreviewImageWidth;
         public double PreviewImageHeight => connector.PreviewImageHeight;
@@ -96,6 +97,7 @@ namespace VidHub.ViewModels
                 OnPropertyChanged(nameof(DisplayHealths));
                 OnPropertyChanged(nameof(DisplayResolutions));
                 OnPropertyChanged(nameof(DisplayFramerates));
+                OnPropertyChanged(nameof(DisplayTags));
                 OnPropertyChanged(nameof(PreviewImageWidth));
                 OnPropertyChanged(nameof(PreviewImageHeight));
             }
