@@ -24,5 +24,6 @@ namespace VidHub.Services.Connectors.Base
         Task OpenFileExplorer(Video video);
         Task Remove(Video video);
         Task Rename(Video video);
+        Task ModifyVideoTags(Video video);
     }
 }

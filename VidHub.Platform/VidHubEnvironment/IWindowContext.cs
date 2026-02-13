@@ -12,6 +12,7 @@
         Task OpenVersionsDialog();
         Task OpenTagsDialog();
         Task OpenRenameDialog(object obj);
+        Task OpenModifyTagsDialog(object obj);
         bool TryEnqueue(Action callback);
     }
 }

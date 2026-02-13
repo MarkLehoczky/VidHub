@@ -22,6 +22,10 @@ namespace VidHub.Services.Connectors.Dialogs
         public void RemoveTag(Tag tag)
         {
             Tags.Remove(tag);
+            foreach (var video in vs)
+            {
+                video.TagID.Remove(tag.ID);
+            }
         }
     }
 }

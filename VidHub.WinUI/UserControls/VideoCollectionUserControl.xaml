@@ -47,6 +47,17 @@
                             </Grid.RowDefinitions>
                             <Grid.ContextFlyout>
                                 <MenuFlyout>
+                                    <MenuFlyoutItem Text="Modify Tags" Command="{Binding ElementName=videocollection, Path=DataContext.ModifyVideoTagsCommand}" CommandParameter="{Binding}">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xe8ec;" FontFamily="Segoe Fluent Icons" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutItem Text="Rename" Command="{Binding ElementName=videocollection, Path=DataContext.RenameCommand}" CommandParameter="{Binding}">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xe8ac;" FontFamily="Segoe Fluent Icons" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutSeparator />
                                     <MenuFlyoutItem Text="Open" Command="{Binding ElementName=videocollection, Path=DataContext.OpenCommand}" CommandParameter="{Binding}">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xe786;" FontFamily="Segoe Fluent Icons" />
@@ -55,11 +66,6 @@
                                     <MenuFlyoutItem Text="Open in File Explorer" Command="{Binding ElementName=videocollection, Path=DataContext.OpenFileExplorerCommand}" CommandParameter="{Binding}">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xec50;" FontFamily="Segoe Fluent Icons" />
-                                        </MenuFlyoutItem.Icon>
-                                    </MenuFlyoutItem>
-                                    <MenuFlyoutItem Text="Rename" Command="{Binding ElementName=videocollection, Path=DataContext.RenameCommand}" CommandParameter="{Binding}">
-                                        <MenuFlyoutItem.Icon>
-                                            <FontIcon Glyph="&#xe8ac;" FontFamily="Segoe Fluent Icons" />
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
                                     <MenuFlyoutItem Text="Copy Video File" Command="{Binding ElementName=videocollection, Path=DataContext.CopyFileCommand}" CommandParameter="{Binding}">

@@ -135,7 +135,6 @@ namespace VidHub.Services.Logics
             }
         }
 
-
         public bool DisplayMaximumResolutionVideos
         {
             get => settings.SidePanel.DisplayMaximumResolutionVideos;

@@ -76,6 +76,13 @@ namespace VidHub.ViewModels
             await connector.Remove(video);
         }
 
+        [RelayCommand]
+        private async Task ModifyVideoTagsAsync(Video video)
+        {
+            logger.LogTrace("ModifyVideoTagsAsync invoked for {File}", video.FilePath);
+            await connector.ModifyVideoTags(video);
+        }
+
 
         public override void Update(IEnumerable<UpdateSection> sections)
         {

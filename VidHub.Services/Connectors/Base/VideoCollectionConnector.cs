@@ -109,5 +109,12 @@ namespace VidHub.Services.Connectors.Base
             _ = await Task.Run(() => vs.Remove(video));
             logger.LogInformation("Removed video {File}", video.FilePath);
         }
+
+        public async Task ModifyVideoTags(Video video)
+        {
+            logger.LogTrace("Modify Tags requested for file={File}", video.FilePath);
+            await VidHubContext.Window.OpenModifyTagsDialog(video);
+            logger.LogInformation("Modify Tags video {File}", video.FilePath);
+        }
     }
 }

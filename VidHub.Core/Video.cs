@@ -20,7 +20,7 @@ namespace VidHub.Core
         public string PreviewImagePath { get; set; } = string.Empty;
         public string FilePath { get; set; } = string.Empty;
         public VideoMetadata Metadata { get; set; } = new();
-        public List<long> TagID { get; set; } = [];
+        public HashSet<long> TagID { get; set; } = [];
     }
 
 
@@ -41,7 +41,7 @@ namespace VidHub.Core
         private VideoMetadata metadata;
         private DetailedHealth health;
         private bool loadingFinished;
-        private List<long> tagID;
+        private HashSet<long> tagID;
         private readonly ILogger logger = VidHubContext.Logger;
 
         [JsonIgnore] public int ID { get => id; private set => SetFocusedProperty(ref id, value); }
@@ -54,7 +54,9 @@ namespace VidHub.Core
         public VideoMetadata Metadata { get => metadata; set => SetFocusedProperty(ref metadata, value); }
         [JsonIgnore] public DetailedHealth Health { get => health; set => SetFocusedProperty(ref health, value); }
         [JsonIgnore] public bool LoadingFinished { get => loadingFinished; set => SetFocusedProperty(ref loadingFinished, value); }
-        public List<long> TagID { get => tagID; set => SetFocusedProperty(ref tagID, value); }
+        public HashSet<long> TagID { get => tagID; set => SetFocusedProperty(ref tagID, value); }
+        public List<Tag> AddedTags => [.. VidHubSettings.Instance.General.Tags.Where(t => TagID.Contains(t.ID))];
+        public List<Tag> NotAddedTags => [.. VidHubSettings.Instance.General.Tags.Where(t => !TagID.Contains(t.ID))];
 
 
         public Video()
@@ -84,6 +86,19 @@ namespace VidHub.Core
         public Video(Uri file) : this(file.AbsolutePath) { }
         public Video(StorageFile file) : this(file.Path) { }
 
+
+        public bool AddTag(Tag tag)
+        {
+            bool result = TagID.Add(tag.ID);
+            SaveCache();
+            return result;
+        }
+        public bool RemoveTag(Tag tag)
+        {
+            bool result = TagID.Remove(tag.ID);
+            SaveCache();
+            return result;
+        }
 
         public void CheckHealth()
         {
