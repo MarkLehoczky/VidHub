@@ -61,7 +61,7 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
 
-                        <ToggleSplitButton Content="RESOLUTION" IsChecked="{Binding FilterResolution}" Margin="0 0 5 0" HorizontalAlignment="Stretch" Grid.Column="0">
+                        <ToggleSplitButton Content="RESOLUTION" IsChecked="{Binding FilterResolution, Mode=TwoWay}" Margin="0 0 5 0" HorizontalAlignment="Stretch" Grid.Column="0">
                             <ToggleSplitButton.Flyout>
                                 <Flyout FlyoutPresenterStyle="{StaticResource FlyoutPresenterStyle}" >
                                     <ItemsControl UseSystemFocusVisuals="True">
@@ -75,7 +75,7 @@
                             </ToggleSplitButton.Flyout>
                         </ToggleSplitButton>
 
-                        <ToggleSplitButton Content="FRAMERATE" IsChecked="{Binding FilterFramerate}" Margin="5 0 0 0" HorizontalAlignment="Stretch" Grid.Column="1">
+                        <ToggleSplitButton Content="FRAMERATE" IsChecked="{Binding FilterFramerate, Mode=TwoWay}" Margin="5 0 0 0" HorizontalAlignment="Stretch" Grid.Column="1">
                             <ToggleSplitButton.Flyout>
                                 <Flyout FlyoutPresenterStyle="{StaticResource FlyoutPresenterStyle}">
                                     <ItemsControl>
@@ -90,7 +90,7 @@
                         </ToggleSplitButton>
                     </Grid>
 
-                    <ToggleSplitButton Content="TAGS" IsChecked="{Binding FilterTags}" Margin="0 5 0 10" HorizontalAlignment="Stretch">
+                    <ToggleSplitButton Content="TAGS" IsChecked="{Binding FilterTags, Mode=TwoWay}" Margin="0 5 0 10" HorizontalAlignment="Stretch">
                         <ToggleSplitButton.Flyout>
                             <Flyout FlyoutPresenterStyle="{StaticResource FlyoutPresenterStyle}">
                                 <ItemsRepeater ItemsSource="{Binding Tags}">
@@ -99,7 +99,7 @@
                                     </ItemsRepeater.Layout>
                                     <ItemsRepeater.ItemTemplate>
                                         <DataTemplate>
-                                            <ToggleButton IsChecked="{Binding IsSelected}" HorizontalAlignment="Stretch">
+                                            <ToggleButton IsChecked="{Binding IsSelected, Mode=TwoWay}" HorizontalAlignment="Stretch">
                                                 <ToggleButton.Content>
                                                     <Border Background="{Binding Color, Converter={StaticResource ColorConverter}}" BorderThickness="0" CornerRadius="10" Margin="5 0 5 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2" >
                                                         <TextBlock Text="{Binding Name}" FontFamily="Consolas" Margin="6 2" />

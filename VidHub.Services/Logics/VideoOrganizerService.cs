@@ -276,7 +276,6 @@ namespace VidHub.Services.Logics
             {
                 selectedComparer = Comparer<Video>.Create((x, y) => tempComparer.Compare(y, x));
             }
-            service.Predicate = settings.ValidVideo;
             service.Comparer = selectedComparer;
             service.Update(UpdateSection.VIDEOCOLLECTION);
             logger.LogDebug("Video collection updated with SortBy={SortBy}, Orientation={Orientation}", settings.SidePanel.SortBy, Orientation);
