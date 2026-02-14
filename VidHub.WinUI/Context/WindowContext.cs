@@ -260,6 +260,41 @@ namespace VidHub.WinUI.Context
             });
         }
 
+        public async Task OpenTagsDialog()
+        {
+            logger.LogTrace("OpenTagsDialog requested, hasOpenDialog={Has}", hasOpenDialog);
+            if (hasOpenDialog)
+            {
+                logger.LogDebug("Dialog already open, skipping");
+                return;
+            }
+
+            _ = TryEnqueue(async () =>
+            {
+                try
+                {
+                    TagsUserControl content = new();
+                    ContentDialog dialog = new()
+                    {
+                        Title = "VIDEO TAGS",
+                        CloseButtonText = "Finish",
+                        DefaultButton = ContentDialogButton.Close,
+                        Content = content,
+                        XamlRoot = window.Content.XamlRoot
+                    };
+                    hasOpenDialog = true;
+                    dialog.CloseButtonClick += (_, _) => hasOpenDialog = false;
+                    _ = await dialog.ShowAsync();
+                    logger.LogInformation("Tags dialog shown");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Failed to show Tags dialog");
+                    hasOpenDialog = false;
+                }
+            });
+        }
+
         public async Task OpenRenameDialog(object obj)
         {
             logger.LogTrace("OpenRenameDialog requested, hasOpenDialog={Has}", hasOpenDialog);
@@ -295,6 +330,46 @@ namespace VidHub.WinUI.Context
                 catch (Exception ex)
                 {
                     logger.LogError(ex, "Failed to show Rename dialog");
+                    hasOpenDialog = false;
+                }
+            });
+        }
+
+        public async Task OpenModifyTagsDialog(object obj)
+        {
+            logger.LogTrace("OpenModifyTagsDialog requested, hasOpenDialog={Has}", hasOpenDialog);
+            if (hasOpenDialog)
+            {
+                logger.LogDebug("Dialog already open, skipping");
+                return;
+            }
+
+            _ = TryEnqueue(async () =>
+            {
+                try
+                {
+                    if (obj == null || obj is not Video video)
+                    {
+                        logger.LogWarning("OpenModifyTagsDialog called with invalid object");
+                        return;
+                    }
+                    ModifyTagsUserControl content = new(video);
+                    ContentDialog dialog = new()
+                    {
+                        Title = $"Modify tags for '{video.Title}' video",
+                        CloseButtonText = "Finish",
+                        DefaultButton = ContentDialogButton.Close,
+                        Content = content,
+                        XamlRoot = window.Content.XamlRoot
+                    };
+                    hasOpenDialog = true;
+                    dialog.CloseButtonClick += (_, _) => hasOpenDialog = false;
+                    _ = await dialog.ShowAsync();
+                    logger.LogInformation("ModifyTag dialog shown for {File}", video.FilePath);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Failed to show ModifyTag dialog");
                     hasOpenDialog = false;
                 }
             });

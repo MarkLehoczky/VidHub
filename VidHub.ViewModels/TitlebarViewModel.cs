@@ -129,6 +129,11 @@ namespace VidHub.ViewModels
             get => connector.DisplayHealths;
             set { connector.DisplayHealths = value; logger.LogDebug("DisplayHealths set to {Value}", value); }
         }
+        public bool DisplayTags
+        {
+            get => connector.DisplayTags;
+            set { connector.DisplayTags = value; logger.LogDebug("DisplayTags set to {Value}", value); }
+        }
 
         public bool KeepSidePanelSettings
         {
@@ -256,6 +261,14 @@ namespace VidHub.ViewModels
             logger.LogTrace("OpenLicensesDialogAsync invoked");
             await connector.OpenLicensesDialog();
         }
+
+        [RelayCommand]
+        private async Task OpenTagsDialogAsync()
+        {
+            logger.LogTrace("OpenTagsDialogAsync invoked");
+            await connector.OpenTagsDialog();
+        }
+
 
         [RelayCommand]
         private async Task ClearCacheAsync()

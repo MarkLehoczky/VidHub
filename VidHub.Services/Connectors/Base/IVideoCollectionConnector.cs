@@ -13,6 +13,7 @@ namespace VidHub.Services.Connectors.Base
         bool DisplayTitles { get; }
         bool DisplayResolutions { get; }
         bool DisplayFramerates { get; }
+        bool DisplayTags { get; }
         ObservableCollection<Video> DisplayedVideos { get; }
         ObservableCollection<BarNotification> DisplayedNotifications { get; }
         double PreviewImageWidth { get; }
@@ -24,5 +25,6 @@ namespace VidHub.Services.Connectors.Base
         Task OpenFileExplorer(Video video);
         Task Remove(Video video);
         Task Rename(Video video);
+        Task ModifyVideoTags(Video video);
     }
 }

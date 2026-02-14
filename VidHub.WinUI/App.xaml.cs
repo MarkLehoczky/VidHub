@@ -37,6 +37,7 @@ namespace VidHub.WinUI
                     _ = services.AddSingleton<IDisplayFormatConnector, DisplayFormatConnector>();
                     _ = services.AddSingleton<ITitleFormatConnector, PassiveTitleFormatConnector>();
                     _ = services.AddSingleton<IPreviewImageFormatConnector, PreviewImageFormatConnector>();
+                    _ = services.AddSingleton<ITagConnector, TagConnector>();
                     _ = services.AddTransient<TitleBarViewModel>();
                     _ = services.AddTransient<SidePanelViewModel>();
                     _ = services.AddTransient<VideoCollectionViewModel>();
@@ -54,6 +55,7 @@ namespace VidHub.WinUI
             _window.Activate();
             VidHubContext.Window = new WindowContext(_window);
             _window.Activated += (s, e) => VidHubContext.Window.IsActive = e.WindowActivationState != WindowActivationState.Deactivated;
+            _window.Closed += (s, e) => VidHubSettings.Instance.Save();
         }
     }
 }

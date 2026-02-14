@@ -100,6 +100,15 @@ namespace VidHub.Services.Connectors.Base
                 vs.Update(UpdateSection.VIDEOCOLLECTION);
             }
         }
+        public bool DisplayTags
+        {
+            get => settings.Display.DisplayTags;
+            set
+            {
+                settings.Display.DisplayTags = value;
+                vs.Update(UpdateSection.VIDEOCOLLECTION);
+            }
+        }
         public bool DisplayTitles
         {
             get => settings.Display.DisplayTitle;
@@ -270,6 +279,11 @@ namespace VidHub.Services.Connectors.Base
         {
             await VidHubContext.Window.OpenVersionsDialog();
         }
+        public async Task OpenTagsDialog()
+        {
+            await VidHubContext.Window.OpenTagsDialog();
+        }
+
         public async Task ClearCache()
         {
             await Task.Run(() =>

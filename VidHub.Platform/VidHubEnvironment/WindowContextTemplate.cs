@@ -45,5 +45,15 @@
         {
             throw new NotImplementedException();
         }
+
+        public Task OpenTagsDialog()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task OpenModifyTagsDialog(object obj)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

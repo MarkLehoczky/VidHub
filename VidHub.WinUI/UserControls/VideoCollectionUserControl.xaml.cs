@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using VidHub.Core;
+using VidHub.Core.Models;
 using VidHub.Platform.VidHubEnvironment;
 using VidHub.Services.Logics;
 using Windows.ApplicationModel.DataTransfer;

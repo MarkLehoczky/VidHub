@@ -8,5 +8,6 @@
         public bool DisplayDate { get; set; } = true;
         public bool DisplayResolution { get; set; } = false;
         public bool DisplayFramerate { get; set; } = false;
+        public bool DisplayTags { get; set; } = true;
     }
 }

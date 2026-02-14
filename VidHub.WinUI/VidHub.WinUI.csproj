@@ -16,7 +16,9 @@
     <None Remove="Assets\Placeholder.Image.png" />
     <None Remove="Pages\MainPage.xaml" />
     <None Remove="UserControls\Dialogs\LicensesUserControl.xaml" />
+    <None Remove="UserControls\Dialogs\ModifyTagsUserControl.xaml" />
     <None Remove="UserControls\Dialogs\RenameUserControl.xaml" />
+    <None Remove="UserControls\Dialogs\TagsUserControl.xaml" />
     <None Remove="UserControls\Dialogs\VersionsUserControl.xaml" />
     <None Remove="UserControls\SidepanelUserControl.xaml" />
     <None Remove="UserControls\TitlebarUserControl.xaml" />
@@ -46,6 +48,9 @@
     <ProjectCapability Include="Msix" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Uwp.Controls.Primitives" Version="8.2.251219" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.2.251219" />
+    <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" Version="7.1.2" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.8" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4948" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.250606001" />
@@ -59,6 +64,16 @@
     <Content Update="Assets\Placeholder.Image.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="UserControls\Dialogs\ModifyTagsUserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="UserControls\Dialogs\TagsUserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="UserControls\Modals\LicensesUserControl.xaml">

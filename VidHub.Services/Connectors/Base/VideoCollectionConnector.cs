@@ -23,6 +23,7 @@ namespace VidHub.Services.Connectors.Base
         public bool DisplayTitles => settings.Display.DisplayTitle;
         public bool DisplayResolutions => settings.Display.DisplayResolution;
         public bool DisplayFramerates => settings.Display.DisplayFramerate;
+        public bool DisplayTags => settings.Display.DisplayTags;
 
         public double PreviewImageWidth => settings.Dialogs.DisplayFormat.PreviewImageWidth;
         public double PreviewImageHeight => settings.Dialogs.DisplayFormat.PreviewImageHeight;
@@ -108,6 +109,13 @@ namespace VidHub.Services.Connectors.Base
             logger.LogTrace("Remove requested for file={File}", video.FilePath);
             _ = await Task.Run(() => vs.Remove(video));
             logger.LogInformation("Removed video {File}", video.FilePath);
+        }
+
+        public async Task ModifyVideoTags(Video video)
+        {
+            logger.LogTrace("Modify Tags requested for file={File}", video.FilePath);
+            await VidHubContext.Window.OpenModifyTagsDialog(video);
+            logger.LogInformation("Modify Tags video {File}", video.FilePath);
         }
     }
 }

@@ -25,16 +25,6 @@ namespace VidHub.Core.Settings
 
         public VidHubSettings()
         {
-            try
-            {
-                logger.LogTrace("Loading settings");
-                Save();
-                logger.LogInformation("Settings loaded");
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Failed to load settings during VidHubSettings initialization");
-            }
         }
 
 
@@ -150,12 +140,7 @@ namespace VidHub.Core.Settings
                 logger.LogTrace("No duration filter applied");
             }
 
-            bool filterResolution = SidePanel.DisplayMaximumResolutionVideos
-                || SidePanel.DisplayLargeResolutionVideos
-                || SidePanel.DisplayMediumResolutionVideos
-                || SidePanel.DisplayLowResolutionVideos
-                || SidePanel.DisplayMinimumResolutionVideos;
-            if (filterResolution)
+            if (SidePanel.FilterResolution)
             {
                 logger.LogDebug("Applying resolution filter. Flags: Max={Max} Large={Large} Medium={Medium} Low={Low} Min={Min}",
                     SidePanel.DisplayMaximumResolutionVideos, SidePanel.DisplayLargeResolutionVideos, SidePanel.DisplayMediumResolutionVideos, SidePanel.DisplayLowResolutionVideos, SidePanel.DisplayMinimumResolutionVideos);
@@ -188,12 +173,7 @@ namespace VidHub.Core.Settings
                 logger.LogTrace("No resolution filter applied");
             }
 
-            bool filterFramerate = SidePanel.DisplayMaximumFramerateVideos
-                || SidePanel.DisplayLargeFramerateVideos
-                || SidePanel.DisplayMediumFramerateVideos
-                || SidePanel.DisplayLowFramerateVideos
-                || SidePanel.DisplayMinimumFramerateVideos;
-            if (filterFramerate)
+            if (SidePanel.FilterFramerate)
             {
                 logger.LogDebug("Applying framerate filter. Flags: Max={Max} Large={Large} Medium={Medium} Low={Low} Min={Min}",
                     SidePanel.DisplayMaximumFramerateVideos, SidePanel.DisplayLargeFramerateVideos, SidePanel.DisplayMediumFramerateVideos, SidePanel.DisplayLowFramerateVideos, SidePanel.DisplayMinimumFramerateVideos);
@@ -226,6 +206,20 @@ namespace VidHub.Core.Settings
             else
             {
                 logger.LogTrace("No framerate filter applied");
+            }
+
+            if (SidePanel.FilterTags)
+            {
+                logger.LogDebug("Applying tag filter. Selected tags: {SelectedTags}", string.Join(", ", General.Tags.Where(t => t.IsSelected).Select(t => t.Name)));
+                if (!General.Tags.Where(t => t.IsSelected).All(t => video.TagID.Contains(t.ID)))
+                {
+                    logger.LogDebug("Video '{Title}' does not have all selected tags, excluded by tag filter", video.Title);
+                    return false;
+                }
+                else
+                {
+                    logger.LogTrace("Video '{Title}' matched tag filter", video.Title);
+                }
             }
 
             logger.LogDebug("Video '{Title}' passed all filters", video.Title);
@@ -390,6 +384,10 @@ namespace VidHub.Core.Settings
                         }
                         else
                         {
+                            foreach (var tag in General.Tags)
+                            {
+                                tag.IsSelected = false;
+                            }
                             logger.LogDebug("SidePanel settings not restored because KeepSidePanelSettings=false");
                         }
                     }

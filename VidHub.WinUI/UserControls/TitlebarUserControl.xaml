@@ -70,6 +70,11 @@
                         <FontIcon Glyph="&#xec49;" FontFamily="Segoe Fluent Icons" />
                     </ToggleMenuFlyoutItem.Icon>
                 </ToggleMenuFlyoutItem>
+                <ToggleMenuFlyoutItem Text="Display Video Tags" IsChecked="{Binding DisplayTags, Mode=TwoWay}">
+                    <ToggleMenuFlyoutItem.Icon>
+                        <FontIcon Glyph="&#xe8ec;" FontFamily="Segoe Fluent Icons" />
+                    </ToggleMenuFlyoutItem.Icon>
+                </ToggleMenuFlyoutItem>
             </MenuBarItem>
             <MenuBarItem Title="Settings" Height="32" Margin="0">
                 <MenuFlyoutSubItem Text="Notifications">
@@ -117,6 +122,7 @@
                     <MenuFlyoutItem Text="Format the Display" Command="{Binding OpenDisplayFormatDialogCommand}" />
                     <MenuFlyoutItem Text="Format the initial Title" Command="{Binding OpenPassiveTitleFormatDialogCommand}" />
                     <MenuFlyoutItem Text="Format the initial Preview Image" Command="{Binding OpenPreviewImageFormatDialogCommand}" />
+                    <MenuFlyoutItem Text="Format Tags" Command="{Binding OpenTagsDialogCommand}" />
                 </MenuFlyoutSubItem>
 
                 <MenuFlyoutSubItem Text="Filtering &amp; Search">

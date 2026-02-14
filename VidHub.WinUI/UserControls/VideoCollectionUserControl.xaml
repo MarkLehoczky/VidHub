@@ -18,6 +18,7 @@
         <converter:HealthColorConverter x:Key="HealthColor" />
         <converter:NotificationButtonConverter x:Key="TransformButton" />
         <converter:PreviewImagePlaceholderConverter x:Key="PlaceholderFallback" />
+        <converter:ColorConverter x:Key="ColorConverter" />
     </UserControl.Resources>
 
     <UserControl.DataContext>
@@ -47,6 +48,17 @@
                             </Grid.RowDefinitions>
                             <Grid.ContextFlyout>
                                 <MenuFlyout>
+                                    <MenuFlyoutItem Text="Modify Tags" Command="{Binding ElementName=videocollection, Path=DataContext.ModifyVideoTagsCommand}" CommandParameter="{Binding}">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xe8ec;" FontFamily="Segoe Fluent Icons" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutItem Text="Rename" Command="{Binding ElementName=videocollection, Path=DataContext.RenameCommand}" CommandParameter="{Binding}">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xe8ac;" FontFamily="Segoe Fluent Icons" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutSeparator />
                                     <MenuFlyoutItem Text="Open" Command="{Binding ElementName=videocollection, Path=DataContext.OpenCommand}" CommandParameter="{Binding}">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xe786;" FontFamily="Segoe Fluent Icons" />
@@ -55,11 +67,6 @@
                                     <MenuFlyoutItem Text="Open in File Explorer" Command="{Binding ElementName=videocollection, Path=DataContext.OpenFileExplorerCommand}" CommandParameter="{Binding}">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xec50;" FontFamily="Segoe Fluent Icons" />
-                                        </MenuFlyoutItem.Icon>
-                                    </MenuFlyoutItem>
-                                    <MenuFlyoutItem Text="Rename" Command="{Binding ElementName=videocollection, Path=DataContext.RenameCommand}" CommandParameter="{Binding}">
-                                        <MenuFlyoutItem.Icon>
-                                            <FontIcon Glyph="&#xe8ac;" FontFamily="Segoe Fluent Icons" />
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
                                     <MenuFlyoutItem Text="Copy Video File" Command="{Binding ElementName=videocollection, Path=DataContext.CopyFileCommand}" CommandParameter="{Binding}">
@@ -98,12 +105,24 @@
                                     <FontIcon Glyph="&#xf136;" Foreground="{ThemeResource ApplicationPageBackgroundThemeBrush}" Opacity="0.8" Visibility="{Binding ElementName=videocollection, Path=DataContext.DisplayHealths}" FontFamily="Segoe Fluent Icons" Margin="4" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
                                     <FontIcon Glyph="{Binding Health.State, Converter={StaticResource HealthIcon}}" Foreground="{Binding Health.State, Converter={StaticResource HealthColor}}" ToolTipService.ToolTip="{Binding Health.Details}" Visibility="{Binding ElementName=videocollection, Path=DataContext.DisplayHealths}" FontFamily="Segoe Fluent Icons" Margin="4" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
 
-                                    <Border Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Opacity="0.8" Visibility="{Binding ElementName=videocollection, Path=DataContext.DisplayResolutions}" BorderThickness="0" CornerRadius="10" Margin="4" HorizontalAlignment="Left" VerticalAlignment="Top" >
-                                        <TextBlock Text="{Binding Metadata.DefaultVideoStream.Resolution}" FontFamily="Consolas" Margin="6 2" />
-                                    </Border>
-                                    <Border Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Opacity="0.8" Visibility="{Binding ElementName=videocollection, Path=DataContext.DisplayFramerates}" BorderThickness="0" CornerRadius="10" Margin="4" HorizontalAlignment="Right" VerticalAlignment="Top" >
-                                        <TextBlock Text="{Binding Metadata.DefaultVideoStream.Framerate}" FontFamily="Consolas" Margin="6 2" />
-                                    </Border>
+                                    <StackPanel Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Top">
+                                        <Border Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Opacity="0.8" Visibility="{Binding ElementName=videocollection, Path=DataContext.DisplayResolutions}" BorderThickness="0" CornerRadius="10" Margin="0 4 4 0" HorizontalAlignment="Right" VerticalAlignment="Top" >
+                                            <TextBlock Text="{Binding Metadata.DefaultVideoStream.Resolution}" FontFamily="Consolas" Margin="6 2" />
+                                        </Border>
+                                        <Border Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Opacity="0.8" Visibility="{Binding ElementName=videocollection, Path=DataContext.DisplayFramerates}" BorderThickness="0" CornerRadius="10" Margin="0 4 4 0" HorizontalAlignment="Right" VerticalAlignment="Top" >
+                                            <TextBlock Text="{Binding Metadata.DefaultVideoStream.Framerate}" FontFamily="Consolas" Margin="6 2" />
+                                        </Border>
+                                    </StackPanel>
+
+                                    <ItemsRepeater ItemsSource="{Binding AddedTags}" HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="{Binding ElementName=videocollection, Path=DataContext.DisplayTags}">
+                                        <ItemsRepeater.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Background="{Binding Color, Converter={StaticResource ColorConverter}}" BorderThickness="0" CornerRadius="10" Margin="4 4 0 0" HorizontalAlignment="Left" VerticalAlignment="Top" >
+                                                    <TextBlock Text="{Binding Name}" FontFamily="Consolas" Margin="6 2" />
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsRepeater.ItemTemplate>
+                                    </ItemsRepeater>
                                 </Grid>
                             </Grid>
 

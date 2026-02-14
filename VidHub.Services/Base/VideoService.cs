@@ -19,7 +19,6 @@ namespace VidHub.Services.Base
         private readonly IList<Video> videos = [];
         private readonly IList<BarNotification> notifications = [];
 
-        public Func<Video, bool> Predicate { get; set; } = _ => true;
         public Comparer<Video> Comparer { get; set; } = Comparer<Video>.Default;
 
 
@@ -69,7 +68,7 @@ namespace VidHub.Services.Base
         {
             lock (locker)
             {
-                List<Video> list = videos.Where(Predicate).ToList();
+                List<Video> list = videos.Where(VidHubSettings.Instance.ValidVideo).ToList();
                 list.Sort(Comparer);
                 logger.LogTrace("GetDisplayedVideos returning {Count}", list.Count);
                 return list;
