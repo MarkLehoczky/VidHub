@@ -122,7 +122,6 @@
                     <MenuFlyoutItem Text="Format the Display" Command="{Binding OpenDisplayFormatDialogCommand}" />
                     <MenuFlyoutItem Text="Format the initial Title" Command="{Binding OpenPassiveTitleFormatDialogCommand}" />
                     <MenuFlyoutItem Text="Format the initial Preview Image" Command="{Binding OpenPreviewImageFormatDialogCommand}" />
-                    <MenuFlyoutItem Text="Format Tags" Command="{Binding OpenTagsDialogCommand}" />
                 </MenuFlyoutSubItem>
 
                 <MenuFlyoutSubItem Text="Filtering &amp; Search">

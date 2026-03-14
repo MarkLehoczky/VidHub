@@ -57,13 +57,19 @@
 
                     <Grid Margin="0 10 0 5" HorizontalAlignment="Stretch">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition />
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <ToggleSplitButton Content="RESOLUTION" IsChecked="{Binding FilterResolution, Mode=TwoWay}" Margin="0 0 5 0" HorizontalAlignment="Stretch" Grid.Column="0">
+                        <Button Command="{Binding OpenResolutionSettingsCommand}" HorizontalAlignment="Stretch" Grid.Column="0">
+                            <Button.Content>
+                                <FontIcon Glyph="&#xe713;" FontFamily="Segoe Fluent Icons" />
+                            </Button.Content>
+                        </Button>
+
+                        <ToggleSplitButton Content="RESOLUTION" IsChecked="{Binding FilterResolution, Mode=TwoWay}" Margin="10 0 0 0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="1">
                             <ToggleSplitButton.Flyout>
-                                <Flyout FlyoutPresenterStyle="{StaticResource FlyoutPresenterStyle}">
+                                <Flyout>
                                     <ItemsRepeater ItemsSource="{Binding Resolutions}">
                                         <ItemsRepeater.Layout>
                                             <StackLayout />
@@ -81,10 +87,23 @@
                                 </Flyout>
                             </ToggleSplitButton.Flyout>
                         </ToggleSplitButton>
+                    </Grid>
 
-                        <ToggleSplitButton Content="FRAMERATE" IsChecked="{Binding FilterFramerate, Mode=TwoWay}" Margin="5 0 0 0" HorizontalAlignment="Stretch" Grid.Column="1">
+                    <Grid Margin="0 5 0 5" HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <Button Command="{Binding OpenFramerateSettingsCommand}" HorizontalAlignment="Stretch" Grid.Column="0">
+                            <Button.Content>
+                                <FontIcon Glyph="&#xe713;" FontFamily="Segoe Fluent Icons" />
+                            </Button.Content>
+                        </Button>
+
+                        <ToggleSplitButton Content="FRAMERATE" IsChecked="{Binding FilterFramerate, Mode=TwoWay}" Margin="10 0 0 0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="1">
                             <ToggleSplitButton.Flyout>
-                                <Flyout FlyoutPresenterStyle="{StaticResource FlyoutPresenterStyle}">
+                                <Flyout>
                                     <ItemsRepeater ItemsSource="{Binding Framerates}">
                                         <ItemsRepeater.Layout>
                                             <StackLayout />
@@ -104,32 +123,42 @@
                         </ToggleSplitButton>
                     </Grid>
 
-                    <ToggleSplitButton Content="TAGS" IsChecked="{Binding FilterTags, Mode=TwoWay}" Margin="0 5 0 10" HorizontalAlignment="Stretch">
-                        <ToggleSplitButton.Flyout>
-                            <Flyout FlyoutPresenterStyle="{StaticResource FlyoutPresenterStyle}">
-                                <ItemsRepeater ItemsSource="{Binding Tags}">
-                                    <ItemsRepeater.Layout>
-                                        <StackLayout />
-                                    </ItemsRepeater.Layout>
-                                    <ItemsRepeater.ItemTemplate>
-                                        <DataTemplate>
-                                            <ToggleButton IsChecked="{Binding IsSelected, Mode=TwoWay}" HorizontalAlignment="Stretch" Margin="0 0 0 5">
-                                                <ToggleButton.Content>
-                                                    <Border Background="{Binding Color, Converter={StaticResource ColorConverter}}" BorderThickness="0" CornerRadius="10" Margin="5 0 5 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2" >
-                                                        <TextBlock Text="{Binding Name}" FontFamily="Consolas" Margin="6 2" />
-                                                    </Border>
-                                                </ToggleButton.Content>
-                                            </ToggleButton>
-                                        </DataTemplate>
-                                    </ItemsRepeater.ItemTemplate>
-                                </ItemsRepeater>
-                            </Flyout>
-                        </ToggleSplitButton.Flyout>
-                    </ToggleSplitButton>
 
-                    <Button Content="Modify resolutions" Command="{Binding OpenResolutionSettingsCommand}" HorizontalAlignment="Stretch" />
-                    <Button Content="Modify framerate" Command="{Binding OpenFramerateSettingsCommand}" HorizontalAlignment="Stretch" />
-                    <Button Content="Modify tags" Command="{Binding OpenTagSettingsCommand}" HorizontalAlignment="Stretch" />
+                    <Grid Margin="0 5 0 10" HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <Button Command="{Binding OpenTagSettingsCommand}" HorizontalAlignment="Stretch" Grid.Column="0">
+                            <Button.Content>
+                                <FontIcon Glyph="&#xe713;" FontFamily="Segoe Fluent Icons" />
+                            </Button.Content>
+                        </Button>
+
+                        <ToggleSplitButton Content="TAGS" IsChecked="{Binding FilterTags, Mode=TwoWay}" Margin="10 0 0 0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="1">
+                            <ToggleSplitButton.Flyout>
+                                <Flyout>
+                                    <ItemsRepeater ItemsSource="{Binding Tags}">
+                                        <ItemsRepeater.Layout>
+                                            <StackLayout />
+                                        </ItemsRepeater.Layout>
+                                        <ItemsRepeater.ItemTemplate>
+                                            <DataTemplate>
+                                                <ToggleButton IsChecked="{Binding IsSelected, Mode=TwoWay}" HorizontalAlignment="Stretch" Margin="0 0 0 5">
+                                                    <ToggleButton.Content>
+                                                        <Border Background="{Binding Color, Converter={StaticResource ColorConverter}}" BorderThickness="0" CornerRadius="10" Margin="5 0 5 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2" >
+                                                            <TextBlock Text="{Binding Name}" FontFamily="Consolas" Margin="6 2" />
+                                                        </Border>
+                                                    </ToggleButton.Content>
+                                                </ToggleButton>
+                                            </DataTemplate>
+                                        </ItemsRepeater.ItemTemplate>
+                                    </ItemsRepeater>
+                                </Flyout>
+                            </ToggleSplitButton.Flyout>
+                        </ToggleSplitButton>
+                    </Grid>
 
                 </StackPanel>
             </ScrollViewer>
