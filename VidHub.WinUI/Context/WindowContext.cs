@@ -397,6 +397,13 @@ namespace VidHub.WinUI.Context
                         Content = content,
                         XamlRoot = window.Content.XamlRoot
                     };
+                    dialog.Closed += (_, _) =>
+                    {
+                        foreach (Video video in VidHubContext.Host.GetService<IVideoService>())
+                        {
+                            video.Metadata.DefaultVideoStream?.SetFixedResolution();
+                        }
+                    };
                     hasOpenDialog = true;
                     dialog.CloseButtonClick += (_, _) => hasOpenDialog = false;
                     _ = await dialog.ShowAsync();
@@ -430,7 +437,14 @@ namespace VidHub.WinUI.Context
                         CloseButtonText = "Finish",
                         DefaultButton = ContentDialogButton.Close,
                         Content = content,
-                        XamlRoot = window.Content.XamlRoot
+                        XamlRoot = window.Content.XamlRoot,
+                    };
+                    dialog.Closed += (_, _) =>
+                    {
+                        foreach (Video video in VidHubContext.Host.GetService<IVideoService>())
+                        {
+                            video.Metadata.DefaultVideoStream?.SetFixedFramerate();
+                        }
                     };
                     hasOpenDialog = true;
                     dialog.CloseButtonClick += (_, _) => hasOpenDialog = false;

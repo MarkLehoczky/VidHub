@@ -63,14 +63,21 @@
 
                         <ToggleSplitButton Content="RESOLUTION" IsChecked="{Binding FilterResolution, Mode=TwoWay}" Margin="0 0 5 0" HorizontalAlignment="Stretch" Grid.Column="0">
                             <ToggleSplitButton.Flyout>
-                                <Flyout FlyoutPresenterStyle="{StaticResource FlyoutPresenterStyle}" >
-                                    <ItemsControl UseSystemFocusVisuals="True">
-                                        <ToggleButton Content="2160p" IsChecked="{Binding DisplayMaximumResolutionVideos, Mode=TwoWay}" Margin="0 0 0 5" HorizontalAlignment="Stretch" />
-                                        <ToggleButton Content="1440p" IsChecked="{Binding DisplayLargeResolutionVideos, Mode=TwoWay}" Margin="0 0 0 5" HorizontalAlignment="Stretch" />
-                                        <ToggleButton Content="1080p" IsChecked="{Binding DisplayMediumResolutionVideos, Mode=TwoWay}" Margin="0 0 0 5" HorizontalAlignment="Stretch" />
-                                        <ToggleButton Content="720p" IsChecked="{Binding DisplayLowResolutionVideos, Mode=TwoWay}" Margin="0 0 0 5" HorizontalAlignment="Stretch" />
-                                        <ToggleButton Content="Low" IsChecked="{Binding DisplayMinimumResolutionVideos, Mode=TwoWay}" Margin="0 0 0 0" HorizontalAlignment="Stretch" />
-                                    </ItemsControl>
+                                <Flyout FlyoutPresenterStyle="{StaticResource FlyoutPresenterStyle}">
+                                    <ItemsRepeater ItemsSource="{Binding Resolutions}">
+                                        <ItemsRepeater.Layout>
+                                            <StackLayout />
+                                        </ItemsRepeater.Layout>
+                                        <ItemsRepeater.ItemTemplate>
+                                            <DataTemplate>
+                                                <ToggleButton IsChecked="{Binding IsSelected, Mode=TwoWay}" HorizontalAlignment="Stretch" Margin="0 0 0 5">
+                                                    <ToggleButton.Content>
+                                                        <TextBlock Text="{Binding Name}" FontFamily="Consolas" Margin="6 2" />
+                                                    </ToggleButton.Content>
+                                                </ToggleButton>
+                                            </DataTemplate>
+                                        </ItemsRepeater.ItemTemplate>
+                                    </ItemsRepeater>
                                 </Flyout>
                             </ToggleSplitButton.Flyout>
                         </ToggleSplitButton>
@@ -78,13 +85,20 @@
                         <ToggleSplitButton Content="FRAMERATE" IsChecked="{Binding FilterFramerate, Mode=TwoWay}" Margin="5 0 0 0" HorizontalAlignment="Stretch" Grid.Column="1">
                             <ToggleSplitButton.Flyout>
                                 <Flyout FlyoutPresenterStyle="{StaticResource FlyoutPresenterStyle}">
-                                    <ItemsControl>
-                                        <ToggleButton Content="120fps" IsChecked="{Binding DisplayMaximumFramerateVideos, Mode=TwoWay}" Margin="0 0 0 5" HorizontalAlignment="Stretch" />
-                                        <ToggleButton Content="60fps" IsChecked="{Binding DisplayLargeFramerateVideos, Mode=TwoWay}" Margin="0 0 0 5" HorizontalAlignment="Stretch" />
-                                        <ToggleButton Content="30fps" IsChecked="{Binding DisplayMediumFramerateVideos, Mode=TwoWay}" Margin="0 0 0 5" HorizontalAlignment="Stretch" />
-                                        <ToggleButton Content="20fps" IsChecked="{Binding DisplayLowFramerateVideos, Mode=TwoWay}" Margin="0 0 0 5" HorizontalAlignment="Stretch" />
-                                        <ToggleButton Content="Low" IsChecked="{Binding DisplayMinimumFramerateVideos, Mode=TwoWay}" Margin="0 0 0 0" HorizontalAlignment="Stretch" />
-                                    </ItemsControl>
+                                    <ItemsRepeater ItemsSource="{Binding Framerates}">
+                                        <ItemsRepeater.Layout>
+                                            <StackLayout />
+                                        </ItemsRepeater.Layout>
+                                        <ItemsRepeater.ItemTemplate>
+                                            <DataTemplate>
+                                                <ToggleButton IsChecked="{Binding IsSelected, Mode=TwoWay}" HorizontalAlignment="Stretch" Margin="0 0 0 5">
+                                                    <ToggleButton.Content>
+                                                        <TextBlock Text="{Binding Name}" FontFamily="Consolas" Margin="6 2" />
+                                                    </ToggleButton.Content>
+                                                </ToggleButton>
+                                            </DataTemplate>
+                                        </ItemsRepeater.ItemTemplate>
+                                    </ItemsRepeater>
                                 </Flyout>
                             </ToggleSplitButton.Flyout>
                         </ToggleSplitButton>
@@ -99,7 +113,7 @@
                                     </ItemsRepeater.Layout>
                                     <ItemsRepeater.ItemTemplate>
                                         <DataTemplate>
-                                            <ToggleButton IsChecked="{Binding IsSelected, Mode=TwoWay}" HorizontalAlignment="Stretch">
+                                            <ToggleButton IsChecked="{Binding IsSelected, Mode=TwoWay}" HorizontalAlignment="Stretch" Margin="0 0 0 5">
                                                 <ToggleButton.Content>
                                                     <Border Background="{Binding Color, Converter={StaticResource ColorConverter}}" BorderThickness="0" CornerRadius="10" Margin="5 0 5 0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2" >
                                                         <TextBlock Text="{Binding Name}" FontFamily="Consolas" Margin="6 2" />
@@ -116,7 +130,7 @@
                     <Button Content="Modify resolutions" Command="{Binding OpenResolutionSettingsCommand}" HorizontalAlignment="Stretch" />
                     <Button Content="Modify framerate" Command="{Binding OpenFramerateSettingsCommand}" HorizontalAlignment="Stretch" />
                     <Button Content="Modify tags" Command="{Binding OpenTagSettingsCommand}" HorizontalAlignment="Stretch" />
-                    
+
                 </StackPanel>
             </ScrollViewer>
 

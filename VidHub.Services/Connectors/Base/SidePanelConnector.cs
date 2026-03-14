@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using VidHub.Core.Models;
 using VidHub.Core.Settings;
+using VidHub.Core.Streams;
 using VidHub.Core.Utilities;
 using VidHub.Platform.VidHubEnvironment;
 using VidHub.Services.Base;
@@ -49,6 +50,9 @@ namespace VidHub.Services.Connectors.Base
         public int TotalFileCount => load.TotalFileCount;
         public string TransferDescription => load.TransferDescription;
 
+        public ObservableCollection<FixedResolution> Resolutions => settings.General.Resolutions;
+
+        public ObservableCollection<FixedFramerate> Framerates => settings.General.Framerates;
 
         public void ChangeOrientation()
         {

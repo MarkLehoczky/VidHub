@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using VidHub.Core.Models;
+using VidHub.Core.Streams;
 using VidHub.Services.Base;
-using Windows.ApplicationModel.VoiceCommands;
 
 namespace VidHub.Services.Connectors.Base
 {
@@ -19,17 +19,9 @@ namespace VidHub.Services.Connectors.Base
         TimeSpan? MaxDuration { get; set; }
         TimeSpan? MinDuration { get; set; }
         bool FilterResolution { get; set; }
-        bool DisplayMaximumResolutionVideos { get; set; }
-        bool DisplayLargeResolutionVideos { get; set; }
-        bool DisplayMediumResolutionVideos { get; set; }
-        bool DisplayLowResolutionVideos { get; set; }
+        ObservableCollection<FixedResolution> Resolutions { get; }
         bool FilterFramerate { get; set; }
-        bool DisplayMinimumResolutionVideos { get; set; }
-        bool DisplayMaximumFramerateVideos { get; set; }
-        bool DisplayLargeFramerateVideos { get; set; }
-        bool DisplayMediumFramerateVideos { get; set; }
-        bool DisplayLowFramerateVideos { get; set; }
-        bool DisplayMinimumFramerateVideos { get; set; }
+        ObservableCollection<FixedFramerate> Framerates { get; }
         bool FilterTags { get; set; }
         ObservableCollection<Tag> Tags { get; }
         bool HasActiveTransfer { get; }
