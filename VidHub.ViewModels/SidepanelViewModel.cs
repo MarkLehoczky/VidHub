@@ -106,6 +106,28 @@ namespace VidHub.ViewModels
         }
 
 
+        [RelayCommand]
+        public async Task OpenResolutionSettingsAsync()
+        {
+            logger.LogTrace("OpenResolutionSettings invoked");
+            await connector.OpenResolutionSettings();
+        }
+
+        [RelayCommand]
+        public async Task OpenFramerateSettingsAsync()
+        {
+            logger.LogTrace("OpenFramerateSettings invoked");
+            await connector.OpenFramerateSettings();
+        }
+
+        [RelayCommand]
+        public async Task OpenTagSettingsAsync()
+        {
+            logger.LogTrace("OpenTagSettings invoked");
+            await connector.OpenTagSettings();
+        }
+
+
         public override void Update(IEnumerable<UpdateSection> sections)
         {
             logger.LogTrace("SidePanelViewModel.Update entered with sections count={Count}", sections?.Count() ?? 0);

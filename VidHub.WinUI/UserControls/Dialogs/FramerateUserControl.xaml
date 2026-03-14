@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="VidHub.WinUI.UserControls.Dialogs.FramerateUserControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:VidHub.WinUI.UserControls.Dialogs"
+    xmlns:viewmodel="using:VidHub.ViewModels.Dialogs"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <UserControl.DataContext>
+        <viewmodel:FramerateViewModel />
+    </UserControl.DataContext>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <Button Command="{Binding AddFramerateCommand}" Content="&#xe710;" FontFamily="Segoe Fluent Icons" Margin="10" Grid.Row="0" />
+
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden" Grid.Row="1">
+            <ItemsControl x:Name="tagcollection" ItemsSource="{Binding Framerates}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+
+                        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" CornerRadius="{ThemeResource ControlCornerRadius}" HorizontalAlignment="Stretch" Padding="10" Margin="0 5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Button Command="{Binding ElementName=tagcollection, Path=DataContext.RemoveFramerateCommand}" CommandParameter="{Binding}" Content="&#xe74d;" FontFamily="Segoe Fluent Icons" VerticalAlignment="Stretch" Grid.Column="0" />
+                            <TextBox Text="{Binding Name}" Header="Name" PlaceholderText="e.g. 30 fps" Margin="10 0 20 0" Grid.Column="1" />
+                            <NumberBox Value="{Binding Framerate}" Header="Framerate" PlaceholderText="e.g. 30" Minimum="0" SmallChange="1" LargeChange="100" Grid.Column="2" />
+                        </Grid>
+
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+    </Grid>
+</UserControl>

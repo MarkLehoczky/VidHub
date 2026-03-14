@@ -33,14 +33,14 @@ namespace VidHub.Services.Connectors.Base
         public bool DisplayMediumResolutionVideos { get => settings.SidePanel.DisplayMediumResolutionVideos; set { settings.SidePanel.DisplayMediumResolutionVideos = value; vs.Update(UpdateSection.VIDEOCOLLECTION); logger.LogDebug("DisplayMediumResolutionVideos set to {Value}", value); } }
         public bool DisplayLowResolutionVideos { get => settings.SidePanel.DisplayLowResolutionVideos; set { settings.SidePanel.DisplayLowResolutionVideos = value; vs.Update(UpdateSection.VIDEOCOLLECTION); logger.LogDebug("DisplayLowResolutionVideos set to {Value}", value); } }
         public bool DisplayMinimumResolutionVideos { get => settings.SidePanel.DisplayMinimumResolutionVideos; set { settings.SidePanel.DisplayMinimumResolutionVideos = value; vs.Update(UpdateSection.VIDEOCOLLECTION); logger.LogDebug("DisplayMinimumResolutionVideos set to {Value}", value); } }
-        
+
         public bool FilterFramerate { get => settings.SidePanel.FilterFramerate; set { settings.SidePanel.FilterFramerate = value; vs.Update(UpdateSection.VIDEOCOLLECTION); logger.LogDebug("FilterFramerate set to {Value}", value); } }
         public bool DisplayMaximumFramerateVideos { get => settings.SidePanel.DisplayMaximumFramerateVideos; set { settings.SidePanel.DisplayMaximumFramerateVideos = value; vs.Update(UpdateSection.VIDEOCOLLECTION); logger.LogDebug("DisplayMaximumFramerateVideos set to {Value}", value); } }
         public bool DisplayLargeFramerateVideos { get => settings.SidePanel.DisplayLargeFramerateVideos; set { settings.SidePanel.DisplayLargeFramerateVideos = value; vs.Update(UpdateSection.VIDEOCOLLECTION); logger.LogDebug("DisplayLargeFramerateVideos set to {Value}", value); } }
         public bool DisplayMediumFramerateVideos { get => settings.SidePanel.DisplayMediumFramerateVideos; set { settings.SidePanel.DisplayMediumFramerateVideos = value; vs.Update(UpdateSection.VIDEOCOLLECTION); logger.LogDebug("DisplayMediumFramerateVideos set to {Value}", value); } }
         public bool DisplayLowFramerateVideos { get => settings.SidePanel.DisplayLowFramerateVideos; set { settings.SidePanel.DisplayLowFramerateVideos = value; vs.Update(UpdateSection.VIDEOCOLLECTION); logger.LogDebug("DisplayLowFramerateVideos set to {Value}", value); } }
         public bool DisplayMinimumFramerateVideos { get => settings.SidePanel.DisplayMinimumFramerateVideos; set { settings.SidePanel.DisplayMinimumFramerateVideos = value; vs.Update(UpdateSection.VIDEOCOLLECTION); logger.LogDebug("DisplayMinimumFramerateVideos set to {Value}", value); } }
-       
+
         public bool FilterTags { get => settings.SidePanel.FilterTags; set { settings.SidePanel.FilterTags = value; vs.Update(UpdateSection.VIDEOCOLLECTION); logger.LogDebug("FilterTags set to {Value}", value); } }
         public ObservableCollection<Tag> Tags => settings.General.Tags;
 
@@ -74,6 +74,24 @@ namespace VidHub.Services.Connectors.Base
             logger.LogTrace("UpdateSearchText called");
             organize.UpdateSearchText();
             vs.Update(UpdateSection.VIDEOCOLLECTION);
+        }
+
+        public async Task OpenResolutionSettings()
+        {
+            logger.LogTrace("OpenResolutionSettings called");
+            await VidHubContext.Window.OpenResolutionDialog();
+        }
+
+        public async Task OpenFramerateSettings()
+        {
+            logger.LogTrace("OpenFramerateSettings called");
+            await VidHubContext.Window.OpenFramerateDialog();
+        }
+
+        public async Task OpenTagSettings()
+        {
+            logger.LogTrace("OpenTagSettings called");
+            await VidHubContext.Window.OpenTagsDialog();
         }
     }
 }

@@ -37,6 +37,8 @@ namespace VidHub.WinUI
                     _ = services.AddSingleton<IDisplayFormatConnector, DisplayFormatConnector>();
                     _ = services.AddSingleton<ITitleFormatConnector, PassiveTitleFormatConnector>();
                     _ = services.AddSingleton<IPreviewImageFormatConnector, PreviewImageFormatConnector>();
+                    _ = services.AddSingleton<IResolutionConnector, ResolutionConnector>();
+                    _ = services.AddSingleton<IFramerateConnector, FramerateConnector>();
                     _ = services.AddSingleton<ITagConnector, TagConnector>();
                     _ = services.AddTransient<TitleBarViewModel>();
                     _ = services.AddTransient<SidePanelViewModel>();

@@ -113,6 +113,10 @@
                         </ToggleSplitButton.Flyout>
                     </ToggleSplitButton>
 
+                    <Button Content="Modify resolutions" Command="{Binding OpenResolutionSettingsCommand}" HorizontalAlignment="Stretch" />
+                    <Button Content="Modify framerate" Command="{Binding OpenFramerateSettingsCommand}" HorizontalAlignment="Stretch" />
+                    <Button Content="Modify tags" Command="{Binding OpenTagSettingsCommand}" HorizontalAlignment="Stretch" />
+                    
                 </StackPanel>
             </ScrollViewer>
 

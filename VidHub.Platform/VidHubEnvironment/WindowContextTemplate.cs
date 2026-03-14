@@ -55,5 +55,15 @@
         {
             throw new NotImplementedException();
         }
+
+        public Task OpenResolutionDialog()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task OpenFramerateDialog()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

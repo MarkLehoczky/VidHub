@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using VidHub.Core.Models;
 using VidHub.Services.Base;
+using Windows.ApplicationModel.VoiceCommands;
 
 namespace VidHub.Services.Connectors.Base
 {
@@ -40,5 +41,9 @@ namespace VidHub.Services.Connectors.Base
         IEnumerable<string> GetSearchSuggestions();
         IEnumerable<string> GetSortOptions();
         void UpdateSearchText();
+
+        Task OpenResolutionSettings();
+        Task OpenFramerateSettings();
+        Task OpenTagSettings();
     }
 }

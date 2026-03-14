@@ -374,5 +374,75 @@ namespace VidHub.WinUI.Context
                 }
             });
         }
+
+        public async Task OpenResolutionDialog()
+        {
+            logger.LogTrace("OpenResolutionDialog requested, hasOpenDialog={Has}", hasOpenDialog);
+            if (hasOpenDialog)
+            {
+                logger.LogDebug("Dialog already open, skipping");
+                return;
+            }
+
+            _ = TryEnqueue(async () =>
+            {
+                try
+                {
+                    ResolutionUserControl content = new();
+                    ContentDialog dialog = new()
+                    {
+                        Title = "VIDEO RESOLUTIONS",
+                        CloseButtonText = "Finish",
+                        DefaultButton = ContentDialogButton.Close,
+                        Content = content,
+                        XamlRoot = window.Content.XamlRoot
+                    };
+                    hasOpenDialog = true;
+                    dialog.CloseButtonClick += (_, _) => hasOpenDialog = false;
+                    _ = await dialog.ShowAsync();
+                    logger.LogInformation("Resolutions dialog shown");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Failed to show Resolutions dialog");
+                    hasOpenDialog = false;
+                }
+            });
+        }
+
+        public async Task OpenFramerateDialog()
+        {
+            logger.LogTrace("OpenFramerateDialog requested, hasOpenDialog={Has}", hasOpenDialog);
+            if (hasOpenDialog)
+            {
+                logger.LogDebug("Dialog already open, skipping");
+                return;
+            }
+
+            _ = TryEnqueue(async () =>
+            {
+                try
+                {
+                    FramerateUserControl content = new();
+                    ContentDialog dialog = new()
+                    {
+                        Title = "VIDEO FRAMERATES",
+                        CloseButtonText = "Finish",
+                        DefaultButton = ContentDialogButton.Close,
+                        Content = content,
+                        XamlRoot = window.Content.XamlRoot
+                    };
+                    hasOpenDialog = true;
+                    dialog.CloseButtonClick += (_, _) => hasOpenDialog = false;
+                    _ = await dialog.ShowAsync();
+                    logger.LogInformation("Framerates dialog shown");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Failed to show Framerates dialog");
+                    hasOpenDialog = false;
+                }
+            });
+        }
     }
 }

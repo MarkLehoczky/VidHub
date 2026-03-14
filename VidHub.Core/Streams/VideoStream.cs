@@ -266,4 +266,21 @@ namespace VidHub.Core.Streams
 
         public VideoStream() : this(new Dictionary<string, string>()) { }
     }
+
+
+    public class FixedFramerate
+    {
+        public int Framerate { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public bool IsSelected { get; set; } = false;
+    }
+    public class FixedResolution
+    {
+        public int Width { get; set; }
+        public int Height { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public bool IsSelected { get; set; } = false;
+
+        public int Value => Width * Height;
+    }
 }
