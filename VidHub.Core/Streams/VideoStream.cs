@@ -1,5 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using VidHub.Core.Settings;
+using VidHub.Core.Utilities;
+using VidHub.Platform.VidHubEnvironment;
 
 namespace VidHub.Core.Streams
 {
@@ -9,7 +11,9 @@ namespace VidHub.Core.Streams
 
         public int Framerate { get; set; }
         public string Name { get; set; } = string.Empty;
-        public bool IsSelected { get => isSelected; set { isSelected = value; } }
+        public bool IsSelected { get => isSelected; set { isSelected = value; VidHubContext.Host.Update(UpdateSection.VIDEOCOLLECTION); } }
+
+
         public override bool Equals(object? obj)
         {
             if (obj == null) return false;
@@ -52,12 +56,14 @@ namespace VidHub.Core.Streams
 
     public class FixedResolution
     {
+        private bool isSelected = false;
+
         public int Width { get; set; }
         public int Height { get; set; }
         public string Name { get; set; } = string.Empty;
-        public bool IsSelected { get; set; } = false;
-
+        public bool IsSelected { get => isSelected; set { isSelected = value; VidHubContext.Host.Update(UpdateSection.VIDEOCOLLECTION); } }
         public int Value => Width * Height;
+
 
         override public bool Equals(object? obj)
         {

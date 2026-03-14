@@ -1,10 +1,12 @@
-﻿namespace VidHub.Platform.VidHubEnvironment
+﻿using System.Reflection.Metadata.Ecma335;
+
+namespace VidHub.Platform.VidHubEnvironment
 {
     public class WindowContextTemplate : IWindowContext
     {
         public nint HWND => throw new NotImplementedException();
 
-        public bool IsActive { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public bool IsActive { get => false; set { } }
 
         public Task OpenActiveTitleFormatDialog()
         {
