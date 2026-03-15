@@ -10,6 +10,8 @@
         Task OpenPassiveTitleFormatDialog();
         Task OpenActiveTitleFormatDialog();
         Task OpenVersionsDialog();
+        Task OpenResolutionDialog();
+        Task OpenFramerateDialog();
         Task OpenTagsDialog();
         Task OpenRenameDialog(object obj);
         Task OpenModifyTagsDialog(object obj);

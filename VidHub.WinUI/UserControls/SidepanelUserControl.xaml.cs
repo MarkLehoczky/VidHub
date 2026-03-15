@@ -17,5 +17,13 @@ namespace VidHub.WinUI.UserControls
                 viewModel.UpdateTextFilter();
             }
         }
+
+        private void UpdateVideoCollection(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        {
+            if (DataContext is SidePanelViewModel viewModel)
+            {
+                viewModel.Update(Core.Utilities.UpdateSection.VIDEOCOLLECTION);
+            }
+        }
     }
 }

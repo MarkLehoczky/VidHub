@@ -6,5 +6,15 @@ namespace VidHub.Platform.VidHubEnvironment
         {
             return default;
         }
+
+        public void Update<T>(IEnumerable<T> items)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Update<T>(params T[] items)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

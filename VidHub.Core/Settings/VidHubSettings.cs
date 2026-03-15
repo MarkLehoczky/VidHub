@@ -2,7 +2,6 @@
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using VidHub.Core.Notifications;
-using VidHub.Core.Streams;
 using VidHub.Platform.VidHubEnvironment;
 
 namespace VidHub.Core.Settings
@@ -150,18 +149,8 @@ namespace VidHub.Core.Settings
                     logger.LogDebug("Video '{Title}' has no DefaultVideoStream, excluded by resolution filter", video.Title);
                     return false;
                 }
-                bool matchingResolution = video.Metadata.DefaultVideoStream.Resolution.Definition switch
-                {
-                    DefinedResolution.UHD8K => SidePanel.DisplayMaximumResolutionVideos,
-                    DefinedResolution.UHD4K => SidePanel.DisplayMaximumResolutionVideos,
-                    DefinedResolution.QHD => SidePanel.DisplayLargeResolutionVideos,
-                    DefinedResolution.FHD => SidePanel.DisplayMediumResolutionVideos,
-                    DefinedResolution.HD => SidePanel.DisplayLowResolutionVideos,
-                    DefinedResolution.SD => SidePanel.DisplayMinimumResolutionVideos,
-                    DefinedResolution.LOW => SidePanel.DisplayMinimumResolutionVideos,
-                    _ => false,
-                };
-                logger.LogTrace("Resolution match result={Match} for Video '{Title}' with Definition={Definition}", matchingResolution, video.Title, video.Metadata.DefaultVideoStream?.Resolution.Definition);
+                bool matchingResolution = General.Resolutions.Where(f => f.IsSelected).Contains(video.Metadata.DefaultVideoStream.DefinedResolution);
+                logger.LogTrace("Resolution match result={Match} for Video '{Title}' with Definition={Definition}", matchingResolution, video.Title, video.Metadata.DefaultVideoStream?.DefinedResolution);
                 if (!matchingResolution)
                 {
                     logger.LogDebug("Video '{Title}' did not match resolution filters", video.Title);
@@ -183,20 +172,8 @@ namespace VidHub.Core.Settings
                     logger.LogDebug("Video '{Title}' has no DefaultVideoStream, excluded by framerate filter", video.Title);
                     return false;
                 }
-                bool matchingFramerate = video.Metadata.DefaultVideoStream.Framerate.Definition switch
-                {
-                    DefinedFramerate.FPS240 => SidePanel.DisplayMaximumFramerateVideos,
-                    DefinedFramerate.FPS120 => SidePanel.DisplayMaximumFramerateVideos,
-                    DefinedFramerate.FPS90 => SidePanel.DisplayLargeFramerateVideos,
-                    DefinedFramerate.FPS60 => SidePanel.DisplayLargeFramerateVideos,
-                    DefinedFramerate.FPS30 => SidePanel.DisplayMediumFramerateVideos,
-                    DefinedFramerate.FPS24 => SidePanel.DisplayLowFramerateVideos,
-                    DefinedFramerate.FPS20 => SidePanel.DisplayLowFramerateVideos,
-                    DefinedFramerate.FPS12 => SidePanel.DisplayMinimumFramerateVideos,
-                    DefinedFramerate.LOW => SidePanel.DisplayMinimumFramerateVideos,
-                    _ => false,
-                };
-                logger.LogTrace("Framerate match result={Match} for Video '{Title}' with Definition={Definition}", matchingFramerate, video.Title, video.Metadata.DefaultVideoStream?.Framerate.Definition);
+                bool matchingFramerate = General.Framerates.Where(f => f.IsSelected).Contains(video.Metadata.DefaultVideoStream.DefinedFramerate);
+                logger.LogTrace("Framerate match result={Match} for Video '{Title}' with Definition={Definition}", matchingFramerate, video.Title, video.Metadata.DefaultVideoStream?.DefinedFramerate);
                 if (!matchingFramerate)
                 {
                     logger.LogDebug("Video '{Title}' did not match framerate filters", video.Title);

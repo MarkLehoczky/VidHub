@@ -107,10 +107,10 @@
 
                                     <StackPanel Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Top">
                                         <Border Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Opacity="0.8" Visibility="{Binding ElementName=videocollection, Path=DataContext.DisplayResolutions}" BorderThickness="0" CornerRadius="10" Margin="0 4 4 0" HorizontalAlignment="Right" VerticalAlignment="Top" >
-                                            <TextBlock Text="{Binding Metadata.DefaultVideoStream.Resolution}" FontFamily="Consolas" Margin="6 2" />
+                                            <TextBlock Text="{Binding Metadata.DefaultVideoStream.DefinedResolution.Name}" FontFamily="Consolas" Margin="6 2" />
                                         </Border>
                                         <Border Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Opacity="0.8" Visibility="{Binding ElementName=videocollection, Path=DataContext.DisplayFramerates}" BorderThickness="0" CornerRadius="10" Margin="0 4 4 0" HorizontalAlignment="Right" VerticalAlignment="Top" >
-                                            <TextBlock Text="{Binding Metadata.DefaultVideoStream.Framerate}" FontFamily="Consolas" Margin="6 2" />
+                                            <TextBlock Text="{Binding Metadata.DefaultVideoStream.DefinedFramerate.Name}" FontFamily="Consolas" Margin="6 2" />
                                         </Border>
                                     </StackPanel>
 

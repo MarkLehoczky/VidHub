@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
 using VidHub.Core.Models;
+using VidHub.Core.Streams;
 using VidHub.Core.Utilities;
 using VidHub.Platform.VidHubEnvironment;
 using VidHub.Services.Connectors.Base;
@@ -70,18 +71,10 @@ namespace VidHub.ViewModels
         }
 
         public bool FilterResolution { get => connector.FilterResolution; set { connector.FilterResolution = value; logger.LogDebug("FilterResolution set in viewmodel to {Value}", value); } }
-        public bool DisplayMaximumResolutionVideos { get => connector.DisplayMaximumResolutionVideos; set { connector.DisplayMaximumResolutionVideos = value; logger.LogDebug("DisplayMaximumResolutionVideos set in viewmodel to {Value}", value); } }
-        public bool DisplayLargeResolutionVideos { get => connector.DisplayLargeResolutionVideos; set { connector.DisplayLargeResolutionVideos = value; logger.LogDebug("DisplayLargeResolutionVideos set in viewmodel to {Value}", value); } }
-        public bool DisplayMediumResolutionVideos { get => connector.DisplayMediumResolutionVideos; set { connector.DisplayMediumResolutionVideos = value; logger.LogDebug("DisplayMediumResolutionVideos set in viewmodel to {Value}", value); } }
-        public bool DisplayLowResolutionVideos { get => connector.DisplayLowResolutionVideos; set { connector.DisplayLowResolutionVideos = value; logger.LogDebug("DisplayLowResolutionVideos set in viewmodel to {Value}", value); } }
-        public bool DisplayMinimumResolutionVideos { get => connector.DisplayMinimumResolutionVideos; set { connector.DisplayMinimumResolutionVideos = value; logger.LogDebug("DisplayMinimumResolutionVideos set in viewmodel to {Value}", value); } }
-        
+        public ObservableCollection<FixedResolution> Resolutions => connector.Resolutions;
+
         public bool FilterFramerate { get => connector.FilterFramerate; set { connector.FilterFramerate = value; logger.LogDebug("FilterFramerate set in viewmodel to {Value}", value); } }
-        public bool DisplayMaximumFramerateVideos { get => connector.DisplayMaximumFramerateVideos; set { connector.DisplayMaximumFramerateVideos = value; logger.LogDebug("DisplayMaximumFramerateVideos set in viewmodel to {Value}", value); } }
-        public bool DisplayLargeFramerateVideos { get => connector.DisplayLargeFramerateVideos; set { connector.DisplayLargeFramerateVideos = value; logger.LogDebug("DisplayLargeFramerateVideos set in viewmodel to {Value}", value); } }
-        public bool DisplayMediumFramerateVideos { get => connector.DisplayMediumFramerateVideos; set { connector.DisplayMediumFramerateVideos = value; logger.LogDebug("DisplayMediumFramerateVideos set in viewmodel to {Value}", value); } }
-        public bool DisplayLowFramerateVideos { get => connector.DisplayLowFramerateVideos; set { connector.DisplayLowFramerateVideos = value; logger.LogDebug("DisplayLowFramerateVideos set in viewmodel to {Value}", value); } }
-        public bool DisplayMinimumFramerateVideos { get => connector.DisplayMinimumFramerateVideos; set { connector.DisplayMinimumFramerateVideos = value; logger.LogDebug("DisplayMinimumFramerateVideos set in viewmodel to {Value}", value); } }
+        public ObservableCollection<FixedFramerate> Framerates => connector.Framerates;
 
         public bool FilterTags { get => connector.FilterTags; set { connector.FilterTags = value; logger.LogDebug("FilterTags set in viewmodel to {Value}", value); } }
         public ObservableCollection<Tag> Tags => connector.Tags;
@@ -103,6 +96,28 @@ namespace VidHub.ViewModels
         {
             logger.LogTrace("ChangeOrientation invoked");
             connector.ChangeOrientation();
+        }
+
+
+        [RelayCommand]
+        public async Task OpenResolutionSettingsAsync()
+        {
+            logger.LogTrace("OpenResolutionSettings invoked");
+            await connector.OpenResolutionSettings();
+        }
+
+        [RelayCommand]
+        public async Task OpenFramerateSettingsAsync()
+        {
+            logger.LogTrace("OpenFramerateSettings invoked");
+            await connector.OpenFramerateSettings();
+        }
+
+        [RelayCommand]
+        public async Task OpenTagSettingsAsync()
+        {
+            logger.LogTrace("OpenTagSettings invoked");
+            await connector.OpenTagSettings();
         }
 
 

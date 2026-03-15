@@ -1,62 +1,35 @@
 ﻿using System.Text.Json.Serialization;
+using VidHub.Core.Settings;
+using VidHub.Core.Utilities;
+using VidHub.Platform.VidHubEnvironment;
 
 namespace VidHub.Core.Streams
 {
-    public enum DefinedFramerate
+    public class FixedFramerate
     {
-        UNKNOWN,
-        LOW,
-        FPS12,
-        FPS20,
-        FPS24,
-        FPS30,
-        FPS60,
-        FPS90,
-        FPS120,
-        FPS240
+        private bool isSelected = false;
+
+        public int? Framerate { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public bool IsSelected { get => isSelected; set { isSelected = value; VidHubContext.Host.Update(UpdateSection.VIDEOCOLLECTION); } }
+
+
+        public override bool Equals(object? obj)
+        {
+            if (obj == null) return false;
+            if (obj is not FixedFramerate other) return false;
+            return Framerate == other.Framerate;
+        }
+        override public int GetHashCode()
+        {
+            return Framerate.GetHashCode();
+        }
     }
-
-    public enum DefinedResolution
-    {
-        UNKNOWN,
-        LOW,
-        SD,
-        HD,
-        FHD,
-        QHD,
-        UHD4K,
-        UHD8K
-    }
-
-
-
     public class Framerate
     {
-        private int numerator;
-        private int denominator;
-
-        public int Numerator
-        {
-            get => numerator;
-            set
-            {
-                numerator = value;
-                Value = Denominator != 0 ? (double)Numerator / Denominator : double.NaN;
-                Definition = GetDefinition(Value);
-            }
-        }
-        public int Denominator
-        {
-            get => denominator;
-            set
-            {
-                denominator = value;
-                Value = Denominator != 0 ? (double)Numerator / Denominator : double.NaN;
-                Definition = GetDefinition(Value);
-            }
-        }
-        [JsonIgnore] public double Value { get; set; }
-        [JsonIgnore] public DefinedFramerate Definition { get; set; }
+        public int Numerator { get; set; }
+        public int Denominator { get; set; }
+        public double Value { get; set; }
 
 
         public Framerate()
@@ -64,7 +37,6 @@ namespace VidHub.Core.Streams
             Numerator = 0;
             Denominator = 1;
             Value = double.NaN;
-            Definition = DefinedFramerate.UNKNOWN;
         }
         public Framerate(IDictionary<string, string> metadata)
         {
@@ -78,92 +50,37 @@ namespace VidHub.Core.Streams
                 }
             }
             Value = Denominator != 0 ? (double)Numerator / Denominator : double.NaN;
-            Definition = GetDefinition(Value);
-        }
-
-
-        public static DefinedFramerate GetDefinition(double framerate)
-        {
-            if (framerate >= 240.0)
-            {
-                return DefinedFramerate.FPS240;
-            }
-            else if (framerate >= 120.0)
-            {
-                return DefinedFramerate.FPS120;
-            }
-            else if (framerate >= 90.0)
-            {
-                return DefinedFramerate.FPS90;
-            }
-            else if (framerate >= 60.0)
-            {
-                return DefinedFramerate.FPS60;
-            }
-            else if (framerate >= 30.0)
-            {
-                return DefinedFramerate.FPS30;
-            }
-            else if (framerate >= 24.0)
-            {
-                return DefinedFramerate.FPS30;
-            }
-            else if (framerate >= 20.0)
-            {
-                return DefinedFramerate.FPS20;
-            }
-            else if (framerate >= 12.0)
-            {
-                return DefinedFramerate.FPS12;
-            }
-            else if (framerate > 0.0)
-            {
-                return DefinedFramerate.LOW;
-            }
-            else
-            {
-                return DefinedFramerate.UNKNOWN;
-            }
-        }
-
-        public override string ToString()
-        {
-            return Definition switch
-            {
-                DefinedFramerate.UNKNOWN => "n/a",
-                _ => $"{Math.Round(Value):0} fps"
-            };
         }
     }
 
 
+    public class FixedResolution
+    {
+        private bool isSelected = false;
+
+        public int? Width { get; set; }
+        public int? Height { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public bool IsSelected { get => isSelected; set { isSelected = value; VidHubContext.Host.Update(UpdateSection.VIDEOCOLLECTION); } }
+        public int Value => Width * Height ?? 0;
+
+
+        override public bool Equals(object? obj)
+        {
+            if (obj == null) return false;
+            if (obj is not FixedResolution other) return false;
+            return Value == other.Value;
+        }
+        override public int GetHashCode()
+        {
+            return Value.GetHashCode();
+        }
+    }
     public class Resolution
     {
-        private int width;
-        private int height;
-
-        public int Width
-        {
-            get => width;
-            set
-            {
-                width = value;
-                Value = Width * Height;
-                Definition = GetDefinition(Value);
-            }
-        }
-        public int Height
-        {
-            get => height;
-            set
-            {
-                height = value;
-                Value = Width * Height;
-                Definition = GetDefinition(Value);
-            }
-        }
-        [JsonIgnore] public int Value { get; set; }
-        [JsonIgnore] public DefinedResolution Definition { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
+        public int Value { get; set; }
 
 
         public Resolution()
@@ -171,7 +88,6 @@ namespace VidHub.Core.Streams
             Width = 0;
             Height = 0;
             Value = 0;
-            Definition = DefinedResolution.UNKNOWN;
         }
         public Resolution(IDictionary<string, string> metadata)
         {
@@ -182,59 +98,6 @@ namespace VidHub.Core.Streams
                 ? heightPixel
                 : 0;
             Value = Width * Height;
-            Definition = GetDefinition(Value);
-        }
-
-
-        public static DefinedResolution GetDefinition(int resolution)
-        {
-            if (resolution >= 7680 * 4320)
-            {
-                return DefinedResolution.UHD8K;
-            }
-            else if (resolution >= 3840 * 2160)
-            {
-                return DefinedResolution.UHD4K;
-            }
-            else if (resolution >= 2560 * 1440)
-            {
-                return DefinedResolution.QHD;
-            }
-            else if (resolution >= 1920 * 1080)
-            {
-                return DefinedResolution.FHD;
-            }
-            else if (resolution >= 1280 * 720)
-            {
-                return DefinedResolution.HD;
-            }
-            else if (resolution >= 720 * 480)
-            {
-                return DefinedResolution.SD;
-            }
-            else if (resolution > 0)
-            {
-                return DefinedResolution.LOW;
-            }
-            else
-            {
-                return DefinedResolution.UNKNOWN;
-            }
-        }
-
-        public override string ToString()
-        {
-            return Definition switch
-            {
-                DefinedResolution.UHD8K => "8K UHD",
-                DefinedResolution.UHD4K => "4K UHD",
-                DefinedResolution.QHD => "1440p",
-                DefinedResolution.FHD => "1080p",
-                DefinedResolution.HD => "720p",
-                DefinedResolution.SD => "480p",
-                DefinedResolution.LOW => "Low",
-                _ => "n/a",
-            };
         }
     }
 
@@ -263,7 +126,20 @@ namespace VidHub.Core.Streams
         public Framerate Framerate { get; set; } = new Framerate(metadata);
         public Resolution Resolution { get; set; } = new Resolution(metadata);
 
+        [JsonIgnore] public FixedFramerate? DefinedFramerate { get; set; }
+        [JsonIgnore] public FixedResolution? DefinedResolution { get; set; }
+
 
         public VideoStream() : this(new Dictionary<string, string>()) { }
+
+
+        public void SetFixedFramerate()
+        {
+            DefinedFramerate = VidHubSettings.Instance.General.Framerates.Where(f => f.Framerate >= Framerate.Value).OrderBy(f => f.Framerate).FirstOrDefault();
+        }
+        public void SetFixedResolution()
+        {
+            DefinedResolution = VidHubSettings.Instance.General.Resolutions.Where(r => r.Value >= Resolution.Value).OrderBy(r => r.Value).FirstOrDefault();
+        }
     }
 }

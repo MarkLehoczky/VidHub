@@ -22,6 +22,11 @@ namespace VidHub.Services.Logics
             logger.LogTrace("LoadVideo action invoked for file={File}", file);
             Video video = new(file);
             video.Load();
+            if (video.Metadata.DefaultVideoStream != null)
+            {
+                video.Metadata.DefaultVideoStream.SetFixedResolution();
+                video.Metadata.DefaultVideoStream.SetFixedFramerate();
+            }
             service.Add(video);
             logger.LogDebug("Video loaded and added: {File}", file);
         };
