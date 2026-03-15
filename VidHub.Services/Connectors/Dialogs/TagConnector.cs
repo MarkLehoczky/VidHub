@@ -11,7 +11,7 @@ namespace VidHub.Services.Connectors.Dialogs
 
         public void AddTag()
         {
-            //Tags.Insert(0, new Tag());
+            Tags.Insert(0, new Tag());
         }
 
         public void ChangeColorPickerState(Tag tag)

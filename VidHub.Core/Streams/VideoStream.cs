@@ -9,7 +9,7 @@ namespace VidHub.Core.Streams
     {
         private bool isSelected = false;
 
-        public int Framerate { get; set; }
+        public int? Framerate { get; set; }
         public string Name { get; set; } = string.Empty;
         public bool IsSelected { get => isSelected; set { isSelected = value; VidHubContext.Host.Update(UpdateSection.VIDEOCOLLECTION); } }
 
@@ -58,11 +58,11 @@ namespace VidHub.Core.Streams
     {
         private bool isSelected = false;
 
-        public int Width { get; set; }
-        public int Height { get; set; }
+        public int? Width { get; set; }
+        public int? Height { get; set; }
         public string Name { get; set; } = string.Empty;
         public bool IsSelected { get => isSelected; set { isSelected = value; VidHubContext.Host.Update(UpdateSection.VIDEOCOLLECTION); } }
-        public int Value => Width * Height;
+        public int Value => Width * Height ?? 0;
 
 
         override public bool Equals(object? obj)
