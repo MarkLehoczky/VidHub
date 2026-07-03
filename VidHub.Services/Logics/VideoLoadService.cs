@@ -81,7 +81,7 @@ namespace VidHub.Services.Logics
                         IList<string> files = await FileIO.ReadLinesAsync(file);
                         WrapActions<string> collectActions = new(WrapActions<string>.NoAction, UpdateUI);
                         WrapActions<string> loadActions = new(LoadVideo, UpdateUI);
-                        await manager.QueueVideoCollecting(files, false, collectActions, loadActions);
+                        manager.QueueVideoCollecting(files, false, collectActions, loadActions);
                         logger.LogInformation("Import enqueued {Count} items from {Path}", files.Count, file.Path);
                     });
 
@@ -103,7 +103,7 @@ namespace VidHub.Services.Logics
                 {
                     WrapActions<string> collectActions = new(WrapActions<string>.NoAction, UpdateUI);
                     WrapActions<string> loadActions = new(LoadVideo, UpdateUI);
-                    await manager.QueueVideoCollecting(items, includeSubfolders, collectActions, loadActions);
+                    manager.QueueVideoCollecting(items, includeSubfolders, collectActions, loadActions);
                     logger.LogInformation("LoadItems enqueued {Count} items (includeSubfolders={Include})", items.Count(), includeSubfolders);
                 });
             }
@@ -125,7 +125,7 @@ namespace VidHub.Services.Logics
                 {
                     WrapActions<string> collectActions = new(WrapActions<string>.NoAction, UpdateUI);
                     WrapActions<string> loadActions = new(LoadVideo, UpdateUI);
-                    await manager.QueueVideoCollecting(files, false, collectActions, loadActions);
+                    manager.QueueVideoCollecting(files, false, collectActions, loadActions);
                     logger.LogInformation("LoadFiles enqueued {Count} files", files.Count);
                 });
             }
@@ -147,7 +147,7 @@ namespace VidHub.Services.Logics
                 {
                     WrapActions<string> collectActions = new(WrapActions<string>.NoAction, UpdateUI);
                     WrapActions<string> loadActions = new(LoadVideo, UpdateUI);
-                    await manager.QueueVideoCollecting([folder], includeSubfolders, collectActions, loadActions);
+                    manager.QueueVideoCollecting([folder], includeSubfolders, collectActions, loadActions);
                     logger.LogInformation("LoadFolders enqueued folder {Folder} includeSubfolders={Include}", folder.Path, includeSubfolders);
                 });
             }

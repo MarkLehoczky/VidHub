@@ -39,12 +39,15 @@ namespace VidHub.Core.Utilities
         private readonly object locker = new();
         private readonly ConcurrentQueue<CollectSource> collectQueue = new();
         private readonly ConcurrentQueue<LoadSource> loadQueue = new();
+        private Task? collectTask = null;
+        private Task? loadTask = null;
         private int loadedFileCount = 0;
         private int totalFileCount = 0;
 
 
         public event Action? CollectingFinished;
         public event Action? LoadingFinished;
+        public readonly CancellationTokenSource LoadCancellation = new();
         public bool IsActive => IsCollecting || IsLoading;
         public bool IsCollecting { get; private set; } = false;
         public bool IsLoading { get; private set; } = false;
@@ -68,58 +71,49 @@ namespace VidHub.Core.Utilities
         }
 
 
-        public async Task QueueVideoCollecting(IEnumerable<IStorageItem> items, bool includeSubfolders, WrapActions<string> collectActions, WrapActions<string> loadActions)
+        public void QueueVideoCollecting(IEnumerable<IStorageItem> items, bool includeSubfolders, WrapActions<string> collectActions, WrapActions<string> loadActions)
         {
             logger.LogTrace("QueueVideoCollecting called with IStorageItem collection, includeSubfolders={Include}", includeSubfolders);
-            await QueueVideoCollecting(items.Select(i => i.Path), includeSubfolders, collectActions, loadActions);
+            QueueVideoCollecting(items.Select(i => i.Path), includeSubfolders, collectActions, loadActions);
         }
-        public async Task QueueVideoCollecting(IEnumerable<string> items, bool includeSubfolders, WrapActions<string> collectActions, WrapActions<string> loadActions)
+        public void QueueVideoCollecting(IEnumerable<string> items, bool includeSubfolders, WrapActions<string> collectActions, WrapActions<string> loadActions)
         {
             logger.LogTrace("QueueVideoCollecting called with string collection, includeSubfolders={Include}", includeSubfolders);
-            bool shouldStartProcessing;
             collectQueue.Enqueue(new CollectSource(items, includeSubfolders, collectActions, loadActions));
+
+
             lock (locker)
             {
-                shouldStartProcessing = IsCollecting;
-                if (!IsCollecting)
+                if (collectTask is null || collectTask.IsCompleted)
                 {
-                    IsCollecting = true;
                     logger.LogDebug("Collection started");
+                    IsCollecting = true;
+                    collectTask = Task.Run(ProcessNextCollecting, LoadCancellation.Token);
                 }
-            }
-            if (!shouldStartProcessing)
-            {
-                logger.LogTrace("Starting ProcessNextCollecting task");
-                await ProcessNextCollecting();
-            }
-            else
-            {
-                logger.LogTrace("Collection already in progress, enqueued sources will be processed later");
+                else
+                {
+                    logger.LogTrace("Collection already in progress, enqueued sources will be processed later");
+                }
             }
         }
 
-        private async Task QueueVideoLoading(string file, WrapActions<string> loadActions)
+        private void QueueVideoLoading(string file, WrapActions<string> loadActions)
         {
             logger.LogTrace("QueueVideoLoading called for file={File}", file);
-            bool shouldStartProcessing;
             loadQueue.Enqueue(new LoadSource(file, loadActions));
+
             lock (locker)
             {
-                shouldStartProcessing = IsLoading;
-                if (!IsLoading)
+                if (loadTask is null || loadTask.IsCompleted)
                 {
-                    IsLoading = true;
                     logger.LogDebug("Loading started");
+                    IsLoading = true;
+                    loadTask = Task.Run(ProcessNextLoading, LoadCancellation.Token);
                 }
-            }
-            if (!shouldStartProcessing)
-            {
-                logger.LogTrace("Starting ProcessNextLoading task");
-                await ProcessNextLoading();
-            }
-            else
-            {
-                logger.LogTrace("Loading already in progress, file enqueued");
+                else
+                {
+                    logger.LogTrace("Loading already in progress, file enqueued");
+                }
             }
         }
 
@@ -137,7 +131,7 @@ namespace VidHub.Core.Utilities
                 {
                     currentCollectQueue.CollectActions.PreAction(file);
                     _ = Interlocked.Increment(ref totalFileCount);
-                    _ = Task.Run(async () => await QueueVideoLoading(file, currentCollectQueue.LoadActions));
+                    _ = Task.Run(() => QueueVideoLoading(file, currentCollectQueue.LoadActions));
                     currentCollectQueue.CollectActions.PostAction(file);
                 }
 
@@ -150,7 +144,7 @@ namespace VidHub.Core.Utilities
                         {
                             currentCollectQueue.CollectActions.PreAction(file);
                             _ = Interlocked.Increment(ref totalFileCount);
-                            _ = Task.Run(async () => await QueueVideoLoading(file, currentCollectQueue.LoadActions));
+                            _ = Task.Run(() => QueueVideoLoading(file, currentCollectQueue.LoadActions));
                             currentCollectQueue.CollectActions.PostAction(file);
                         }
                     }
@@ -166,7 +160,7 @@ namespace VidHub.Core.Utilities
             CollectingFinished?.Invoke();
         }
 
-        private async Task ProcessNextLoading()
+        private void ProcessNextLoading()
         {
             logger.LogTrace("ProcessNextLoading entered");
             while (loadQueue.TryDequeue(out LoadSource? currentLoadQueue) && currentLoadQueue is not null)
