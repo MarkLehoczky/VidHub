@@ -2,6 +2,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 using VidHub.Core;
 using VidHub.Platform.VidHubEnvironment;
@@ -457,6 +458,49 @@ namespace VidHub.WinUI.Context
                     hasOpenDialog = false;
                 }
             });
+        }
+
+        public async Task<bool> OpenCloseInterruptedDialog()
+        {
+            logger.LogTrace("OpenCloseInterruptedDialog requested, hasOpenDialog={Has}", hasOpenDialog);
+            if (hasOpenDialog)
+            {
+                logger.LogDebug("Dialog already open, skipping");
+                return true;
+            }
+
+            try
+            {
+                ContentDialog dialog = new()
+                {
+                    Title = "Active Video Loading",
+                    PrimaryButtonText = "Exit",
+                    IsPrimaryButtonEnabled = true,
+                    IsSecondaryButtonEnabled = false,
+                    CloseButtonText = "Cancel",
+                    DefaultButton = ContentDialogButton.Primary,
+                    Content = "There are currently active video loading in progress. Are you sure you want to quit the application?",
+                    XamlRoot = window.Content.XamlRoot,
+                };
+
+                hasOpenDialog = true;
+                try
+                {
+                    var result = await dialog.ShowAsync();
+                    logger.LogInformation("OpenCloseInterruptedDialog dialog closed with result={Result}", result);
+                    return result == ContentDialogResult.Primary;
+                }
+                finally
+                {
+                    hasOpenDialog = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to show OpenCloseInterruptedDialogAsync dialog");
+                hasOpenDialog = false;
+                return true;
+            }
         }
     }
 }

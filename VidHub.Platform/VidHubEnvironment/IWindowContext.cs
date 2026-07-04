@@ -15,6 +15,7 @@
         Task OpenTagsDialog();
         Task OpenRenameDialog(object obj);
         Task OpenModifyTagsDialog(object obj);
+        Task<bool> OpenCloseInterruptedDialog();
         bool TryEnqueue(Action callback);
     }
 }

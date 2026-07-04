@@ -67,5 +67,10 @@ namespace VidHub.Platform.VidHubEnvironment
         {
             throw new NotImplementedException();
         }
+
+        public Task<bool> OpenCloseInterruptedDialog()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

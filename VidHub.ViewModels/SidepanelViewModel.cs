@@ -121,6 +121,12 @@ namespace VidHub.ViewModels
         }
 
 
+        [RelayCommand]
+        public void CancelLoading()
+        {
+            connector.CancelLoading();
+        }
+
         public override void Update(IEnumerable<UpdateSection> sections)
         {
             logger.LogTrace("SidePanelViewModel.Update entered with sections count={Count}", sections?.Count() ?? 0);

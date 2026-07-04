@@ -39,12 +39,15 @@ namespace VidHub.Core.Utilities
         private readonly object locker = new();
         private readonly ConcurrentQueue<CollectSource> collectQueue = new();
         private readonly ConcurrentQueue<LoadSource> loadQueue = new();
+        private Task? collectTask = null;
+        private Task? loadTask = null;
         private int loadedFileCount = 0;
         private int totalFileCount = 0;
 
 
         public event Action? CollectingFinished;
         public event Action? LoadingFinished;
+        public CancellationTokenSource LoadCancellation =new();
         public bool IsActive => IsCollecting || IsLoading;
         public bool IsCollecting { get; private set; } = false;
         public bool IsLoading { get; private set; } = false;
@@ -55,6 +58,19 @@ namespace VidHub.Core.Utilities
         public LoadingManager()
         {
             logger.LogTrace("LoadingManager initialized");
+
+            LoadCancellation.Token.Register(() =>
+            {
+                logger.LogDebug("Cancellation requested - stopping new collecting/loading work");
+                lock (locker)
+                {
+                    collectQueue.Clear();
+                    loadQueue.Clear();
+                    
+                    logger.LogDebug("Queues emptied, active tasks will resolve themselves");
+                }
+            });
+            
             CollectingFinished += () =>
             {
                 logger.LogDebug("CollectingFinished invoked (no-op handler)");
@@ -64,62 +80,66 @@ namespace VidHub.Core.Utilities
                 loadedFileCount = 0;
                 totalFileCount = 0;
                 logger.LogDebug("LoadingFinished invoked, counters reset");
+                LoadCancellation = new CancellationTokenSource();
             };
         }
 
 
-        public async Task QueueVideoCollecting(IEnumerable<IStorageItem> items, bool includeSubfolders, WrapActions<string> collectActions, WrapActions<string> loadActions)
+        public void QueueVideoCollecting(IEnumerable<IStorageItem> items, bool includeSubfolders, WrapActions<string> collectActions, WrapActions<string> loadActions)
         {
             logger.LogTrace("QueueVideoCollecting called with IStorageItem collection, includeSubfolders={Include}", includeSubfolders);
-            await QueueVideoCollecting(items.Select(i => i.Path), includeSubfolders, collectActions, loadActions);
+            QueueVideoCollecting(items.Select(i => i.Path), includeSubfolders, collectActions, loadActions);
         }
-        public async Task QueueVideoCollecting(IEnumerable<string> items, bool includeSubfolders, WrapActions<string> collectActions, WrapActions<string> loadActions)
+        public void QueueVideoCollecting(IEnumerable<string> items, bool includeSubfolders, WrapActions<string> collectActions, WrapActions<string> loadActions)
         {
             logger.LogTrace("QueueVideoCollecting called with string collection, includeSubfolders={Include}", includeSubfolders);
-            bool shouldStartProcessing;
+            if (LoadCancellation.IsCancellationRequested)
+            {
+                logger.LogDebug("QueueVideoCollecting ignored because cancellation requested");
+                return;
+            }
+
             collectQueue.Enqueue(new CollectSource(items, includeSubfolders, collectActions, loadActions));
+
+
             lock (locker)
             {
-                shouldStartProcessing = IsCollecting;
-                if (!IsCollecting)
+                if (collectTask is null || collectTask.IsCompleted)
                 {
-                    IsCollecting = true;
                     logger.LogDebug("Collection started");
+                    IsCollecting = true;
+                    collectTask = Task.Run(ProcessNextCollecting, LoadCancellation.Token);
                 }
-            }
-            if (!shouldStartProcessing)
-            {
-                logger.LogTrace("Starting ProcessNextCollecting task");
-                await ProcessNextCollecting();
-            }
-            else
-            {
-                logger.LogTrace("Collection already in progress, enqueued sources will be processed later");
+                else
+                {
+                    logger.LogTrace("Collection already in progress, enqueued sources will be processed later");
+                }
             }
         }
 
-        private async Task QueueVideoLoading(string file, WrapActions<string> loadActions)
+        private void QueueVideoLoading(string file, WrapActions<string> loadActions)
         {
             logger.LogTrace("QueueVideoLoading called for file={File}", file);
-            bool shouldStartProcessing;
+            if (LoadCancellation.IsCancellationRequested)
+            {
+                logger.LogDebug("QueueVideoLoading ignored because cancellation requested for file={File}", file);
+                return;
+            }
+
             loadQueue.Enqueue(new LoadSource(file, loadActions));
+
             lock (locker)
             {
-                shouldStartProcessing = IsLoading;
-                if (!IsLoading)
+                if (loadTask is null || loadTask.IsCompleted)
                 {
-                    IsLoading = true;
                     logger.LogDebug("Loading started");
+                    IsLoading = true;
+                    loadTask = Task.Run(ProcessNextLoading, LoadCancellation.Token);
                 }
-            }
-            if (!shouldStartProcessing)
-            {
-                logger.LogTrace("Starting ProcessNextLoading task");
-                await ProcessNextLoading();
-            }
-            else
-            {
-                logger.LogTrace("Loading already in progress, file enqueued");
+                else
+                {
+                    logger.LogTrace("Loading already in progress, file enqueued");
+                }
             }
         }
 
@@ -127,7 +147,8 @@ namespace VidHub.Core.Utilities
         private async Task ProcessNextCollecting()
         {
             logger.LogTrace("ProcessNextCollecting entered");
-            while (collectQueue.TryDequeue(out CollectSource? currentCollectQueue) && currentCollectQueue is not null)
+            var token = LoadCancellation.Token;
+            while (!token.IsCancellationRequested && collectQueue.TryDequeue(out CollectSource? currentCollectQueue) && currentCollectQueue is not null)
             {
                 logger.LogDebug("Processing CollectSource with {ItemCount} items, includeSubfolders={Include}", currentCollectQueue.Items.Count(), currentCollectQueue.IncludeSubfolders);
                 IEnumerable<string> files = currentCollectQueue.Items.Where(File.Exists);
@@ -135,10 +156,13 @@ namespace VidHub.Core.Utilities
 
                 foreach (string? file in files.Where(f => Video.ExtensionTypes.Contains(Path.GetExtension(f))))
                 {
-                    currentCollectQueue.CollectActions.PreAction(file);
-                    _ = Interlocked.Increment(ref totalFileCount);
-                    _ = Task.Run(async () => await QueueVideoLoading(file, currentCollectQueue.LoadActions));
-                    currentCollectQueue.CollectActions.PostAction(file);
+                    if (!token.IsCancellationRequested)
+                    {
+                        currentCollectQueue.CollectActions.PreAction(file);
+                        _ = Interlocked.Increment(ref totalFileCount);
+                        _ = Task.Run(() => QueueVideoLoading(file, currentCollectQueue.LoadActions));
+                        currentCollectQueue.CollectActions.PostAction(file);
+                    }
                 }
 
                 if (currentCollectQueue.IncludeSubfolders)
@@ -146,12 +170,18 @@ namespace VidHub.Core.Utilities
                     logger.LogDebug("IncludeSubfolders is true, collecting files from subfolders");
                     foreach (string? folder in folders)
                     {
-                        foreach (string file in CollectFiles(folder).Where(f => Video.ExtensionTypes.Contains(Path.GetExtension(f))))
+                        if (!token.IsCancellationRequested)
                         {
-                            currentCollectQueue.CollectActions.PreAction(file);
-                            _ = Interlocked.Increment(ref totalFileCount);
-                            _ = Task.Run(async () => await QueueVideoLoading(file, currentCollectQueue.LoadActions));
-                            currentCollectQueue.CollectActions.PostAction(file);
+                            foreach (string file in CollectFiles(folder).Where(f => Video.ExtensionTypes.Contains(Path.GetExtension(f))))
+                            {
+                                if (!token.IsCancellationRequested)
+                                {
+                                    currentCollectQueue.CollectActions.PreAction(file);
+                                    _ = Interlocked.Increment(ref totalFileCount);
+                                    _ = Task.Run(() => QueueVideoLoading(file, currentCollectQueue.LoadActions));
+                                    currentCollectQueue.CollectActions.PostAction(file);
+                                }
+                            }
                         }
                     }
                 }
@@ -166,10 +196,11 @@ namespace VidHub.Core.Utilities
             CollectingFinished?.Invoke();
         }
 
-        private async Task ProcessNextLoading()
+        private void ProcessNextLoading()
         {
             logger.LogTrace("ProcessNextLoading entered");
-            while (loadQueue.TryDequeue(out LoadSource? currentLoadQueue) && currentLoadQueue is not null)
+            var token = LoadCancellation.Token;
+            while (!token.IsCancellationRequested && loadQueue.TryDequeue(out LoadSource? currentLoadQueue) && currentLoadQueue is not null)
             {
                 logger.LogDebug("Processing LoadSource for file={File}", currentLoadQueue.File);
                 if (VidHubSettings.Instance.Performance.UseConcurrentLoading)
@@ -178,17 +209,20 @@ namespace VidHub.Core.Utilities
                     List<LoadSource> batch = [currentLoadQueue];
                     for (int i = 1; i < (Environment.ProcessorCount * 3); i++)
                     {
-                        if (loadQueue.TryDequeue(out LoadSource? nextLoadQueue) && nextLoadQueue is not null)
+                        if (!token.IsCancellationRequested && loadQueue.TryDequeue(out LoadSource? nextLoadQueue) && nextLoadQueue is not null)
                         {
                             batch.Add(nextLoadQueue);
                         }
                     }
                     _ = Parallel.ForEach(batch, new ParallelOptions() { MaxDegreeOfParallelism = Environment.ProcessorCount }, currentLoad =>
                     {
-                        logger.LogTrace("Using concurrent loading mode for file={File}", currentLoad.File);
-                        currentLoad.PreActionInvoke();
-                        _ = Interlocked.Increment(ref loadedFileCount);
-                        currentLoad.PostActionInvoke();
+                        if (!token.IsCancellationRequested)
+                        {
+                            logger.LogTrace("Using concurrent loading mode for file={File}", currentLoad.File);
+                            currentLoad.PreActionInvoke();
+                            _ = Interlocked.Increment(ref loadedFileCount);
+                            currentLoad.PostActionInvoke();
+                        }
                     });
                 }
                 else
@@ -226,9 +260,12 @@ namespace VidHub.Core.Utilities
                 logger.LogWarning(ex, "Failed to get files from folder {Folder}", folder);
                 selectedFiles = [];
             }
-            foreach (string selectedFile in selectedFiles)
+            if (!LoadCancellation.Token.IsCancellationRequested)
             {
-                yield return selectedFile;
+                foreach (string selectedFile in selectedFiles)
+                {
+                    yield return selectedFile;
+                }
             }
 
             IEnumerable<string> selectedFolders;
@@ -243,11 +280,17 @@ namespace VidHub.Core.Utilities
                 selectedFolders = [];
             }
 
-            foreach (string selectedFolder in selectedFolders)
+            if (!LoadCancellation.Token.IsCancellationRequested)
             {
-                foreach (string selectedFolderFile in CollectFiles(selectedFolder))
+                foreach (string selectedFolder in selectedFolders)
                 {
-                    yield return selectedFolderFile;
+                    if (!LoadCancellation.Token.IsCancellationRequested)
+                    {
+                        foreach (string selectedFolderFile in CollectFiles(selectedFolder))
+                        {
+                            yield return selectedFolderFile;
+                        }
+                    }
                 }
             }
         }

@@ -97,5 +97,10 @@ namespace VidHub.Services.Connectors.Base
             logger.LogTrace("OpenTagSettings called");
             await VidHubContext.Window.OpenTagsDialog();
         }
+
+        public void CancelLoading()
+        {
+            load.CancelLoading();
+        }
     }
 }
