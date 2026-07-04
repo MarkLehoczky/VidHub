@@ -471,7 +471,6 @@ namespace VidHub.WinUI.Context
 
             try
             {
-                CloseInterruptUserControl content = new();
                 ContentDialog dialog = new()
                 {
                     Title = "Active Video Loading",
