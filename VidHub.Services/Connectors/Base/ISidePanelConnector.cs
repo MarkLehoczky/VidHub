@@ -37,5 +37,6 @@ namespace VidHub.Services.Connectors.Base
         Task OpenResolutionSettings();
         Task OpenFramerateSettings();
         Task OpenTagSettings();
+        void CancelLoading();
     }
 }

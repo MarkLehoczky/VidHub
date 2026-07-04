@@ -14,5 +14,6 @@ namespace VidHub.Services.Logics
         Task LoadItems(IEnumerable<IStorageItem> items, bool includeSubfolders);
         Task LoadFiles();
         Task LoadFolders(bool includeSubfolders);
+        void CancelLoading();
     }
 }

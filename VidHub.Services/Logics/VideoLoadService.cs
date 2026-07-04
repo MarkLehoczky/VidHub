@@ -157,6 +157,11 @@ namespace VidHub.Services.Logics
             }
         }
 
+        public void CancelLoading()
+        {
+            manager.LoadCancellation.Cancel();
+        }
+
 
         private static async Task<StorageFile?> SingleFileOpener(string commitButtonText)
         {

@@ -32,9 +32,9 @@ namespace VidHub.Services.Base
             notifications.Add(NotificationData.LargeCacheSizeNotification());
             notifications.Add(NotificationData.FFmpegNotInstalledNotification());
 
-            recurringActionManager.Add(PeriodicDisplayUpdate, TimeSpan.FromSeconds(5), "Display update");
-            recurringActionManager.Add(PeriodicHealthCheck, TimeSpan.FromSeconds(60), "Health check");
-            recurringActionManager.Add(PeriodicNotificationUpdate, TimeSpan.FromSeconds(5), "Notification update");
+            //recurringActionManager.Add(PeriodicDisplayUpdate, TimeSpan.FromSeconds(5), "Display update");
+            //recurringActionManager.Add(PeriodicHealthCheck, TimeSpan.FromSeconds(60), "Health check");
+            //recurringActionManager.Add(PeriodicNotificationUpdate, TimeSpan.FromSeconds(5), "Notification update");
             logger.LogDebug("VideoService initialized with {NotificationCount} notifications", notifications.Count);
         }
 
